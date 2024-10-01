@@ -1,6 +1,5 @@
 package test;
 import javafx.application.Application;
-import javafx.css.converter.InsetsConverter.SequenceConverter;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;

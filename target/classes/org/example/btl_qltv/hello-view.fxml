@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" prefWidth="600" prefHeight="400">
+    <VBox spacing="10" padding="20">
+        <Label text="Quản Lý Thư Viện" layoutX="20" layoutY="20" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+        <Label text="Danh Sách Tài Liệu:"/>
+        <ListView fx:id="documentList" prefWidth="200" prefHeight="250"/>
+        <Label text="Thông Tin Tài Liệu:"/>
+        <TextArea fx:id="documentInfo" prefWidth="320" prefHeight="250" editable="false"/>
+        <Label text="Chức Năng Quản Lý:"/>
+        <HBox spacing="10">
+            <Button fx:id="addButton" text="Thêm Tài Liệu"/>
+            <Button fx:id="deleteButton" text="Xóa Tài Liệu"/>
+            <Button fx:id="editButton" text="Sửa Tài Liệu"/>
+        </HBox>
+        <Label text="Mượn/Trả Tài Liệu:"/>
+        <HBox spacing="10">
+            <Button fx:id="borrowButton" text="Mượn Tài Liệu"/>
+            <Button fx:id="returnButton" text="Trả Tài Liệu"/>
+        </HBox>
+    </VBox>
+</AnchorPane>
