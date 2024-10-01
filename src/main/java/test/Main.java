@@ -1,4 +1,7 @@
 package test;
+import java.sql.Connection;
+import java.sql.DriverManager;
+
 import javafx.application.Application;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
@@ -16,7 +19,16 @@ public class Main extends Application {
         stage.show();
     }
     public static void main(String[] args) {
-        launch(args);
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(
+            "jdbc:mysql://localhost:3306/classicmodels", "root", "");
+            System.out.println("Connected to the database!");
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // launch(args);
     }
     }
     
