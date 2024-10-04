@@ -1,0 +1,39 @@
+.bg-light {
+    -fx-background-color: green;
+}
+
+.container {
+    -fx-max-width: 400px;
+}
+
+.h1 {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+}
+
+.form-control {
+    -fx-pref-width: 300px;
+    -fx-min-height: 40px;
+    -fx-font-size: 14px;
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 4px;
+    -fx-padding: 6px 12px;
+}
+
+.btn {
+    -fx-pref-width: 300px;
+    -fx-min-height: 40px;
+    -fx-font-size: 16px;
+    -fx-background-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.btn-primary {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #0056b3;
+}

@@ -1,34 +1,26 @@
 package test;
-import java.sql.Connection;
-import java.sql.DriverManager;
 
 import javafx.application.Application;
-import javafx.scene.control.*;
-import javafx.scene.image.*;
-import javafx.scene.layout.*;
-import javafx.scene.*;
-import javafx.stage.*;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        stage.setTitle("Kien");
-        StackPane root = new StackPane();
-        root.getChildren().add(new Label("kien"));
-        Scene scene = new Scene(root,400,400);
-        stage.setScene(scene);
-        stage.show();
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+      if (loader.getLocation() == null) {
+          System.err.println("Error: FXML file not found!");
+          return;
+      }
+      Scene scene = new Scene(loader.load());
+      stage.setTitle("Đăng nhập");
+      stage.setScene(scene);
+      stage.setWidth(1000);
+      stage.setHeight(600);
+      stage.show();
     }
     public static void main(String[] args) {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection(
-            "jdbc:mysql://localhost:3306/classicmodels", "root", "");
-            System.out.println("Connected to the database!");
-            connection.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        // launch(args);
+       launch(args);
     }
     }
     
