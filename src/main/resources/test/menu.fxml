@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="test.menuController">
+   <children>
+      <TabPane layoutX="10.0" layoutY="10.0" prefHeight="580.0" prefWidth="780.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Danh sách tài liệu">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <children>
+                  <TableView fx:id="tvDocuments" layoutX="14.0" layoutY="14.0" prefHeight="500.0" prefWidth="450.0">
+                    <columns>
+                      <TableColumn fx:id="colName" prefWidth="75.0" text="Tên" />
+                      <TableColumn fx:id="colAuthor" prefWidth="150.0" text="Tác giả" />
+                      <TableColumn fx:id="colCategory" prefWidth="150.0" text="Thể loại" />
+                      <TableColumn fx:id="colPublisher" prefWidth="75.0" text="Nhà xuất bản" />
+                      <TableColumn fx:id="colYear" prefWidth="75.0" text="Năm xuất bản" />
+                      <TableColumn fx:id="colQuantity" prefWidth="75.0" text="Số lượng" />
+                    </columns>
+                  </TableView>
+                  <TextArea fx:id="taDocumentDetails" layoutX="478.0" layoutY="14.0" prefHeight="500.0" prefWidth="300.0" />
+                </children>
+              </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Quản lý">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <children>
+                  <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="Thêm tài liệu" />
+                  <Button layoutX="14.0" layoutY="50.0" mnemonicParsing="false" text="Xóa tài liệu" />
+                  <Button layoutX="14.0" layoutY="86.0" mnemonicParsing="false" text="Sửa tài liệu" />
+                  <Button layoutX="14.0" layoutY="122.0" mnemonicParsing="false" text="Quản lý thành viên" />
+                </children>
+              </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Mượn/Trả tài liệu">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <children>
+                  <ComboBox fx:id="cbMembers" layoutX="14.0" layoutY="14.0" prefWidth="150.0" promptText="Chọn thành viên" />
+                  <ComboBox fx:id="cbDocuments" layoutX="14.0" layoutY="50.0" prefWidth="150.0" promptText="Chọn tài liệu" />
+                  <Button layoutX="14.0" layoutY="86.0" mnemonicParsing="false" text="Mượn tài liệu" />
+                  <Button layoutX="14.0" layoutY="122.0" mnemonicParsing="false" text="Trả tài liệu" />
+                </children>
+              </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
