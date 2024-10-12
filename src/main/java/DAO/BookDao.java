@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -74,5 +75,15 @@ public final class BookDao implements DaoInterface<Document> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Document getByName(String name) {
+        List<Document> documents = getAll();
+        for (Document document : documents) {
+            if (document.getName().equals(name)) {
+                return document;
+            }
+        }
+        return null;
     }
 }

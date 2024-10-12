@@ -1,6 +1,11 @@
 package model;
+import java.util.List;
 
+import DAO.UserDao;
+import thread.ThreadManager;
 public final class User {
+    private static int nextId = 6;
+    private int userId; 
     private String username;
     private String password;
     private String address;
@@ -8,8 +13,17 @@ public final class User {
     private String email;
     private String sex;
     private int age;
+
+    static {
+        ThreadManager.execute(() -> {
+            List<User>user = UserDao.getInstance().getAll();
+            nextId = user.getLast().getUserId() + 1;
+        });
+        ThreadManager.shutdown();  
+    }
     
     public User(String username, String password, String address, String phone, String email, String sex, int age) {
+        this.userId = nextId++;
         this.username = username;
         this.password = password;
         this.address = address;
@@ -17,6 +31,14 @@ public final class User {
         this.email = email;
         this.sex = sex;
         this.age = age;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -75,10 +97,3 @@ public final class User {
         this.age = age;
     }
 }
-
-    
-    
-    
-    
-
-

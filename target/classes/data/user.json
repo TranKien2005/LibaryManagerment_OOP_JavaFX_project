@@ -1,0 +1,52 @@
+[
+  {
+    "userId": 1,
+    "username": "john_doe",
+    "password": "password123",
+    "address": "123 Main St, Anytown, USA",
+    "phone": "555-1234",
+    "email": "john.doe@example.com",
+    "sex": "Male",
+    "age": 30
+  },
+  {
+    "userId": 2,
+    "username": "jane_smith",
+    "password": "securePass456",
+    "address": "456 Elm St, Somewhere, USA",
+    "phone": "555-5678",
+    "email": "jane.smith@example.com",
+    "sex": "Female",
+    "age": 28
+  },
+  {
+    "userId": 3,
+    "username": "bob_johnson",
+    "password": "bobsPassword789",
+    "address": "789 Oak Ave, Elsewhere, USA",
+    "phone": "555-9012",
+    "email": "bob.johnson@example.com",
+    "sex": "Male",
+    "age": 35
+  },
+  {
+    "userId": 4,
+    "username": "alice_williams",
+    "password": "aliceSecure321",
+    "address": "321 Pine Rd, Nowhere, USA",
+    "phone": "555-3456",
+    "email": "alice.williams@example.com",
+    "sex": "Female",
+    "age": 26
+  },
+  {
+    "userId": 5,
+    "username": "charlie_brown",
+    "password": "snoopy987",
+    "address": "987 Cedar Ln, Anywhere, USA",
+    "phone": "555-7890",
+    "email": "charlie.brown@example.com",
+    "sex": "Male",
+    "age": 32
+  }
+]

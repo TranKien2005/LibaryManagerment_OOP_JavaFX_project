@@ -63,12 +63,23 @@
                 <padding>
                   <Insets top="20" right="20" bottom="20" left="20"/>
                 </padding>
-                <ComboBox fx:id="cbMembers" prefWidth="250.0" promptText="Chọn thành viên" styleClass="form-control"/>
-                <ComboBox fx:id="cbDocuments" prefWidth="250.0" promptText="Chọn tài liệu" styleClass="form-control"/>
+                <ComboBox fx:id="cbMembers" prefWidth="250.0" promptText="Chọn thành viên" styleClass="form-control" editable="true"/>
+                <ComboBox fx:id="cbDocuments" prefWidth="250.0" promptText="Chọn tài liệu" styleClass="form-control" editable="true"/>
+                <DatePicker fx:id="dpReturnDate" promptText="Ngày trả" styleClass="form-control"/>
+                <DatePicker fx:id="dpBorrowDate" promptText="Ngày mượn" styleClass="form-control"/>
                 <HBox spacing="10">
-                  <Button text="Mượn tài liệu" styleClass="btn, btn-primary"/>
-                  <Button text="Trả tài liệu" styleClass="btn, btn-success"/>
+                  <Button text="Mượn tài liệu" styleClass="btn, btn-primary" onAction="#handleBorrowDocument"/>
+                  <Button text="Trả tài liệu" styleClass="btn, btn-success" onAction="#handleReturnDocument"/>
                 </HBox>
+                <TableView fx:id="tvBorrowedDocuments" prefHeight="200.0" styleClass="table, table-hover">
+                  <columns>
+                    <TableColumn fx:id="colMember" text="Thành viên" prefWidth="100.0"/>
+                    <TableColumn fx:id="colDocument" text="Tài liệu" prefWidth="100.0"/>
+                    <TableColumn fx:id="colBorrowDate" text="Ngày mượn" prefWidth="100.0"/>
+                    <TableColumn fx:id="colReturnDate" text="Ngày trả" prefWidth="100.0"/>
+                    <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="100.0"/>
+                  </columns>
+                </TableView>
               </VBox>
             </content>
           </Tab>

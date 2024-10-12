@@ -1,0 +1,14 @@
+[
+  {
+    "user_id": 3,
+    "bookname": "The Great Gatsby",
+    "borrow_date": "2024-11-07",
+    "return_date": "2024-10-16"
+  },
+  {
+    "user_id": 3,
+    "bookname": "To Kill a Mockingbird",
+    "borrow_date": "2024-10-31",
+    "return_date": "2024-10-02"
+  }
+]

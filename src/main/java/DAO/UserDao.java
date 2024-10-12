@@ -12,7 +12,7 @@ import com.google.gson.reflect.TypeToken;
 import model.User;
 
 public final class UserDao implements DaoInterface<User>{
-    private static final String filePath = "src/main/resources/user.json";
+    private static final String filePath = "src/main/java/data/user.json";
     private static UserDao instance;
 
     private UserDao() {}
@@ -35,9 +35,10 @@ public final class UserDao implements DaoInterface<User>{
     @Override
     public void update(User t) {
         List<User> users = getAll();
-        for (User user : users) {
-            if (user.getUsername().equals(t.getUsername())) {
-                user = t;
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getUserId() == t.getUserId()) {
+                users.set(i, t);
+                break;
             }
         }
         saveUsersToJson(users);
@@ -46,7 +47,7 @@ public final class UserDao implements DaoInterface<User>{
     @Override
     public void delete(User t) {
         List<User> users = getAll();
-        users.removeIf(user -> user.getUsername().equals(t.getUsername()));
+        users.removeIf(user -> user.getUserId() == t.getUserId());
         saveUsersToJson(users);
     }
 
@@ -54,7 +55,7 @@ public final class UserDao implements DaoInterface<User>{
     public User get(User t) {
         List<User> users = getAll();
         for (User user : users) {
-            if (user.getUsername().equals(t.getUsername())) {
+            if (user.getUserId() == t.getUserId()) {
                 return user;
             }
         }
