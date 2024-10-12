@@ -11,7 +11,7 @@ import com.google.gson.reflect.TypeToken;
 
 import model.User;
 
-public class UserDao implements DaoInterface<User>{
+public final class UserDao implements DaoInterface<User>{
     private static final String filePath = "src/main/resources/user.json";
     private static UserDao instance;
 

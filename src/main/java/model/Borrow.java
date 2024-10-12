@@ -1,7 +1,7 @@
 package model;
 import java.time.LocalDate;
 
-public class Borrow {
+public final  class Borrow {
     private int user_id;
     private String bookname;
     private LocalDate borrow_date;
