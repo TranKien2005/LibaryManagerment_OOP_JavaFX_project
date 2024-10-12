@@ -4,6 +4,7 @@ import java.util.List;
 import DAO.BookDao;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -11,6 +12,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Document;
 import thread.ThreadManager;
@@ -47,6 +49,9 @@ public class menuController {
     private ComboBox<String> cbDocuments;
     
     @FXML
+    private TextField tfFilter;
+    
+    @FXML
     private void initialize() {
         // Khởi tạo các cột cho TableView
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -64,7 +69,23 @@ public class menuController {
         // Thêm listener cho việc chọn tài liệu
         tvDocuments.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
-                taDocumentDetails.setText(newSelection.toString());
+                String details = String.format(
+                    "Tên: %s\n" +
+                    "Tác giả: %s\n" +
+                    "Thể loại: %s\n" +
+                    "Nhà xuất bản: %s\n" +
+                    "Năm xuất bản: %d\n" +
+                    "Số lượng: %d",
+                    newSelection.getName(),
+                    newSelection.getAuthor(),
+                    newSelection.getCategory(),
+                    newSelection.getPublisher(),
+                    newSelection.getYear(),
+                    newSelection.getQuantity()
+                );
+                taDocumentDetails.setText(details);
+            } else {
+                taDocumentDetails.clear();
             }
         });
     }
@@ -108,5 +129,32 @@ public class menuController {
     private void onReturnDocument() {
         // Xử lý trả tài liệu
     }
-}
+    
+    @FXML
+    public void handleFilterAction() {
+        String filterText = tfFilter.getText().toLowerCase().trim();
+        ObservableList<Document> allDocuments = FXCollections.observableArrayList(BookDao.getInstance().getAll());
+        ObservableList<Document> filteredDocuments = FXCollections.observableArrayList();
 
+        for (Document doc : allDocuments) {
+            if (doc.getName().toLowerCase().contains(filterText)) {
+                filteredDocuments.add(doc);
+            }
+        }
+
+        tvDocuments.setItems(filteredDocuments);
+
+        if (filteredDocuments.isEmpty()) {
+            showInfoAlert("Không tìm thấy", "Không có tài liệu nào phù hợp với từ khóa tìm kiếm.");
+        }
+    }
+
+    private void showInfoAlert(String title, String content) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+}

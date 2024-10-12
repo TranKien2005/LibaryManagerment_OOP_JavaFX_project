@@ -4,13 +4,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import model.Document;
 
-public class BookDao implements DaoInterface<Document> {
+public final class BookDao implements DaoInterface<Document> {
     private static final String PATH = "src/main/java/data/book.json";
     private static BookDao instance;
 
