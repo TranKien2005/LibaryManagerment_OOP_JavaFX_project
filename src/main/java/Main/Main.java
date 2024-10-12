@@ -1,4 +1,5 @@
-package test;
+package Main;
+import BasicClass.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,15 +12,17 @@ import javafx.scene.*;
 import javafx.stage.*;
 
 public class Main extends Application {
+    private Scene scene;
     private static final String URL = "jdbc:mysql://localhost:3306/librarymanagement";
     private static final String USER = "root";
     private static final String PASSWORD = "";
-
-    public void start(Stage stage) throws Exception {
-        stage.setTitle("Kien");
+    private void setSceneToKien() {
         StackPane root = new StackPane();
         root.getChildren().add(new Label("kien"));
-        Scene scene = new Scene(root, 400, 400);
+        scene = new Scene(root, 400, 400);
+    }
+    public void start(Stage stage) throws Exception {
+        stage.setTitle("Kien");
         stage.setScene(scene);
         stage.show();
     }
@@ -36,6 +39,7 @@ public class Main extends Application {
        try {
            book1.addBookToDatabase(URL, USER, PASSWORD);
            Book.printAllBooks(URL, USER, PASSWORD);
+           Book.printBookById(URL,USER,PASSWORD,2);
        } catch (SQLException e) {
            e.printStackTrace();
        }

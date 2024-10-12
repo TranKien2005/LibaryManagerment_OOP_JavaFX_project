@@ -61,7 +61,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>test.Main</mainClass>
+                    <mainClass>Main.Main</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -69,7 +69,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.4.1</version>
                 <configuration>
-                    <mainClass>test.Main</mainClass>
+                    <mainClass>Main.Main</mainClass>
                 </configuration>
             </plugin>
         </plugins>
