@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane stylesheets="/stylesheet/bootstrap.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.menuController">
+   <children>
+      <TabPane layoutX="10.0" layoutY="10.0" prefHeight="580.0" prefWidth="780.0" tabClosingPolicy="UNAVAILABLE" styleClass="tab-pane">
+        <tabs>
+          <Tab text="Danh sách tài liệu" styleClass="tab">
+            <content>
+              <BorderPane styleClass="bg-white">
+                <center>
+                  <TableView fx:id="tvDocuments" styleClass="table, table-hover">
+                    <columns>
+                      <TableColumn fx:id="colName" prefWidth="120.0" text="Tên" />
+                      <TableColumn fx:id="colAuthor" prefWidth="120.0" text="Tác giả" />
+                      <TableColumn fx:id="colCategory" prefWidth="120.0" text="Thể loại" />
+                      <TableColumn fx:id="colPublisher" prefWidth="120.0" text="Nhà xuất bản" />
+                      <TableColumn fx:id="colYear" prefWidth="100.0" text="Năm xuất bản" />
+                      <TableColumn fx:id="colQuantity" prefWidth="80.0" text="Số lượng" />
+                    </columns>
+                  </TableView>
+                </center>
+                <right>
+                  <TextArea fx:id="taDocumentDetails" prefWidth="300.0" styleClass="form-control" promptText="Chi tiết tài liệu"/>
+                </right>
+                <padding>
+                  <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+              </BorderPane>
+            </content>
+          </Tab>
+          <Tab text="Quản lý" styleClass="tab">
+            <content>
+              <VBox spacing="10" alignment="TOP_LEFT" styleClass="bg-white">
+                <padding>
+                  <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+                <Button text="Thêm tài liệu" styleClass="btn, btn-primary" maxWidth="200"/>
+                <Button text="Xóa tài liệu" styleClass="btn, btn-danger" maxWidth="200"/>
+                <Button text="Sửa tài liệu" styleClass="btn, btn-info" maxWidth="200"/>
+                <Button text="Quản lý thành viên" styleClass="btn, btn-success" maxWidth="200"/>
+              </VBox>
+            </content>
+          </Tab>
+          <Tab text="Mượn/Trả tài liệu" styleClass="tab">
+            <content>
+              <VBox spacing="15" alignment="TOP_LEFT" styleClass="bg-white">
+                <padding>
+                  <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+                <ComboBox fx:id="cbMembers" prefWidth="250.0" promptText="Chọn thành viên" styleClass="form-control"/>
+                <ComboBox fx:id="cbDocuments" prefWidth="250.0" promptText="Chọn tài liệu" styleClass="form-control"/>
+                <HBox spacing="10">
+                  <Button text="Mượn tài liệu" styleClass="btn, btn-primary"/>
+                  <Button text="Trả tài liệu" styleClass="btn, btn-success"/>
+                </HBox>
+              </VBox>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
