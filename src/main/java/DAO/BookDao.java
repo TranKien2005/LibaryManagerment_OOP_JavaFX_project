@@ -75,4 +75,14 @@ public final class BookDao implements DaoInterface<Document> {
             e.printStackTrace();
         }
     }
+
+    public boolean add(Document document) {
+        try {
+            insert(document);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

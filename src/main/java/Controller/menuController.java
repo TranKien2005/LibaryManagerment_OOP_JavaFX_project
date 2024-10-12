@@ -16,8 +16,22 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Document;
 import thread.ThreadManager;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import java.io.IOException;
 
 public class menuController {
+    private static menuController instance;
+
+    public static menuController getInstance() {
+        if (instance == null) {
+            instance = new menuController();
+        }
+        return instance;
+    }
+
     @FXML
     private TableView<Document> tvDocuments;
     
@@ -53,6 +67,7 @@ public class menuController {
     
     @FXML
     private void initialize() {
+        instance = this;
         // Khởi tạo các cột cho TableView
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colAuthor.setCellValueFactory(new PropertyValueFactory<>("author"));
@@ -102,7 +117,40 @@ public class menuController {
     
     @FXML
     private void onAddDocument() {
-        // Xử lý thêm tài liệu
+        try {
+            System.out.println("Đang mở cửa sổ thêm tài liệu");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/add.fxml"));
+            Parent root = loader.load();
+            AddController addController = loader.getController();
+            Stage stage = new Stage();
+            stage.setTitle("Thêm Tài Liệu Mới");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+            
+            // Refresh the table view after adding a new document
+            refreshTableView();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showErrorAlert("Lỗi", "Không thể mở cửa sổ thêm tài liệu: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorAlert("Lỗi không xác định", "Đã xảy ra lỗi: " + e.getMessage());
+        }
+    }
+    
+    public void refreshTableView() {
+        ThreadManager.execute(() -> {
+            try {
+                List<Document> documents = BookDao.getInstance().getAll();
+                Platform.runLater(() -> {
+                    tvDocuments.getItems().clear();
+                    tvDocuments.getItems().addAll(documents);
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() -> showErrorAlert("Lỗi cập nhật", "Không thể cập nhật danh sách tài liệu: " + e.getMessage()));
+            }
+        });
     }
     
     @FXML

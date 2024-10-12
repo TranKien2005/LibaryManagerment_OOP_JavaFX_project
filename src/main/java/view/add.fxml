@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.AddController" 
+      spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+    <Label text="Thêm Tài Liệu Mới" styleClass="h2"/>
+    
+    <GridPane hgap="10" vgap="10">
+        <Label text="Tiêu đề:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="titleField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        
+        <Label text="Tác giả:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="authorField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        
+        <Label text="Thể loại:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="categoryField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        
+        <Label text="Nhà xuất bản:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <TextField fx:id="publisherField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        
+        <Label text="Năm xuất bản:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+        <TextField fx:id="yearField" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        
+        <Label text="Số lượng:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <TextField fx:id="quantityField" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+    </GridPane>
+    
+    <Button fx:id="addButton" text="Thêm tài liệu" onAction="#handleAddDocument"/>
+</VBox>
