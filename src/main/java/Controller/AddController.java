@@ -39,8 +39,23 @@ public class AddController {
         String author = authorField.getText();
         String category = categoryField.getText();
         String publisher = publisherField.getText();
-        int year = Integer.parseInt(yearField.getText());
-        int quantity = Integer.parseInt(quantityField.getText());
+        
+        int year;
+        int quantity;
+        
+        try {
+            year = Integer.parseInt(yearField.getText());
+        } catch (NumberFormatException e) {
+            showAlert("Lỗi", "Năm không đúng định dạng. Vui lòng nhập số nguyên.");
+            return;
+        }
+        
+        try {
+            quantity = Integer.parseInt(quantityField.getText());
+        } catch (NumberFormatException e) {
+            showAlert("Lỗi", "Số lượng không đúng định dạng. Vui lòng nhập số nguyên.");
+            return;
+        }
 
         // Tạo đối tượng Document mới
         Document newDocument = new Document(title, author, category, publisher, year, quantity);
