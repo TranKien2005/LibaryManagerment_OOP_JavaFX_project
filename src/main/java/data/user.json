@@ -1,15 +1,5 @@
 [
   {
-    "userId": 1,
-    "username": "john_doe",
-    "password": "password123",
-    "address": "123 Main St, Anytown, USA",
-    "phone": "555-1234",
-    "email": "john.doe@example.com",
-    "sex": "Male",
-    "age": 30
-  },
-  {
     "userId": 2,
     "username": "jane_smith",
     "password": "securePass456",

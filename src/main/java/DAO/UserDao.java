@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import model.User;
@@ -76,10 +77,11 @@ public final class UserDao implements DaoInterface<User>{
 
 
     private void saveUsersToJson(List<User> users) {
-        Gson gson = new Gson();
-        String json = gson.toJson(users);
+        Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .create();
         try (FileWriter writer = new FileWriter(filePath)) {
-            writer.write(json);
+            gson.toJson(users, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }
