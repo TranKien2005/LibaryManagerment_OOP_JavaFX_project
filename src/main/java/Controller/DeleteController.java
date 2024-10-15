@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.collections.ObservableList;
 
 public class DeleteController {
     @FXML
@@ -16,6 +17,8 @@ public class DeleteController {
     private TableColumn<Document, String> tenColumn;
     @FXML
     private TableColumn<Document, String> tacGiaColumn;
+    @FXML
+    private ListView<String> suggestionListView;
 
     private BookDao bookDao;
 
@@ -29,9 +32,15 @@ public class DeleteController {
         tacGiaColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
         capNhatBangTaiLieu();
         
-        taiLieuTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                tenTaiLieuTextField.setText(newSelection.getName());
+        tenTaiLieuTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            updateSuggestions(newValue);
+        });
+
+        suggestionListView.setOnMouseClicked(event -> {
+            String selectedItem = suggestionListView.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                tenTaiLieuTextField.setText(selectedItem);
+                suggestionListView.setVisible(false);
             }
         });
     }
@@ -44,6 +53,12 @@ public class DeleteController {
             return;
         }
 
+        Document documentToDelete = bookDao.get(new Document(tenTaiLieu, "", "", "", 0, 0));
+        if (documentToDelete == null) {
+            hienThiThongBao("Lỗi", "Tài liệu không tồn tại.");
+            return;
+        }
+
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Xác nhận xóa");
         confirmAlert.setHeaderText(null);
@@ -51,7 +66,6 @@ public class DeleteController {
         
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                Document documentToDelete = new Document(tenTaiLieu, "", "", "", 0, 0);
                 bookDao.delete(documentToDelete);
                 hienThiThongBao("Xóa thành công", "Tài liệu đã được xóa.");
                 capNhatBangTaiLieu();
@@ -70,5 +84,22 @@ public class DeleteController {
         alert.setHeaderText(null);
         alert.setContentText(noiDung);
         alert.showAndWait();
+    }
+
+    private void updateSuggestions(String searchText) {
+        if (searchText == null || searchText.isEmpty()) {
+            suggestionListView.setVisible(false);
+            return;
+        }
+
+        ObservableList<String> suggestions = FXCollections.observableArrayList();
+        for (Document doc : bookDao.getAll()) {
+            if (doc.getName().toLowerCase().contains(searchText.toLowerCase())) {
+                suggestions.add(doc.getName());
+            }
+        }
+
+        suggestionListView.setItems(suggestions);
+        suggestionListView.setVisible(!suggestions.isEmpty());
     }
 }

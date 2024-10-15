@@ -5,10 +5,13 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.DeleteController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
     <Label text="Xóa Tài Liệu" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-    <HBox spacing="10" alignment="CENTER">
-        <Label text="Tên Tài Liệu:"/>
-        <TextField fx:id="tenTaiLieuTextField"/>
-    </HBox>
+    <VBox spacing="5">
+        <HBox spacing="10" alignment="CENTER">
+            <Label text="Tên Tài Liệu:"/>
+            <TextField fx:id="tenTaiLieuTextField"/>
+        </HBox>
+        <ListView fx:id="suggestionListView" visible="false" prefHeight="100"/>
+    </VBox>
     <Button text="Xóa" onAction="#xoaTaiLieu"/>
     <TableView fx:id="taiLieuTableView">
         <columns>
