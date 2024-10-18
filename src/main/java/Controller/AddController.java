@@ -8,6 +8,7 @@ import model.Document;
 import DAO.BookDao;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import java.util.function.Consumer;
 
 public class AddController {
     
@@ -31,6 +32,12 @@ public class AddController {
     
     @FXML
     private Button addButton;
+    
+    private Consumer<Document> onAddListener;
+
+    public void setOnAddListener(Consumer<Document> listener) {
+        this.onAddListener = listener;
+    }
     
     @FXML
     private void handleAddDocument() {
@@ -60,6 +67,16 @@ public class AddController {
         // Tạo đối tượng Document mới
         Document newDocument = new Document(title, author, category, publisher, year, quantity);
 
+        if (onAddListener != null) {
+            try {
+                onAddListener.accept(newDocument);
+                // Tiếp tục với việc thêm tài liệu nếu không có lỗi
+            } catch (IllegalArgumentException e) {
+                showAlert("Lỗi nhập liệu", e.getMessage());
+                return;
+            }
+        }
+        
         // Lưu tài liệu mới vào cơ sở dữ liệu
         boolean success = saveDocument(newDocument);
 

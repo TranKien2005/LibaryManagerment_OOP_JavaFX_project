@@ -155,7 +155,21 @@ public class menuController {
     
     @FXML
     private void onDeleteDocument() {
-        // Xử lý xóa tài liệu
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/delete.fxml"));
+            Parent root = loader.load();
+            DeleteController deleteController = loader.getController();
+            Stage stage = new Stage();
+            stage.setTitle("Xóa Tài Liệu");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+            
+            // Cập nhật lại bảng sau khi xóa
+            refreshTableView();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showErrorAlert("Lỗi", "Không thể mở cửa sổ xóa tài liệu: " + e.getMessage());
+        }
     }
     
     @FXML
