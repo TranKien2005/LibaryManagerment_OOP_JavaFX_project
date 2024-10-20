@@ -340,14 +340,12 @@ public class menuController {
             return;
         }
 
-        // Find the document by name
         Document selectedDocument = BookDao.getInstance().getByName(selectedBorrow.getBookname());
         if (selectedDocument == null) {
             showErrorAlert("Lỗi", "Không tìm thấy tài liệu.");
             return;
         }
 
-        // Delete the borrow record
         BorrowDao.getInstance().delete(selectedBorrow);
         
         // Update the document quantity
@@ -356,7 +354,7 @@ public class menuController {
 
         showInfoAlert("Thành công", "Tài liệu đã được trả thành công.");
         refreshDocumentList();
-        loadBorrowedDocuments(); // Refresh the borrowed documents list
+        loadBorrowedDocuments();
     }
 
     private void refreshDocumentList() {
@@ -364,7 +362,7 @@ public class menuController {
             List<Document> documents = BookDao.getInstance().getAll();
             Platform.runLater(() -> {
                 tvDocuments.setItems(FXCollections.observableArrayList(documents));
-                tvDocuments.refresh(); // Refresh the TableView to show updated quantities
+                tvDocuments.refresh(); 
             });
         });
     }
