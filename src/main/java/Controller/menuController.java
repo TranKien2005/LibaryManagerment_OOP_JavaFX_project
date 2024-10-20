@@ -324,10 +324,8 @@ public class menuController {
         );
 
         BorrowDao.getInstance().insert(newBorrow);
-
         selectedDocument.setQuantity(selectedDocument.getQuantity() - 1);
         BookDao.getInstance().update(selectedDocument);
-
         showInfoAlert("Thành công", "Tài liệu đã được mượn thành công.");
         refreshDocumentList();
         loadBorrowedDocuments(); // Refresh the borrowed documents list
@@ -335,49 +333,24 @@ public class menuController {
 
     @FXML
     private void handleReturnDocument() {
-        String selectedDocumentName = cbDocuments.getValue();
-        String selectedMemberIdString = cbMembers.getValue();
-
-        if (selectedDocumentName == null || selectedDocumentName.isEmpty() || selectedMemberIdString == null) {
-            showErrorAlert("Lỗi", "Vui lòng chọn tài liệu và thành viên để trả.");
-            return;
-        }
-
-        // Convert the selected member ID to Integer
-        Integer selectedMemberId;
-        try {
-            selectedMemberId = Integer.parseInt(selectedMemberIdString);
-        } catch (NumberFormatException e) {
-            showErrorAlert("Lỗi", "ID thành viên không hợp lệ.");
+        Borrow selectedBorrow = tvBorrowedDocuments.getSelectionModel().getSelectedItem();
+        
+        if (selectedBorrow == null) {
+            showErrorAlert("Lỗi", "Vui lòng chọn một tài liệu đã mượn từ bảng để trả.");
             return;
         }
 
         // Find the document by name
-        Document selectedDocument = BookDao.getInstance().getByName(selectedDocumentName);
+        Document selectedDocument = BookDao.getInstance().getByName(selectedBorrow.getBookname());
         if (selectedDocument == null) {
             showErrorAlert("Lỗi", "Không tìm thấy tài liệu.");
             return;
         }
 
-        // Tìm bản ghi mượn
-        User user = UserDao.getInstance().getAll().stream()
-                .filter(u -> u.getUserId() == selectedMemberId)
-                .findFirst()
-                .orElse(null);
-        if (user == null) {
-            showErrorAlert("Lỗi", "Không tìm thấy thành viên.");
-            return;
-        }
-        Borrow borrowToReturn = new Borrow(selectedMemberId, selectedDocumentName, null, null);
-        Borrow foundBorrow = BorrowDao.getInstance().get(borrowToReturn);
-
-        if (foundBorrow == null) {
-            showErrorAlert("Lỗi", "Không tìm thấy bản ghi mượn cho tài liệu và thành viên này.");
-            return;
-        }
-
+        // Delete the borrow record
+        BorrowDao.getInstance().delete(selectedBorrow);
         
-        BorrowDao.getInstance().delete(foundBorrow);
+        // Update the document quantity
         selectedDocument.setQuantity(selectedDocument.getQuantity() + 1);
         BookDao.getInstance().update(selectedDocument);
 

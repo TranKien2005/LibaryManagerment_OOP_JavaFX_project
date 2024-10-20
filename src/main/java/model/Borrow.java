@@ -1,5 +1,6 @@
 package model;
 import java.time.LocalDate;
+import java.util.Objects;
 
 public final  class Borrow {
     private int user_id;
@@ -44,5 +45,21 @@ public final  class Borrow {
 
     public LocalDate getReturn_date() {
         return return_date;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Borrow borrow = (Borrow) obj;
+        return user_id == borrow.user_id &&
+               bookname.equals(borrow.bookname) &&
+               borrow_date.equals(borrow.borrow_date) &&
+               return_date.equals(borrow.return_date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(user_id, bookname, borrow_date, return_date);
     }
 }

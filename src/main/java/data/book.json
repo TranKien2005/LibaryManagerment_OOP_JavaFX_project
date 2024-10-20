@@ -5,7 +5,7 @@
     "category": "Dystopian",
     "publisher": "Secker \u0026 Warburg",
     "year": 1949,
-    "quantity": 15
+    "quantity": 12
   },
   {
     "name": "Pride and Prejudice",
@@ -54,5 +54,13 @@
     "publisher": "Ward, Lock \u0026 Co.",
     "year": 1890,
     "quantity": 12
+  },
+  {
+    "name": "1980",
+    "author": "George Orwell",
+    "category": "Dystopian Fiction",
+    "publisher": "Secker \u0026 Warburg",
+    "year": 1949,
+    "quantity": 1
   }
 ]

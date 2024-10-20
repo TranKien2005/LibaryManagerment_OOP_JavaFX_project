@@ -9,6 +9,7 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -73,8 +74,7 @@ public class BorrowDao implements DaoInterface<Borrow> {
     @Override
     public void delete(Borrow borrow) {
         List<Borrow> borrows = getAll();
-        borrows.removeIf(b -> b.getUser_id() == borrow.getUser_id() && 
-                              b.getBookname().equals(borrow.getBookname()));
+        borrows.removeIf(b -> b.equals(borrow));
         saveBorrowsToJson(borrows);
     }
 
