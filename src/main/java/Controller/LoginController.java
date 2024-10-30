@@ -2,6 +2,7 @@ package Controller;
 
 import java.io.IOException;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -32,11 +33,17 @@ public class LoginController {
             return;
         }
         try {
+            
             Parent root = loader.load();
             Scene scene = new Scene(root);
             Stage stage = (Stage) loginButton.getScene().getWindow();
+           
             stage.setScene(scene);
-            stage.show();
+            stage.setMaximized(true); // Set the stage to full screen
+            
+           
+               
+          
         } catch (IOException e) {
             System.err.println("Error loading menu.fxml: " + e.getMessage());
             e.printStackTrace();
@@ -52,6 +59,7 @@ public class LoginController {
             Scene scene = new Scene(root);
             Stage stage = (Stage) loginButton.getScene().getWindow();
             stage.setScene(scene);
+            stage.setMaximized(true); // Set the stage to full screen
             stage.show();
         } catch (IOException e) {
             System.err.println("Error loading register.fxml: " + e.getMessage());

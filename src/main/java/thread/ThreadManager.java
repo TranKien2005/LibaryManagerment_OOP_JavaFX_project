@@ -10,7 +10,7 @@ public class ThreadManager {
 
     public static void execute(Runnable task) {
         if (executorService == null || executorService.isShutdown()) {
-            executorService = Executors.newFixedThreadPool(1);
+            executorService = Executors.newFixedThreadPool(5);
         }
         executorService.execute(task);
     }

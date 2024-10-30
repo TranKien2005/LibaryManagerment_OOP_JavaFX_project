@@ -3,9 +3,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.DeleteController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.DeleteController" spacing="10" alignment="CENTER" style="-fx-padding: 20; -fx-alignment: center;">
     <Label text="Xóa Tài Liệu" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-    <VBox spacing="5">
+    <VBox spacing="5" alignment="CENTER">
         <HBox spacing="10" alignment="CENTER">
             <Label text="Tên Tài Liệu:"/>
             <TextField fx:id="tenTaiLieuTextField"/>
@@ -18,5 +18,9 @@
             <TableColumn text="Tên" fx:id="tenColumn"/>
             <TableColumn text="Tác giả" fx:id="tacGiaColumn"/>
         </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
     </TableView>
+    <Button text="Back to Menu" onAction="#backToMenu" alignment="CENTER"/>
 </VBox>

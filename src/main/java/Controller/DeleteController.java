@@ -3,12 +3,17 @@ package Controller;
 import model.Document;
 import DAO.BookDao;
 import javafx.collections.FXCollections;
+import java.io.IOException;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import javafx.collections.ObservableList;
 
-public class DeleteController {
+public class DeleteController extends menuController {
     @FXML
     private TextField tenTaiLieuTextField;
     @FXML
@@ -101,5 +106,31 @@ public class DeleteController {
 
         suggestionListView.setItems(suggestions);
         suggestionListView.setVisible(!suggestions.isEmpty());
+    }
+
+    @FXML
+    private void backToMenu() {
+         FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/menu.fxml"));
+        if (loader.getLocation() == null) {
+            System.err.println("Error: menu.fxml file not found!");
+            return;
+        }
+        try {
+            
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) taiLieuTableView.getScene().getWindow();
+           
+            stage.setScene(scene);
+            stage.setMaximized(true); // Set the stage to full screen
+            
+           
+               
+          
+        } catch (IOException e) {
+            System.err.println("Error loading menu.fxml: " + e.getMessage());
+            e.printStackTrace();
+            
+        }
     }
 }

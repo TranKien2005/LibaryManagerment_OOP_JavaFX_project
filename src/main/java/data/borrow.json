@@ -1,0 +1,32 @@
+[
+  {
+    "user_id": 3,
+    "bookname": "The Catcher in the Rye",
+    "borrow_date": "2024-10-31",
+    "return_date": "2024-10-08"
+  },
+  {
+    "user_id": 6,
+    "bookname": "1980",
+    "borrow_date": "2024-10-31",
+    "return_date": "2025-10-09"
+  },
+  {
+    "user_id": 6,
+    "bookname": "The Catcher in the Rye",
+    "borrow_date": "2024-10-31",
+    "return_date": "2025-10-09"
+  },
+  {
+    "user_id": 6,
+    "bookname": "The Catcher in the Rye",
+    "borrow_date": "2024-10-31",
+    "return_date": "2025-10-09"
+  },
+  {
+    "user_id": 6,
+    "bookname": "The Catcher in the Rye",
+    "borrow_date": "2024-10-31",
+    "return_date": "2025-10-09"
+  }
+]
