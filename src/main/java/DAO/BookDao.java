@@ -40,10 +40,13 @@ public final class BookDao implements DaoInterface<Document> {
         for (int i = 0; i < documents.size(); i++) {
             if (documents.get(i).getName().equals(t.getName())) {
                 documents.set(i, t);
+
                 saveDocumentsToJson(documents);
+
                 break;
             }
         }
+        saveDocumentsToJson(documents);
     }
 
     @Override

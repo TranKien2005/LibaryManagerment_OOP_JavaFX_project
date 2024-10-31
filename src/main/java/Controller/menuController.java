@@ -271,10 +271,29 @@ public class menuController {
             showErrorAlert("Lỗi", "Không thể mở cửa sổ xóa tài liệu: " + e.getMessage());
         }
     }
+
     
     @FXML
     private void onEditDocument() {
-        // Xử lý sửa tài liệu
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/edit.fxml"));
+            Parent root = loader.load();
+            EditController editController = loader.getController();
+            
+            // Thiết lập callback để cập nhật bảng
+            editController.setOnEditSuccess(v -> refreshTableView());
+            
+            Stage stage = (Stage) tvDocuments.getScene().getWindow();
+           
+            stage.setTitle("Sửa Tài Liệu");
+            stage.setScene(new Scene(root));
+            stage.setMaximized(false);
+            stage.showAndWait();
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showErrorAlert("Lỗi", "Không thể mở cửa sổ sửa tài liệu: " + e.getMessage());
+        }
     }
     
    @FXML

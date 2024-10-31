@@ -90,6 +90,7 @@ public class AddController extends menuController{
         } else {
             showAlert("Lỗi", "Không thể thêm tài liệu. Vui lòng thử lại.");
         }
+        handleBackToMenu();
     }
     
     private boolean saveDocument(Document document) {

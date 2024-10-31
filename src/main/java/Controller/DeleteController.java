@@ -77,6 +77,7 @@ public class DeleteController extends menuController {
                 tenTaiLieuTextField.clear();
             }
         });
+        backToMenu();
     }
 
     private void capNhatBangTaiLieu() {

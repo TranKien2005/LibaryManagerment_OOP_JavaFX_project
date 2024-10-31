@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.EditController">
+    <VBox fx:id="mainVBox" spacing="10" alignment="CENTER" style="-fx-padding: 20;" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <Label text="Sửa Tài Liệu" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+        <TextField fx:id="searchField" promptText="Tìm kiếm tài liệu" onKeyReleased="#handleSearch"/>
+        <ListView fx:id="suggestionListView" visible="false" prefHeight="100"/>
+        <TextField fx:id="titleField" promptText="Tiêu đề"/>
+        <TextField fx:id="authorField" promptText="Tác giả"/>
+        <TextField fx:id="categoryField" promptText="Thể loại"/>
+        <TextField fx:id="publisherField" promptText="Nhà xuất bản"/>
+        <TextField fx:id="yearField" promptText="Năm xuất bản"/>
+        <TextField fx:id="quantityField" promptText="Số lượng"/>
+        <Button text="Lưu" onAction="#handleEditDocument"/>
+        <Button text="Quay lại Menu" onAction="#handleBackToMenu" VBox.vgrow="ALWAYS"/>
+    </VBox>
+</AnchorPane>
