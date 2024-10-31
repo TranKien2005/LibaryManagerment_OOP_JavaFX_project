@@ -32,11 +32,13 @@ public final class BookDao implements DaoInterface<Document> {
     @Override
     public void update(Document t) {
         List<Document> documents = getAll();
-        for (Document document : documents) {
-            if (document.getName().equals(t.getName())) {
-                document = t;
+        for (int i = 0; i < documents.size(); i++) {
+            if (documents.get(i).getName().equals(t.getName())) {
+                documents.set(i, t);
+                break;
             }
         }
+        saveDocumentsToJson(documents);
     }
 
     @Override

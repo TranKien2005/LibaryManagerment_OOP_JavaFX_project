@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.EditController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+    <Label text="Sửa Tài Liệu" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+    <TextField fx:id="searchField" promptText="Tìm kiếm tài liệu" onKeyReleased="#handleSearch"/>
+    <ListView fx:id="suggestionListView" visible="false" prefHeight="100"/>
+    <TextField fx:id="titleField" promptText="Tiêu đề"/>
+    <TextField fx:id="authorField" promptText="Tác giả"/>
+    <TextField fx:id="categoryField" promptText="Thể loại"/>
+    <TextField fx:id="publisherField" promptText="Nhà xuất bản"/>
+    <TextField fx:id="yearField" promptText="Năm xuất bản"/>
+    <TextField fx:id="quantityField" promptText="Số lượng"/>
+    <Button text="Lưu" onAction="#handleEditDocument"/>
+</VBox>

@@ -52,7 +52,7 @@
                 </padding>
                 <Button text="Thêm tài liệu" styleClass="btn, btn-primary" maxWidth="200" onAction="#onAddDocument"/>
                 <Button text="Xóa tài liệu" styleClass="btn, btn-danger" maxWidth="200" onAction="#onDeleteDocument"/>
-                <Button text="Sửa tài liệu" styleClass="btn, btn-info" maxWidth="200"/>
+                <Button text="Sửa tài liệu" styleClass="btn, btn-info" maxWidth="200" onAction="#onEditDocument"/>
                 <Button text="Quản lý thành viên" styleClass="btn, btn-success" maxWidth="200"/>
               </VBox>
             </content>
