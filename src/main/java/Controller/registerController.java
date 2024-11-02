@@ -58,13 +58,15 @@ public class registerController extends LoginController {
     }
 
     @FXML
-    private void handlRegister() {
+    private void handleRegister() {
         User user = validateInputs();
         if (user != null) {
            UserDao userDao = UserDao.getInstance();
            userDao.insert(user);
             showAlert("Thông báo", "Đăng ký thành công");
+            handleLogin();
         }
+
     }
 
     private User validateInputs() {
@@ -93,6 +95,7 @@ public class registerController extends LoginController {
             stage.setHeight(600);
             stage.centerOnScreen();
             stage.setMaximized(false); // Set the stage to full screen
+            stage.setResizable(false);
             
             stage.show();
         } catch (Exception e) {

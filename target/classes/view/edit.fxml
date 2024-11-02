@@ -2,19 +2,35 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.EditController">
-    <VBox fx:id="mainVBox" spacing="10" alignment="CENTER" style="-fx-padding: 20;" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-        <Label text="Sửa Tài Liệu" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-        <TextField fx:id="searchField" promptText="Tìm kiếm tài liệu" onKeyReleased="#handleSearch"/>
-        <ListView fx:id="suggestionListView" visible="false" prefHeight="100"/>
-        <TextField fx:id="titleField" promptText="Tiêu đề"/>
-        <TextField fx:id="authorField" promptText="Tác giả"/>
-        <TextField fx:id="categoryField" promptText="Thể loại"/>
-        <TextField fx:id="publisherField" promptText="Nhà xuất bản"/>
-        <TextField fx:id="yearField" promptText="Năm xuất bản"/>
-        <TextField fx:id="quantityField" promptText="Số lượng"/>
-        <Button text="Lưu" onAction="#handleEditDocument"/>
-        <Button text="Quay lại Menu" onAction="#handleBackToMenu" VBox.vgrow="ALWAYS"/>
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.EditController" stylesheets="@/stylesheet/edit.css">
+    <VBox fx:id="mainVBox" spacing="10" alignment="CENTER" styleClass="form-container" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <Label text="Sửa Tài Liệu" styleClass="h2"/>
+        <TextField fx:id="searchField" promptText="Tìm kiếm tài liệu" onKeyReleased="#handleSearch" styleClass="text-field"/>
+        <ListView fx:id="suggestionListView" visible="false" prefHeight="100" styleClass="list-view"/>
+        <TextField fx:id="titleField" promptText="Tiêu đề" styleClass="text-field"/>
+        <TextField fx:id="authorField" promptText="Tác giả" styleClass="text-field"/>
+        <TextField fx:id="categoryField" promptText="Thể loại" styleClass="text-field"/>
+        <TextField fx:id="publisherField" promptText="Nhà xuất bản" styleClass="text-field"/>
+        <TextField fx:id="yearField" promptText="Năm xuất bản" styleClass="text-field"/>
+        <TextField fx:id="quantityField" promptText="Số lượng" styleClass="text-field"/>
+        <HBox spacing="10" alignment="CENTER">
+            <Button text="Lưu" onAction="#handleEditDocument" styleClass="btn, btn-primary">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                        <Image url="@/icons/save.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button text="Hủy" onAction="#handleCancel" styleClass="btn, btn-secondary">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                        <Image url="@/icons/cancel.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+        </HBox>
     </VBox>
 </AnchorPane>

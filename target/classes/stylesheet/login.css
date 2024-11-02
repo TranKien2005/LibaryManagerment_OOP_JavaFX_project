@@ -1,0 +1,59 @@
+.bg-dark {
+    -fx-background-color: #343a40; /* Màu nền tối */
+}
+
+.login-form {
+    -fx-background-color: #6c757d; /* Màu nền xám sáng hơn */
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.welcome-box {
+    -fx-background-color: #495057; /* Màu nền xám đậm */
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-padding: 20;
+    -fx-translate-x: 20; /* Lệch thêm sang bên phải */
+}
+
+.h2 {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center; /* Căn giữa văn bản */
+}
+
+.text-light {
+    -fx-text-fill: #f8f9fa; /* Màu chữ sáng */
+}
+
+.text-muted {
+    -fx-text-fill: #adb5bd; /* Màu chữ xám nhạt */
+}
+
+.form-control {
+    -fx-background-color: #adb5bd; /* Màu nền xám nhạt hơn */
+    -fx-text-fill: #343a40; /* Màu chữ tối */
+    -fx-background-radius: 5;
+    -fx-padding: 10 20;
+}
+
+.btn {
+    -fx-background-color: #495057; /* Màu nền xám đậm */
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-padding: 10 20;
+}
+
+.btn-primary {
+    -fx-background-color: #495057; /* Màu nền xám đậm */
+}
+
+.btn-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: #adb5bd; /* Màu chữ xám nhạt */
+    -fx-underline: true;
+}
+
+.btn-block {
+    -fx-min-width: 100%;
+}

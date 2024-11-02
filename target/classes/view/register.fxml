@@ -1,56 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ScrollPane?>
-<StackPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" 
-           prefWidth="1000" prefHeight="800" styleClass="bg-light"
-           stylesheets="/stylesheet/bootstrap.css, /stylesheet/bootstrap" fx:controller="Controller.registerController">
-    <HBox alignment="CENTER" spacing="20" StackPane.alignment="CENTER">
-        <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="edge-to-edge" HBox.hgrow="ALWAYS">
-            <VBox alignment="CENTER" spacing="15" styleClass="register-form" maxWidth="400">
-                <padding>
-                    <Insets top="20" right="30" bottom="20" left="30"/>
-                </padding>
-                
-                <ImageView fitWidth="80" fitHeight="80" preserveRatio="true">
-                    <Image url="@/images/logo.jpg"/>
-                </ImageView>
-                
-                <Label text="Đăng ký" styleClass="h3, text-primary"/>
-                
-                <TextField fx:id="usernameField" promptText="Tên đăng nhập" styleClass="form-control" maxWidth="250" minHeight="35"/>
-                <PasswordField fx:id="passwordField" promptText="Mật khẩu" styleClass="form-control" maxWidth="250" minHeight="35"/>
-                <PasswordField fx:id="confirmPasswordField" promptText="Xác nhận mật khẩu" styleClass="form-control" maxWidth="250" minHeight="35"/>
-                <HBox spacing="10">
-                    <TextField fx:id="addressField" promptText="Địa chỉ" styleClass="form-control" HBox.hgrow="ALWAYS" minHeight="35"/>
-                    <TextField fx:id="phoneField" promptText="Số điện thoại" styleClass="form-control" HBox.hgrow="ALWAYS" minHeight="35"/>
-                </HBox>
-                <HBox spacing="10">
-                    <TextField fx:id="emailField" promptText="Email" styleClass="form-control" HBox.hgrow="ALWAYS" minHeight="35"/>
-                    <ComboBox fx:id="sexComboBox" promptText="Giới tính" styleClass="form-control" HBox.hgrow="ALWAYS" minHeight="35"/>
-                </HBox>
-                <TextField fx:id="ageField" promptText="Tuổi" styleClass="form-control" maxWidth="250" minHeight="35"/>
-                
-                <Button text="Đăng ký" defaultButton="true" styleClass="btn, btn-primary, btn-block" fx:id="registerButton" onAction="#handlRegister" maxWidth="250"/>
-                
-                <HBox alignment="CENTER" spacing="10">
-                    <Label text="Đã có tài khoản?" styleClass="text-muted"/>
-                    <Button text="Đăng nhập" styleClass="btn, btn-link" onAction="#handleLogin"/>
-                </HBox>
-            </VBox>
-        </ScrollPane>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane prefHeight="600.0" prefWidth="1000.0" styleClass="bg-dark" stylesheets="/stylesheet/register.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.registerController">
+    <HBox alignment="CENTER" spacing="20" StackPane.alignment="CENTER" styleClass="bg-dark" HBox.hgrow="ALWAYS">
+        <VBox alignment="CENTER" maxWidth="450" spacing="15" styleClass="register-form">
+            <padding>
+                <Insets bottom="20" left="30" right="30" top="20" />
+            </padding>
+            
+            <ImageView fitHeight="100" fitWidth="100" preserveRatio="true">
+                <Image url="@/images/login/logo.png" />
+            </ImageView>
+            
+            <Label styleClass="h3, text-light" text="Đăng ký" />
+            
+            <TextField fx:id="usernameField" maxWidth="300" minHeight="35" promptText="Tên đăng nhập" styleClass="form-control" />
+            <PasswordField fx:id="passwordField" maxWidth="300" minHeight="35" promptText="Mật khẩu" styleClass="form-control" />
+            <PasswordField fx:id="confirmPasswordField" maxWidth="300" minHeight="35" promptText="Xác nhận mật khẩu" styleClass="form-control" />
+            <HBox spacing="10">
+                <TextField fx:id="addressField" minHeight="35" promptText="Địa chỉ" styleClass="form-control" HBox.hgrow="ALWAYS" />
+                <TextField fx:id="phoneField" minHeight="35" promptText="Số điện thoại" styleClass="form-control" HBox.hgrow="ALWAYS" />
+            </HBox>
+            <HBox spacing="10">
+                <TextField fx:id="emailField" minHeight="35" promptText="Email" styleClass="form-control" HBox.hgrow="ALWAYS" />
+                <ComboBox fx:id="sexComboBox" minHeight="35" promptText="Giới tính" styleClass="form-control" HBox.hgrow="ALWAYS" />
+            </HBox>
+            <TextField fx:id="ageField" maxWidth="300" minHeight="35" promptText="Tuổi" styleClass="form-control" />
+            
+            <Button fx:id="registerButton" defaultButton="true" maxWidth="300" onAction="#handleRegister" styleClass="btn, btn-primary, btn-block" text="Đăng ký" />
+            <Button fx:id="loginButton" maxWidth="300" onAction="#handleLogin" styleClass="btn, btn-secondary, btn-block" text="Login" />
+        </VBox>
         
-        <ImageView fitWidth="400" fitHeight="600" preserveRatio="true">
-            <Image url="@/images/logo.jpg"/>
-        </ImageView>
+        <!-- Phần bổ sung bên phải -->
+        <VBox alignment="CENTER" maxWidth="550" prefHeight="600.0" prefWidth="550.0" spacing="20" styleClass="info-box">
+            <padding>
+                <Insets bottom="20" left="30" right="30" top="20" />
+            </padding>
+            <Label styleClass="h3, text-light" text="Hướng dẫn đăng ký" />
+            <Label prefHeight="120.0" prefWidth="500.0" styleClass="text-light" text="1. Điền đầy đủ thông tin cá nhân vào các trường nhập liệu. Đảm bảo rằng bạn đã nhập đúng tên đăng nhập, mật khẩu, xác nhận mật khẩu, địa chỉ, số điện thoại, email, giới tính và tuổi của bạn." wrapText="true" />
+            <Label prefHeight="73.0" prefWidth="500.0" styleClass="text-light" text="2. Mật khẩu và xác nhận mật khẩu phải khớp nhau. Nếu không, bạn sẽ không thể hoàn tất quá trình đăng ký." wrapText="true" />
+            <Label prefHeight="73.0" prefWidth="500.0" styleClass="text-light" text="3. Nhấn nút 'Đăng ký' để hoàn tất quá trình đăng ký. Sau khi đăng ký thành công, bạn sẽ có thể đăng nhập vào hệ thống quản lý thư viện." wrapText="true" />
+            <Label prefHeight="73.0" prefWidth="500.0" styleClass="text-light" text="4. Nếu bạn gặp bất kỳ vấn đề nào trong quá trình đăng ký, vui lòng liên hệ với bộ phận hỗ trợ để được giúp đỡ." wrapText="true" />
+            <ImageView fitWidth="200" fitHeight="200" preserveRatio="true">
+                <Image url="@/images/register/warning.png" />
+            </ImageView>
+        </VBox>
     </HBox>
 </StackPane>

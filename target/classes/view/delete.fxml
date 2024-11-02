@@ -2,18 +2,39 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.DeleteController" spacing="10" alignment="CENTER" style="-fx-padding: 20; -fx-alignment: center;">
-    <Label text="Xóa Tài Liệu" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-    <VBox spacing="5" alignment="CENTER">
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.DeleteController" spacing="20" alignment="CENTER" stylesheets="@/stylesheet/delete.css">
+    <Label text="Xóa Tài Liệu" styleClass="h2" alignment="CENTER"/>
+    
+    <VBox spacing="10" alignment="CENTER" styleClass="form-container" prefWidth="200">
         <HBox spacing="10" alignment="CENTER">
-            <Label text="Tên Tài Liệu:"/>
-            <TextField fx:id="tenTaiLieuTextField"/>
+            <Label text="Tên Tài Liệu:" styleClass="form-label"/>
+            <TextField fx:id="tenTaiLieuTextField" styleClass="text-field" prefWidth="300"/>
         </HBox>
-        <ListView fx:id="suggestionListView" visible="false" prefHeight="100"/>
+        <ListView fx:id="suggestionListView" visible="false" prefHeight="100" prefWidth="300"/>
     </VBox>
-    <Button text="Xóa" onAction="#xoaTaiLieu"/>
-    <TableView fx:id="taiLieuTableView">
+    
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Xóa" onAction="#xoaTaiLieu" styleClass="btn, btn-danger">
+            <graphic>
+                <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                    <Image url="@/icons/delete.png" />
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button text="Hủy" onAction="#handleCancel" styleClass="btn, btn-secondary">
+            <graphic>
+                <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                    <Image url="@/icons/cancel.png" />
+                </ImageView>
+            </graphic>
+        </Button>
+    </HBox>
+    
+    <TableView fx:id="taiLieuTableView" styleClass="table-view">
         <columns>
             <TableColumn text="Tên" fx:id="tenColumn"/>
             <TableColumn text="Tác giả" fx:id="tacGiaColumn"/>
@@ -22,5 +43,4 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
         </columnResizePolicy>
     </TableView>
-    <Button text="Back to Menu" onAction="#backToMenu" alignment="CENTER"/>
 </VBox>

@@ -1,0 +1,78 @@
+/* Đặt màu nền và padding cho VBox */
+.form-container {
+    -fx-padding: 20;
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* Tùy chỉnh giao diện cho Label */
+.h2 {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+/* Tùy chỉnh giao diện cho TextField */
+.text-field {
+    -fx-padding: 10;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-font-size: 14px;
+}
+
+/* Tùy chỉnh giao diện cho ListView */
+.list-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ddd;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* Tùy chỉnh giao diện cho Button */
+.btn {
+    -fx-padding: 10 20;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+}
+
+.btn-primary {
+    -fx-background-color: #007bff;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #0056b3;
+}
+
+.btn-secondary {
+    -fx-background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #5a6268;
+}
+
+/* Tăng kích thước của từng hàng dựa trên lượng dữ liệu nhập */
+.text-field:focused {
+    -fx-pref-height: 40px;
+    -fx-font-size: 16px;
+}
+
+/* Thay đổi màu nền của từng phần */
+.form-container {
+    -fx-background-color: #e9ecef;
+}
+
+.btn-primary {
+    -fx-background-color: #007bff;
+}
+
+.btn-secondary {
+    -fx-background-color: #6c757d;
+}

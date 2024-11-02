@@ -5,6 +5,7 @@ import java.io.IOException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -12,6 +13,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class LoginController {
@@ -33,17 +35,20 @@ public class LoginController {
             return;
         }
         try {
-            
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) loginButton.getScene().getWindow();
-           
-            stage.setScene(scene);
-            stage.setMaximized(true); // Set the stage to full screen
-            
-           
-               
-          
+             Parent root = loader.load();
+        Scene scene = new Scene(root);
+        Stage stage = (Stage) loginButton.getScene().getWindow();
+        stage.setTitle("Menu"); // Change the title of the stage
+        stage.setScene(scene);
+
+        // Get the screen bounds
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setX((screenBounds.getWidth() - 1600) / 2);
+        stage.setY((screenBounds.getHeight() - 900) / 2);
+        stage.setWidth(1600);
+        stage.setHeight(900);
+
+        stage.show();
         } catch (IOException e) {
             System.err.println("Error loading menu.fxml: " + e.getMessage());
             e.printStackTrace();
@@ -58,9 +63,14 @@ public class LoginController {
             Parent root = loader.load();
             Scene scene = new Scene(root);
             Stage stage = (Stage) loginButton.getScene().getWindow();
+            stage.setTitle("Register");
+          
             stage.setScene(scene);
-            stage.setMaximized(true); // Set the stage to full screen
+            stage.setHeight(650);
+            stage.setWidth(1000);
             stage.show();
+           
+            
         } catch (IOException e) {
             System.err.println("Error loading register.fxml: " + e.getMessage());
             e.printStackTrace();

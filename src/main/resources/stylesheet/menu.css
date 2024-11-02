@@ -1,0 +1,257 @@
+/* Đặt màu nền cho BorderPane */
+.bg-white {
+    -fx-background-color: white;
+}
+
+/* Đặt màu nền cho toàn bộ pane */
+.pane-background {
+    -fx-background-color: #f0f0f0; /* Màu nền xám nhạt */
+    -fx-padding: 20;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+/* Tùy chỉnh giao diện cho TextField */
+.form-control {
+    -fx-padding: 10;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* Tùy chỉnh giao diện cho TextField trong thanh tìm kiếm */
+.search-field {
+    -fx-pref-width: 400px; /* Đặt chiều rộng lớn hơn */
+}
+
+/* Tùy chỉnh giao diện cho Button */
+.btn {
+    -fx-padding: 10 20;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-text-fill: white;
+}
+
+.btn-primary {
+    -fx-background-color: #007bff;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #0056b3;
+}
+
+.btn-info {
+    -fx-background-color: #17a2b8;
+}
+
+.btn-info:hover {
+    -fx-background-color: #138496;
+}
+
+.btn-success {
+    -fx-background-color: #28a745;
+}
+
+.btn-success:hover {
+    -fx-background-color: #218838;
+}
+
+.btn-danger {
+    -fx-background-color: #dc3545;
+}
+
+.btn-danger:hover {
+    -fx-background-color: #c82333;
+}
+
+/* Tùy chỉnh giao diện cho Button icon */
+.btn-icon {
+    -fx-background-color: transparent;
+    -fx-padding: 5;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.btn-icon:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+/* Tùy chỉnh giao diện cho TableView */
+.table {
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-background-color: #f9f9f9;
+}
+
+.table .column-header-background {
+    -fx-background-color: #007bff;
+}
+
+.table .column-header, .table .filler {
+    -fx-size: 30px;
+    -fx-border-color: transparent transparent #ccc transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table .table-row-cell {
+    -fx-border-color: transparent transparent #ccc transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table .table-row-cell:filled:selected, .table .table-row-cell:filled:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+.table-hover .table-row-cell:hover {
+    -fx-background-color: #f5f5f5;
+}
+
+/* Tùy chỉnh giao diện cho Label */
+.h1 {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.h4 {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+/* Căn giữa văn bản */
+.center-text {
+    -fx-alignment: center;
+}
+
+/* Tùy chỉnh giao diện cho hộp chi tiết tài liệu */
+.detail-box {
+    -fx-padding: 20;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-background-color: #f9f9f9;
+}
+
+/* Tùy chỉnh văn bản lớn hơn và phông chữ khác */
+.large-text {
+    -fx-font-size: 16px;
+    -fx-font-family: "Arial";
+}
+
+/* Tùy chỉnh giao diện cho tiêu đề hộp chi tiết tài liệu */
+.title-box {
+    -fx-background-color: #808080; /* Đổi màu nền thành màu xám */
+    -fx-padding: 5; /* Giảm padding để ôm vào chữ hơn */
+}
+
+.title-text {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+/* Đặt chiều rộng và màu nền cho sidebar */
+.sidebar {
+    -fx-background-color: #2c3e50;
+    -fx-padding: 10;
+    -fx-pref-width: 250; /* Tăng chiều rộng của sidebar */
+}
+
+/* Tùy chỉnh giao diện cho các nút trong sidebar */
+.sidebar-button {
+    -fx-background-color: #34495e;
+    -fx-text-fill: white;
+    -fx-font-size: 16px; /* Tăng kích thước chữ */
+    -fx-pref-width: 220; /* Tăng chiều rộng của nút */
+    -fx-pref-height: 50; /* Tăng chiều cao của nút */
+    -fx-cursor: hand;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 10 20;
+    -fx-alignment: CENTER_LEFT; /* Căn chỉnh nội dung nút sang trái */
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #3b5998;
+}
+
+.sidebar-button:pressed {
+    -fx-background-color: #2c3e50;
+}
+
+/* Tùy chỉnh giao diện cho thanh công cụ */
+.toolbar {
+    -fx-padding: 10;
+    -fx-background-color: #f1f1f1;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* Tùy chỉnh giao diện cho thanh trạng thái */
+.status-bar {
+    -fx-padding: 10;
+    -fx-background-color: #f1f1f1;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* Tùy chỉnh giao diện cho hộp đánh giá */
+.rating-box {
+    -fx-padding: 20;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-background-color: #f9f9f9;
+}
+
+/* Tùy chỉnh giao diện cho hộp cảnh báo */
+.warning-box {
+    -fx-padding: 20;
+    -fx-border-color: #ff0000; /* Màu viền đỏ */
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-background-color: #ffe6e6; /* Màu nền đỏ nhạt */
+}
+
+.warning-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ff0000; /* Màu chữ đỏ */
+}
+
+.warning-text {
+    -fx-font-size: 16px;
+    -fx-text-fill: #ff0000; /* Màu chữ đỏ */
+}
+
+/* Tùy chỉnh giao diện cho hộp form */
+.form-box {
+    -fx-padding: 20;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-background-color: #f9f9f9;
+}
+
+/* Tùy chỉnh giao diện cho hộp table */
+.table-box {
+    -fx-padding: 20;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-background-color: #f9f9f9;
+}

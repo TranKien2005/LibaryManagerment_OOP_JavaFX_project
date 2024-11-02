@@ -1,0 +1,64 @@
+.bg-dark {
+    -fx-background-color: #343a40; /* Màu nền tối */
+}
+
+.register-form {
+    -fx-background-color: #495057; /* Màu nền xám đậm */
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.info-box {
+    -fx-background-color: #495057; /* Màu nền xám đậm */
+    -fx-background-radius: 10; /* Bo viền tròn */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-padding: 20;
+}
+
+.h3 {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center; /* Căn giữa văn bản */
+}
+
+.text-light {
+    -fx-text-fill: #f8f9fa; /* Màu chữ sáng */
+    -fx-font-size: 16px; /* Kích thước chữ lớn hơn */
+}
+
+.text-warning {
+    -fx-text-fill: #ffc107; /* Màu chữ cảnh báo */
+    -fx-font-size: 16px; /* Kích thước chữ lớn hơn */
+}
+
+.text-danger {
+    -fx-text-fill: #dc3545; /* Màu chữ chú ý */
+    -fx-font-size: 16px; /* Kích thước chữ lớn hơn */
+}
+
+.form-control {
+    -fx-background-color: #6c757d; /* Màu nền xám nhạt */
+    -fx-text-fill: #f8f9fa; /* Màu chữ sáng */
+    -fx-prompt-text-fill: #adb5bd; /* Màu chữ của placeholder */
+    -fx-background-radius: 5;
+    -fx-padding: 10 20;
+}
+
+.btn {
+    -fx-background-color: #007bff; /* Màu nền xanh */
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-padding: 10 20;
+}
+
+.btn-primary {
+    -fx-background-color: #007bff; /* Màu nền xanh */
+}
+
+.btn-secondary {
+    -fx-background-color: #6c757d; /* Màu nền xám nhạt */
+}
+
+.btn-block {
+    -fx-min-width: 100%;
+}

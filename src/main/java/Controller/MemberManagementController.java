@@ -11,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -20,6 +21,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import model.User;
 import thread.ThreadManager;
@@ -241,27 +243,6 @@ public class MemberManagementController {
         });
     }
 
-    @FXML
-    private void handleBackToMainMenu() {
-        try {
-            // Load the menu.fxml file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/menu.fxml"));
-            Parent menuRoot = loader.load();
-
-            // Get the current stage
-            Stage stage = (Stage) tvMembers.getScene().getWindow();
-
-            stage.getScene().setRoot(menuRoot);
-
-            // Buộc cập nhật lại bố cục sau khi thay đổi nội dung
-            Platform.runLater(() -> {
-                stage.setWidth(stage.getWidth() + 1);
-                stage.setWidth(stage.getWidth() - 1);
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Error", "Unable to load the main menu.");
-        }
-    }
+   
   
 }

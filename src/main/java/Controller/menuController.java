@@ -14,17 +14,24 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import model.Borrow;
 import model.Document;
@@ -46,6 +53,20 @@ public class menuController {
         return instance;
     }
 
+    @FXML
+    private StackPane stackPane;
+
+    @FXML
+    private BorderPane documentTab;
+
+    @FXML
+    private BorderPane managementTab;
+
+    @FXML 
+    private StackPane managementStackPane;
+
+    @FXML
+    private BorderPane borrowAndReturnTab;
     @FXML
     private TableView<Document> tvDocuments;
     
@@ -190,9 +211,64 @@ public class menuController {
         });
 
         loadBorrowedDocuments();
-    }
 
-    private void loadBorrowedDocuments() {
+        //add subscene
+         // Tải và thêm các cảnh phụ vào managementStackPane
+         try {
+           
+
+            FXMLLoader addBookLoader = new FXMLLoader(getClass().getResource("/view/add.fxml"));
+            Parent addBookPane = addBookLoader.load();
+            managementStackPane.getChildren().add(addBookPane);
+
+            FXMLLoader deleteBookLoader = new FXMLLoader(getClass().getResource("/view/delete.fxml"));
+            Parent deleteBookPane = deleteBookLoader.load();
+            managementStackPane.getChildren().add(deleteBookPane);
+
+            FXMLLoader editBookLoader = new FXMLLoader(getClass().getResource("/view/edit.fxml"));
+            Parent editBookPane = editBookLoader.load();
+            managementStackPane.getChildren().add(editBookPane);
+
+            FXMLLoader manageMembersLoader = new FXMLLoader(getClass().getResource("/view/member_management.fxml"));
+            Parent manageMembersPane = manageMembersLoader.load();
+            managementStackPane.getChildren().add(manageMembersPane);
+
+            // Đặt cảnh báo là pane mặc định hiển thị
+            managementStackPane.getChildren().get(0).setVisible(true);
+            for (int i = 1; i < managementStackPane.getChildren().size(); i++) {
+                managementStackPane.getChildren().get(i).setVisible(false);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showErrorAlert("Lỗi", "Không thể tải subscene: " + e.getMessage());
+            Platform.exit();
+        }
+
+        
+        }
+
+        @FXML
+        private void showDocumentListTab() {
+        stackPane.getChildren().forEach(node -> node.setVisible(false));
+        documentTab.setVisible(true);
+        showPane(0);
+        }
+
+        @FXML
+        private void showManagementTab() {
+        stackPane.getChildren().forEach(node -> node.setVisible(false));
+        managementTab.setVisible(true);
+        showPane(0);
+        }
+
+        @FXML
+        private void showBorrowReturnTab() {
+        stackPane.getChildren().forEach(node -> node.setVisible(false));
+        borrowAndReturnTab.setVisible(true);
+        showPane(0);
+        }
+
+        private void loadBorrowedDocuments() {
         ThreadManager.execute(() -> {
             List<Borrow> borrowedDocuments = BorrowDao.getInstance().getAll();
             Platform.runLater(() -> {
@@ -209,28 +285,16 @@ public class menuController {
         alert.showAndWait();
     }
     
+    public void showPane(int index) {
+        for (int i = 0; i < managementStackPane.getChildren().size(); i++) {
+            managementStackPane.getChildren().get(i).setVisible(i == index);
+        }
+    }
+
     @FXML
     private void onAddDocument() {
         try {
-            System.out.println("Đang mở cửa sổ thêm tài liệu");
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/add.fxml"));
-            Parent root = loader.load();
-            AddController addController = loader.getController();
-            Stage stage = (Stage) tvDocuments.getScene().getWindow();
-            stage.setTitle("Thêm Tài Liệu Mới");
-            
-            stage.setWidth(1000);
-            stage.setHeight(600);
-           
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.setMaximized(false);
-            
-            // Refresh the table view after adding a new document
-            refreshTableView();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showErrorAlert("Lỗi", "Không thể mở cửa sổ thêm tài liệu: " + e.getMessage());
+            showPane(1);
         } catch (Exception e) {
             e.printStackTrace();
             showErrorAlert("Lỗi không xác định", "Đã xảy ra lỗi: " + e.getMessage());
@@ -254,68 +318,22 @@ public class menuController {
     
     @FXML
     private void onDeleteDocument() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/delete.fxml"));
-            Parent root = loader.load();
-            DeleteController deleteController = loader.getController();
-            Stage stage = (Stage) tvDocuments.getScene().getWindow();
-            stage.setTitle("Xóa Tài Liệu");
-            stage.setScene(new Scene(root));
-            stage.setMaximized(false);
-            stage.showAndWait();
-            
-            // Cập nhật lại bảng sau khi xóa
-            refreshTableView();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showErrorAlert("Lỗi", "Không thể mở cửa sổ xóa tài liệu: " + e.getMessage());
-        }
+        showPane(2);
     }
 
     
     @FXML
     private void onEditDocument() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/edit.fxml"));
-            Parent root = loader.load();
-            EditController editController = loader.getController();
-            
-            // Thiết lập callback để cập nhật bảng
-            editController.setOnEditSuccess(v -> refreshTableView());
-            
-            Stage stage = (Stage) tvDocuments.getScene().getWindow();
+     
+            showPane(3);
            
-            stage.setTitle("Sửa Tài Liệu");
-            stage.setScene(new Scene(root));
-            stage.setMaximized(false);
-            stage.showAndWait();
             
-        } catch (IOException e) {
-            e.printStackTrace();
-            showErrorAlert("Lỗi", "Không thể mở cửa sổ sửa tài liệu: " + e.getMessage());
-        }
+      
     }
     
    @FXML
 private void onManageMembers() {
-    try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/member_management.fxml"));
-        Parent root = loader.load();
-        
-        // Lấy Stage hiện tại từ một nút hoặc bất kỳ thành phần nào trong Scene hiện tại
-        Stage stage = (Stage) tvDocuments.getScene().getWindow();
-        stage.setTitle("Quản lý Thành viên");
-        stage.getScene().setRoot(root);
-
-        // Buộc cập nhật lại bố cục sau khi thay đổi nội dung
-        Platform.runLater(() -> {
-            stage.setWidth(stage.getWidth() + 1);
-            stage.setWidth(stage.getWidth() - 1);
-        });
-    } catch (IOException e) {
-        e.printStackTrace();
-        showErrorAlert("Lỗi không xác định", "Đã xảy ra lỗi: " + e.getMessage());
-    }
+    showPane(4);
 }
     
     @FXML

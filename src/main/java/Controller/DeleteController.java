@@ -6,10 +6,12 @@ import javafx.collections.FXCollections;
 import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.collections.ObservableList;
 
@@ -77,7 +79,7 @@ public class DeleteController extends menuController {
                 tenTaiLieuTextField.clear();
             }
         });
-        backToMenu();
+       
     }
 
     private void capNhatBangTaiLieu() {
@@ -108,30 +110,10 @@ public class DeleteController extends menuController {
         suggestionListView.setItems(suggestions);
         suggestionListView.setVisible(!suggestions.isEmpty());
     }
-
     @FXML
-    private void backToMenu() {
-         FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/menu.fxml"));
-        if (loader.getLocation() == null) {
-            System.err.println("Error: menu.fxml file not found!");
-            return;
-        }
-        try {
-            
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) taiLieuTableView.getScene().getWindow();
-           
-            stage.setScene(scene);
-            stage.setMaximized(true); // Set the stage to full screen
-            
-           
-               
-          
-        } catch (IOException e) {
-            System.err.println("Error loading menu.fxml: " + e.getMessage());
-            e.printStackTrace();
-            
-        }
+    private void handleCancel() {
+        tenTaiLieuTextField.clear();
+        suggestionListView.setVisible(false);
     }
+   
 }

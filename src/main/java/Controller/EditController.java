@@ -6,10 +6,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
@@ -107,7 +110,7 @@ public class EditController extends menuController {
             if (onEditSuccess != null) {
             onEditSuccess.accept(null); // Gọi callback
             }
-            handleBackToMenu();
+           
         } catch (NumberFormatException e) {
             showAlert("Lỗi", "Năm và số lượng phải là số nguyên hợp lệ.");
         } catch (Exception e) {
@@ -123,23 +126,17 @@ public class EditController extends menuController {
         alert.showAndWait();
     }
 
-     @FXML
-    private void handleBackToMenu() {
-        try {
-            // Load the menu.fxml file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/menu.fxml"));
-            Parent menuRoot = loader.load();
-
-            // Get the current stage
-            Stage stage = (Stage) searchField.getScene().getWindow();
-
-            stage.getScene().setRoot(menuRoot);
-            stage.setMaximized(true);
-            // Buộc cập nhật lại bố cục sau khi thay đổi nội dung
-           stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Error", "Unable to load the main menu.");
-        }
+    @FXML
+    private void handleCancel() {
+        titleField.setText("");
+        authorField.setText("");
+        categoryField.setText("");
+        publisherField.setText("");
+        yearField.setText("");
+        quantityField.setText("");
+        searchField.setText("");
+        suggestionListView.setItems(FXCollections.observableArrayList());
+        suggestionListView.setVisible(false);
     }
+   
 }

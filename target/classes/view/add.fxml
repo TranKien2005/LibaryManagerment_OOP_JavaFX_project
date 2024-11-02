@@ -3,34 +3,48 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 
-<StackPane xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.AddController" alignment="CENTER">
-    <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;" VBox.vgrow="ALWAYS">
+<StackPane xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.AddController" alignment="CENTER" stylesheets="@/stylesheet/add.css">
+    <VBox spacing="20" alignment="CENTER" styleClass="form-container">
         <Label text="Thêm Tài Liệu Mới" styleClass="h2" alignment="CENTER"/>
         
-        <GridPane hgap="10" vgap="10" alignment="CENTER">
-            <Label text="Tiêu đề:" GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="CENTER"/>
-            <TextField fx:id="titleField" GridPane.columnIndex="1" GridPane.rowIndex="0" alignment="CENTER"/>
+        <GridPane hgap="10" vgap="10" alignment="CENTER" styleClass="form-grid">
+            <Label text="Tiêu đề:" GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="CENTER" styleClass="form-label"/>
+            <TextField fx:id="titleField" GridPane.columnIndex="1" GridPane.rowIndex="0" alignment="CENTER" styleClass="text-field"/>
             
-            <Label text="Tác giả:" GridPane.columnIndex="0" GridPane.rowIndex="1" alignment="CENTER"/>
-            <TextField fx:id="authorField" GridPane.columnIndex="1" GridPane.rowIndex="1" alignment="CENTER"/>
+            <Label text="Tác giả:" GridPane.columnIndex="0" GridPane.rowIndex="1" alignment="CENTER" styleClass="form-label"/>
+            <TextField fx:id="authorField" GridPane.columnIndex="1" GridPane.rowIndex="1" alignment="CENTER" styleClass="text-field"/>
             
-            <Label text="Thể loại:" GridPane.columnIndex="0" GridPane.rowIndex="2" alignment="CENTER"/>
-            <TextField fx:id="categoryField" GridPane.columnIndex="1" GridPane.rowIndex="2" alignment="CENTER"/>
+            <Label text="Thể loại:" GridPane.columnIndex="0" GridPane.rowIndex="2" alignment="CENTER" styleClass="form-label"/>
+            <TextField fx:id="categoryField" GridPane.columnIndex="1" GridPane.rowIndex="2" alignment="CENTER" styleClass="text-field"/>
             
-            <Label text="Nhà xuất bản:" GridPane.columnIndex="0" GridPane.rowIndex="3" alignment="CENTER"/>
-            <TextField fx:id="publisherField" GridPane.columnIndex="1" GridPane.rowIndex="3" alignment="CENTER"/>
+            <Label text="Nhà xuất bản:" GridPane.columnIndex="0" GridPane.rowIndex="3" alignment="CENTER" styleClass="form-label"/>
+            <TextField fx:id="publisherField" GridPane.columnIndex="1" GridPane.rowIndex="3" alignment="CENTER" styleClass="text-field"/>
             
-            <Label text="Năm xuất bản:" GridPane.columnIndex="0" GridPane.rowIndex="4" alignment="CENTER"/>
-            <TextField fx:id="yearField" GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="CENTER"/>
+            <Label text="Năm xuất bản:" GridPane.columnIndex="0" GridPane.rowIndex="4" alignment="CENTER" styleClass="form-label"/>
+            <TextField fx:id="yearField" GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="CENTER" styleClass="text-field"/>
             
-            <Label text="Số lượng:" GridPane.columnIndex="0" GridPane.rowIndex="5" alignment="CENTER"/>
-            <TextField fx:id="quantityField" GridPane.columnIndex="1" GridPane.rowIndex="5" alignment="CENTER"/>
+            <Label text="Số lượng:" GridPane.columnIndex="0" GridPane.rowIndex="5" alignment="CENTER" styleClass="form-label"/>
+            <TextField fx:id="quantityField" GridPane.columnIndex="1" GridPane.rowIndex="5" alignment="CENTER" styleClass="text-field"/>
         </GridPane>
         
-        <HBox spacing="10" alignment="CENTER">
-            <Button fx:id="addButton" text="Thêm tài liệu" onAction="#handleAddDocument"/>
-            <Button fx:id="backButton" text="Quay lại" onAction="#handleBackToMenu"/>
+        <HBox spacing="50" alignment="CENTER">
+            <Button fx:id="addButton" text="Thêm tài liệu" onAction="#handleAddDocument" styleClass="btn, btn-primary" prefWidth="200">
+                <graphic>
+                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true" smooth="true">
+                        <Image url="@/icons/ok.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="cancelButton" text="Hủy bỏ" onAction="#handleCancel" styleClass="btn, btn-secondary" prefWidth="200">
+                <graphic>
+                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true" smooth="true">
+                        <Image url="@/icons/cancel.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
         </HBox>
     </VBox>
 </StackPane>

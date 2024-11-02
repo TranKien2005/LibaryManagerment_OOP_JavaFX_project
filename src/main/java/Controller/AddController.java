@@ -3,17 +3,22 @@ import java.io.IOException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import model.Document;
 import DAO.BookDao;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import java.util.function.Consumer;
 
+
 public class AddController extends menuController{
+   
     
     @FXML
     private TextField titleField;
@@ -90,7 +95,7 @@ public class AddController extends menuController{
         } else {
             showAlert("Lỗi", "Không thể thêm tài liệu. Vui lòng thử lại.");
         }
-        handleBackToMenu();
+      
     }
     
     private boolean saveDocument(Document document) {
@@ -124,22 +129,9 @@ public class AddController extends menuController{
     private Button backButton;
 
     @FXML
-    private void handleBackToMenu() {
-        try {
-            // Load the menu.fxml file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/menu.fxml"));
-            Parent menuRoot = loader.load();
-
-            // Get the current stage
-            Stage stage = (Stage) backButton.getScene().getWindow();
-
-            stage.getScene().setRoot(menuRoot);
-            stage.setMaximized(true);
-            // Buộc cập nhật lại bố cục sau khi thay đổi nội dung
-           stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Error", "Unable to load the main menu.");
-        }
+    private void handleCancel() {
+    clearFields();
     }
+
+   
 }
