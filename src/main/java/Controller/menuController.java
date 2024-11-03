@@ -1,5 +1,6 @@
 package Controller;
 import java.io.IOException;
+import javafx.scene.control.Label;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 import DAO.BookDao;
 import DAO.BorrowDao;
 import DAO.UserDao;
+import googleAPI.GoogleApiBookController;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -42,6 +44,7 @@ import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import java.io.IOException;
+import googleAPI.*;
 
 public class menuController {
     private static menuController instance;
@@ -124,6 +127,15 @@ public class menuController {
     private TableColumn<Borrow, String> colStatus;
 
     @FXML
+    private Label scoreLabel;
+
+    @FXML
+    private TextArea reviewTextArea;
+
+    @FXML
+    private Label accuracyLabel;
+
+    @FXML
     private void initialize() {
 
         instance = this;
@@ -161,8 +173,36 @@ public class menuController {
                     newSelection.getQuantity()
                 );
                 taDocumentDetails.setText(details);
+
+                // Fetch score and review from GoogleApiBookController
+                ThreadManager.execute(() -> {
+               
+                        String bookName = newSelection.getName();
+                        String authorName = newSelection.getAuthor();
+                        System.out.println(bookName);
+                        System.out.println(authorName);
+                        BookInfo bookinfo = googleAPI.GoogleApiBookController.getBookInfo(bookName);
+                        String score = bookinfo.getRating();
+                        String review = bookinfo.getDescription();
+                        String doChinhXac;
+                        if (bookinfo.truly) doChinhXac = "Cao";
+                        else {
+                            doChinhXac = "Thấp";
+                        }
+                        System.out.println(review);
+                        System.out.println(score);
+
+                        Platform.runLater(() -> {
+                            reviewTextArea.setText(review);
+                            scoreLabel.setText(String.valueOf(score));
+                            accuracyLabel.setText(doChinhXac);
+                        });
+                    
+                });
             } else {
                 taDocumentDetails.clear();
+                scoreLabel.setText("");
+                reviewTextArea.clear();
             }
         });
         
@@ -252,6 +292,7 @@ public class menuController {
         stackPane.getChildren().forEach(node -> node.setVisible(false));
         documentTab.setVisible(true);
         showPane(0);
+        
         }
 
         @FXML
@@ -299,6 +340,31 @@ public class menuController {
             e.printStackTrace();
             showErrorAlert("Lỗi không xác định", "Đã xảy ra lỗi: " + e.getMessage());
         }
+    }
+
+    @FXML
+    private void handleReload() {
+        refreshDocumentList();
+        loadBorrowedDocuments();
+        cbMembers.getItems().clear();
+        cbDocuments.getItems().clear();
+        
+        ThreadManager.execute(() -> {
+            List<User> users = UserDao.getInstance().getAll();
+            List<Document> documents = BookDao.getInstance().getAll();
+            
+            Platform.runLater(() -> {
+                if (users != null) {
+                    cbMembers.getItems().addAll(users.stream()
+                        .map((User user) -> user.getUserId() + " - " + user.getUsername())
+                        .collect(Collectors.toList()));
+                }
+                
+                if (documents != null) {
+                    cbDocuments.getItems().addAll(documents.stream().map(Document::getName).collect(Collectors.toList()));
+                }
+            });
+        });
     }
     
     public void refreshTableView() {

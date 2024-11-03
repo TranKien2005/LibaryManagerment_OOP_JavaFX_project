@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.BookDetailController" spacing="20" alignment="CENTER" padding="20">
+    <HBox spacing="20" alignment="CENTER">
+        <!-- Ảnh bìa sách -->
+        <ImageView fx:id="bookCoverImageView" fitHeight="200" fitWidth="150" preserveRatio="true" smooth="true"/>
+        
+        <!-- Thông tin chi tiết sách -->
+        <VBox spacing="10" alignment="TOP_LEFT">
+            <Label text="Tiêu đề:" styleClass="label-title"/>
+            <Label fx:id="bookTitleLabel" styleClass="label-content"/>
+            
+            <Label text="Tác giả:" styleClass="label-title"/>
+            <Label fx:id="bookAuthorLabel" styleClass="label-content"/>
+            
+            <Label text="Nhà xuất bản:" styleClass="label-title"/>
+            <Label fx:id="bookPublisherLabel" styleClass="label-content"/>
+            
+            <Label text="Ngày xuất bản:" styleClass="label-title"/>
+            <Label fx:id="bookPublishedDateLabel" styleClass="label-content"/>
+            
+            <Label text="Điểm đánh giá:" styleClass="label-title"/>
+            <Label fx:id="bookRatingLabel" styleClass="label-content"/>
+        </VBox>
+    </HBox>
+    
+    <!-- Mô tả sách -->
+    <VBox spacing="10" alignment="TOP_LEFT" prefWidth="400">
+        <Label text="Mô tả:" styleClass="label-title"/>
+        <TextArea fx:id="bookDescriptionTextArea" wrapText="true" editable="false" prefHeight="200"/>
+    </VBox>
+    
+    <!-- Nút mượn sách và trả sách -->
+    <HBox spacing="20" alignment="CENTER">
+        <Button text="Mượn sách" onAction="#handleBorrowBook" styleClass="btn, btn-primary"/>
+        <Button text="Trả sách" onAction="#handleReturnBook" styleClass="btn, btn-secondary"/>
+    </HBox>
+</VBox>

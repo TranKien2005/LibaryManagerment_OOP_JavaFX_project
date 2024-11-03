@@ -91,7 +91,7 @@ public class AddController extends menuController{
         if (success) {
             showAlert("Thành công", "Tài liệu đã được thêm thành công.");
             clearFields();
-            closeWindow();
+           
         } else {
             showAlert("Lỗi", "Không thể thêm tài liệu. Vui lòng thử lại.");
         }
