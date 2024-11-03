@@ -1,25 +1,65 @@
-/* Đặt màu nền và padding cho VBox */
-.form-container {
+/* Đặt màu nền và padding cho StackPane */
+.main-container {
     -fx-padding: 20;
-    -fx-background-color: #f9f9f9;
+    -fx-background-color: #f9f9f9; /* Màu nền sáng hơn */
     -fx-border-color: #ccc;
     -fx-border-width: 1;
-    -fx-border-radius: 5;
-    -fx-background-radius: 5;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
 }
 
 /* Tùy chỉnh giao diện cho Label */
 .h2 {
-    -fx-font-size: 24px;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333; /* Màu chữ tối hơn */
+}
+
+/* Tùy chỉnh giao diện cho VBox */
+.left-container {
+    -fx-padding: 20;
+    -fx-background-color: #ffffff; /* Màu nền sáng hơn */
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.guide-box {
+    -fx-padding: 10;
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.guide-title {
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-text-fill: #333;
 }
 
-/* Tùy chỉnh giao diện cho Label trong VBox */
+.guide-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666;
+}
+
+/* Tùy chỉnh giao diện cho GridPane */
+.form-grid {
+    -fx-padding: 20;
+    -fx-background-color: #ffffff; /* Màu nền sáng hơn */
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+/* Tùy chỉnh giao diện cho Label trong GridPane */
 .form-label {
     -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-text-fill: #333;
+    -fx-text-fill: #333; /* Màu chữ tối hơn */
 }
 
 /* Tùy chỉnh giao diện cho TextField */
@@ -29,6 +69,8 @@
     -fx-border-radius: 5;
     -fx-background-radius: 5;
     -fx-font-size: 14px;
+    -fx-text-fill: #333;
+    -fx-background-color: #ffffff;
 }
 
 /* Tùy chỉnh giao diện cho Button */
@@ -41,19 +83,19 @@
 }
 
 .btn-danger {
-    -fx-background-color: #dc3545;
+    -fx-background-color: #e74c3c;
 }
 
 .btn-danger:hover {
-    -fx-background-color: #c82333;
+    -fx-background-color: #c0392b;
 }
 
 .btn-secondary {
-    -fx-background-color: #6c757d;
+    -fx-background-color: #95a5a6;
 }
 
 .btn-secondary:hover {
-    -fx-background-color: #5a6268;
+    -fx-background-color: #7f8c8d;
 }
 
 /* Tăng kích thước của từng hàng dựa trên lượng dữ liệu nhập */
@@ -64,28 +106,32 @@
 
 /* Thay đổi màu nền của từng phần */
 .form-container {
-    -fx-background-color: #e9ecef;
+    -fx-background-color: #f9f9f9;
+}
+
+.form-grid {
+    -fx-background-color: #ffffff;
 }
 
 .btn-danger {
-    -fx-background-color: #dc3545;
+    -fx-background-color: #e74c3c;
 }
 
 .btn-secondary {
-    -fx-background-color: #6c757d;
+    -fx-background-color: #95a5a6;
 }
 
 /* Tùy chỉnh giao diện cho TableView */
 .table-view {
     -fx-background-color: #ffffff;
-    -fx-border-color: #ddd;
+    -fx-border-color: #ccc;
     -fx-border-width: 1;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
 }
 
 .table-view .column-header-background {
-    -fx-background-color: #007bff;
+    -fx-background-color: #f9f9f9;
 }
 
 .table-view .column-header, .table-view .filler {
@@ -95,7 +141,7 @@
 }
 
 .table-view .column-header .label {
-    -fx-text-fill: white;
+    -fx-text-fill: #333; /* Màu chữ tối hơn */
     -fx-font-weight: bold;
 }
 
@@ -109,11 +155,11 @@
 }
 
 .table-view .table-row-cell:filled {
-    -fx-background-color: #f9f9f9;
+    -fx-background-color: #ffffff;
 }
 
 .table-view .table-row-cell:odd {
-    -fx-background-color: #f1f1f1;
+    -fx-background-color: #f9f9f9;
 }
 
 .table-view .table-row-cell:even {

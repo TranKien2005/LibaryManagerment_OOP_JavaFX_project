@@ -6,41 +6,58 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.DeleteController" spacing="20" alignment="CENTER" stylesheets="@/stylesheet/delete.css">
-    <Label text="Xóa Tài Liệu" styleClass="h2" alignment="CENTER"/>
-    
-    <VBox spacing="10" alignment="CENTER" styleClass="form-container" prefWidth="200">
-        <HBox spacing="10" alignment="CENTER">
-            <Label text="Tên Tài Liệu:" styleClass="form-label"/>
-            <TextField fx:id="tenTaiLieuTextField" styleClass="text-field" prefWidth="300"/>
+<StackPane xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.DeleteController" alignment="CENTER" stylesheets="@/stylesheet/delete.css">
+    <VBox spacing="20" alignment="CENTER" styleClass="main-container" prefHeight="600">
+        <Label text="Xóa Tài Liệu" styleClass="h1" alignment="CENTER"/>
+        <HBox spacing="20" alignment="CENTER" styleClass="content-container">
+            <!-- Phần bên trái -->
+            <VBox spacing="20" alignment="CENTER" styleClass="left-container" prefHeight="400">
+                <ImageView fitHeight="100" fitWidth="100" preserveRatio="true" smooth="true">
+                    <Image url="@/images/login/logo.png" />
+                </ImageView>
+                <VBox spacing="10" alignment="CENTER" styleClass="guide-box">
+                    <Label text="Hướng dẫn xóa tài liệu" styleClass="guide-title"/>
+                    <Label text="1. Nhập tên tài liệu vào ô tìm kiếm." styleClass="guide-text"/>
+                    <Label text="2. Chọn tài liệu từ danh sách gợi ý." styleClass="guide-text"/>
+                    <Label text="3. Nhấn nút 'Xóa' để xóa tài liệu." styleClass="guide-text"/>
+                    <Label text="4. Nhấn nút 'Hủy' để hủy bỏ thao tác." styleClass="guide-text"/>
+                </VBox>
+            </VBox>
+            <!-- Phần bên phải -->
+            <VBox spacing="20" alignment="CENTER" styleClass="form-container">
+                <VBox spacing="10" alignment="CENTER" styleClass="form-box">
+                    <HBox spacing="10" alignment="CENTER">
+                        <Label text="Tên Tài Liệu:" styleClass="form-label"/>
+                        <TextField fx:id="tenTaiLieuTextField" styleClass="text-field" prefWidth="300"/>
+                    </HBox>
+                    <ListView fx:id="suggestionListView" visible="false" prefHeight="100" prefWidth="300"/>
+                </VBox>
+                <HBox spacing="10" alignment="CENTER">
+                    <Button text="Xóa" onAction="#xoaTaiLieu" styleClass="btn, btn-danger">
+                        <graphic>
+                            <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                                <Image url="@/icons/delete.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <Button text="Hủy" onAction="#handleCancel" styleClass="btn, btn-secondary">
+                        <graphic>
+                            <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                                <Image url="@/icons/cancel.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </HBox>
+                <TableView fx:id="taiLieuTableView" styleClass="table-view" prefHeight="200" prefWidth="400">
+                    <columns>
+                        <TableColumn text="Tên" fx:id="tenColumn" prefWidth="200"/>
+                        <TableColumn text="Tác giả" fx:id="tacGiaColumn" prefWidth="200"/>
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TableView>
+            </VBox>
         </HBox>
-        <ListView fx:id="suggestionListView" visible="false" prefHeight="100" prefWidth="300"/>
     </VBox>
-    
-    <HBox spacing="10" alignment="CENTER">
-        <Button text="Xóa" onAction="#xoaTaiLieu" styleClass="btn, btn-danger">
-            <graphic>
-                <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
-                    <Image url="@/icons/delete.png" />
-                </ImageView>
-            </graphic>
-        </Button>
-        <Button text="Hủy" onAction="#handleCancel" styleClass="btn, btn-secondary">
-            <graphic>
-                <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
-                    <Image url="@/icons/cancel.png" />
-                </ImageView>
-            </graphic>
-        </Button>
-    </HBox>
-    
-    <TableView fx:id="taiLieuTableView" styleClass="table-view">
-        <columns>
-            <TableColumn text="Tên" fx:id="tenColumn"/>
-            <TableColumn text="Tác giả" fx:id="tacGiaColumn"/>
-        </columns>
-        <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
-        </columnResizePolicy>
-    </TableView>
-</VBox>
+</StackPane>
