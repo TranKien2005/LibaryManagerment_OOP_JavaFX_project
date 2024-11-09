@@ -1,8 +1,10 @@
+c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\googleAPI\GoogleApiBookController.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\MemberManagementController.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Main\Main.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\model\Document.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\thread\ThreadManager.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\DAO\DaoInterface.java
+c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\bookDetailController.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\DeleteController.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\EditController.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\model\User.java
@@ -11,8 +13,8 @@ c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\ja
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\menuController.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\registerController.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\DAO\BorrowDao.java
+c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\googleAPI\BookInfo.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\model\Borrow.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\AddController.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\LoginController.java
-c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\GoogleApiBookController.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\DAO\UserDao.java
