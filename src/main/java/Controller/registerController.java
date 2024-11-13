@@ -1,106 +1,154 @@
 package Controller;
 
-import java.io.IOException;
-
+import DAO.AccountDao;
 import DAO.UserDao;
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
+import DAO.ManagerDao;
+import model.Account;
+import model.User;
+import model.Manager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import model.User;
 
-public class registerController extends LoginController {
-    @FXML
-    private TextField usernameField;
-    @FXML
-    private TextField emailField;
-    @FXML
-    private PasswordField passwordField;
-    @FXML
-    private PasswordField confirmPasswordField;
-    @FXML
-    private TextField addressField;
-    @FXML
-    private TextField phoneField;
-    @FXML
-    private ComboBox<String> sexComboBox;
-    @FXML
-    private TextField ageField;
-    @FXML
-    private Button registerButton;
-
-    private Parent loginRoot;
-    private FXMLLoader loginLoader;
-
-    private void showErrorAlert(String title, String message) {
-        // Implementation for showing an error alert
-        System.out.println(title + ": " + message);
-    }
+public class registerController {
 
     @FXML
-    public void initialize() {
-        sexComboBox.setItems(FXCollections.observableArrayList("Nam", "Nữ", "Khác"));
+    protected TextField usernameField;
+
+    @FXML
+    protected PasswordField passwordField;
+
+    @FXML
+    protected PasswordField confirmPasswordField;
+
+   
+    @FXML
+    protected TextField emailField;
+
+    @FXML
+    protected TextField phoneField;
+
+    @FXML
+    protected ComboBox<String> accountTypeComboBox;
+
+    @FXML
+    protected Button registerButton;
+
+    @FXML
+    protected void handleRegister() {
+        String username = usernameField.getText();
+        String password = passwordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
+       
+        String email = emailField.getText();
+        String phone = phoneField.getText();
+        String accountType = accountTypeComboBox.getValue();
+
+        if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()  || email.isEmpty() || phone.isEmpty() || accountType == null) {
+            showErrorAlert("Registration Failed", "All fields must be filled out.");
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            showErrorAlert("Registration Failed", "Passwords do not match.");
+            return;
+        }
+
+        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            showErrorAlert("Registration Failed", "Invalid email format.");
+            return;
+        }
+
+        if (!phone.matches("\\d{10}")) {
+            showErrorAlert("Registration Failed", "Invalid phone number format. It should be 10 digits.");
+            return;
+        }
+
+        AccountDao accountDao = AccountDao.getInstance();
+        Account existingAccount = accountDao.getByUsername(username);
+
+        if (existingAccount != null) {
+            showErrorAlert("Registration Failed", "Username already exists.");
+            return;
+        }
+
+        Account newAccount = new Account(username, password, accountType);
+        accountDao.insert(newAccount);
+
         
-        try {
-            loginLoader = new FXMLLoader(getClass().getResource("/view/login.fxml"));
-            loginRoot = loginLoader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showErrorAlert("Lỗi không xác định", "Đã xảy ra lỗi: " + e.getMessage());
-        }
-    }
+        int accountId = accountDao.getID(newAccount);
 
-    @FXML
-    private void handleRegister() {
-        User user = validateInputs();
-        if (user != null) {
-           UserDao userDao = UserDao.getInstance();
-           userDao.insert(user);
-            showAlert("Thông báo", "Đăng ký thành công");
-            handleLogin();
+        // Cập nhật thông tin người dùng hoặc quản lý
+        if (accountType.equals("User")) {
+            UserDao userDao = UserDao.getInstance();
+            User newUser = new User(accountId, username, email, phone);
+            userDao.update(newUser, accountId);
+        } else if (accountType.equals("Manager")) {
+            ManagerDao managerDao = ManagerDao.getInstance();
+            Manager newManager = new Manager(accountId, username, email, phone);
+            managerDao.update(newManager, accountId);
         }
 
-    }
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Registration Successful");
+        alert.setHeaderText(null);
+        alert.setContentText("Account created successfully. You can now log in.");
+        alert.showAndWait();
 
-    private User validateInputs() {
-       if (usernameField.getText().isEmpty() ||
-            emailField.getText().isEmpty() ||
-            passwordField.getText().isEmpty() ||
-            confirmPasswordField.getText().isEmpty() ||
-            addressField.getText().isEmpty() ||
-            phoneField.getText().isEmpty()) {
-                showAlert("Lỗi", "Vui lòng điền đầy đủ thông tin");
-                return null;
-            }
-            return new User(usernameField.getText(), passwordField.getText(), addressField.getText(), phoneField.getText(), 
-            emailField.getText(), sexComboBox.getValue(), Integer.parseInt(ageField.getText()));
-    }
-
-    @FXML
-    public void handleLogin() {
+        // Chuyển đổi sang màn hình đăng nhập
         try {
-            // Lấy Stage hiện tại từ một nút hoặc bất kỳ thành phần nào trong Scene hiện tại
-            Stage stage = (Stage) usernameField.getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/login.fxml"));
+            Parent loginRoot = loader.load();
+            Stage stage = (Stage) registerButton.getScene().getWindow();
             stage.setTitle("Đăng nhập");
-           
             stage.getScene().setRoot(loginRoot);
             stage.setWidth(1000);
             stage.setHeight(600);
             stage.centerOnScreen();
             stage.setMaximized(false); // Set the stage to full screen
             stage.setResizable(false);
-            
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
             showErrorAlert("Lỗi không xác định", "Đã xảy ra lỗi: " + e.getMessage());
         }
     }
+
+    @FXML
+    protected void handleLogin() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/login.fxml"));
+            Parent loginRoot = loader.load();
+            Stage stage = (Stage) registerButton.getScene().getWindow();
+            stage.setTitle("Đăng nhập");
+            stage.getScene().setRoot(loginRoot);
+            stage.setWidth(1000);
+            stage.setHeight(600);
+            stage.centerOnScreen();
+            stage.setMaximized(false);
+            stage.setResizable(false);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorAlert("Lỗi không xác định", "Đã xảy ra lỗi: " + e.getMessage());
+        }
+    }
+
+    private void showErrorAlert(String title, String content) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+
 }

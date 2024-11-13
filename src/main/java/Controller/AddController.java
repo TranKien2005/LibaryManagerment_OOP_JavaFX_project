@@ -8,8 +8,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import model.Document;
-import DAO.BookDao;
+import model.*;
+import DAO.*;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -99,7 +99,12 @@ public class AddController extends menuController{
     }
     
     private boolean saveDocument(Document document) {
-        return BookDao.getInstance().add(document);
+        try {
+            BookDao.getInstance().insert(document);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
     
     private void clearFields() {

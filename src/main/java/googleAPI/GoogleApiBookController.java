@@ -35,9 +35,11 @@ public class GoogleApiBookController {
 
     
     public static BookInfo getBookInfoByNoTruly (String bookTitle) {
+        
         if (!isValidInput(bookTitle)) {
             return new BookInfo("Invalid input: Book title is required.", null, null);
         }
+        
 
         try {
             String normalizedTitle = removeVietnameseAccents(bookTitle);

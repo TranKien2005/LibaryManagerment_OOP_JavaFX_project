@@ -1,65 +1,60 @@
 package model;
+
 import java.time.LocalDate;
-import java.util.Objects;
 
-public final  class Borrow {
-    private int user_id;
-    private String bookname;
-    private LocalDate borrow_date;
-    private LocalDate return_date;
+public class Borrow {
+    private int accountID;
+    private int bookID;
+    private LocalDate borrowDate;
+    private LocalDate expectedReturnDate;
+    private String status;
 
-    public Borrow(int user_id, String bookname, LocalDate borrow_date, LocalDate return_date) {
-        this.user_id = user_id;
-        this.bookname = bookname;
-        this.borrow_date = borrow_date;
-        this.return_date = return_date;
+    public Borrow(int accountID, int bookID, LocalDate borrowDate, LocalDate expectedReturnDate, String status) {
+        this.accountID = accountID;
+        this.bookID = bookID;
+        this.borrowDate = borrowDate;
+        this.expectedReturnDate = expectedReturnDate;
+        this.status = status;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    // Getters and setters
+    public int getAccountID() {
+        return accountID;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public void setAccountID(int accountID) {
+        this.accountID = accountID;
     }
 
-    public void setBookname(String bookname) {
-        this.bookname = bookname;
+    public int getBookID() {
+        return bookID;
     }
 
-    public String getBookname() {
-        return bookname;
+    public void setBookID(int bookID) {
+        this.bookID = bookID;
     }
 
-    public void setBorrow_date(LocalDate borrow_date) {
-        this.borrow_date = borrow_date;
+    public LocalDate getBorrowDate() {
+        return borrowDate;
     }
 
-    public LocalDate getBorrow_date() {
-        return borrow_date;
+    public void setBorrowDate(LocalDate borrowDate) {
+        this.borrowDate = borrowDate;
     }
 
-    public void setReturn_date(LocalDate return_date) {
-        this.return_date = return_date;
+    public LocalDate getExpectedReturnDate() {
+        return expectedReturnDate;
     }
 
-    public LocalDate getReturn_date() {
-        return return_date;
+    public void setExpectedReturnDate(LocalDate expectedReturnDate) {
+        this.expectedReturnDate = expectedReturnDate;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Borrow borrow = (Borrow) obj;
-        return user_id == borrow.user_id &&
-               bookname.equals(borrow.bookname) &&
-               borrow_date.equals(borrow.borrow_date) &&
-               return_date.equals(borrow.return_date);
+    public String getStatus() {
+        return status;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(user_id, bookname, borrow_date, return_date);
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

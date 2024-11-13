@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import DAO.UserDao;
+import DAO.AccountDao;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,14 +18,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import model.Account;
 import model.User;
-import thread.ThreadManager;
+import util.ThreadManager;
 
 public class MemberManagementController {
 
@@ -33,19 +36,17 @@ public class MemberManagementController {
     @FXML private VBox rootVBox;
     @FXML private TableColumn<User, Integer> colUserId;
     @FXML private TableColumn<User, String> colUsername;
-    @FXML private TableColumn<User, String> colAddress;
+   
     @FXML private TableColumn<User, String> colPhone;
     @FXML private TableColumn<User, String> colEmail;
-    @FXML private TableColumn<User, String> colSex;
-    @FXML private TableColumn<User, Integer> colAge;
 
-    @FXML private TextField tfUserId;
+
     @FXML private TextField tfUsername;
-    @FXML private TextField tfAddress;
-    @FXML private TextField tfPhone;
+    @FXML private PasswordField pfPassword;
+    @FXML private TextField tfFullname;
     @FXML private TextField tfEmail;
-    @FXML private ComboBox<String> cbSex;
-    @FXML private TextField tfAge;
+    @FXML private TextField tfPhone;
+
 
     private final ObservableList<User> userList = FXCollections.observableArrayList();
 
@@ -55,35 +56,43 @@ public class MemberManagementController {
         Stage stage = (Stage) rootVBox.getScene().getWindow();
         tvMembers.prefHeightProperty().bind(stage.heightProperty().multiply(0.8));
         initializeTableView();
-        initializeComboBox();
         loadUsers();
         });
+
+        tvMembers.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+            tfUsername.setText(newValue.getFullName());
+            Account account = AccountDao.getInstance().get(newValue.getAccountID());
+            pfPassword.setText(account.getPassword());
+            tfUsername.setText(account.getUsername());
+            tfFullname.setText(newValue.getFullName());
+            tfEmail.setText(newValue.getEmail());
+            tfPhone.setText(newValue.getPhone());
+            }
+        });
     }
+  
 
     private void initializeTableView() {
-        colUserId.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getUserId()).asObject());
-        colUsername.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUsername()));
-        colAddress.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getAddress()));
+        colUserId.setCellValueFactory(cellData -> new SimpleIntegerProperty(UserDao.getInstance().getID(cellData.getValue())).asObject());
+        colUsername.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFullName()));
+      
         colPhone.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPhone()));
         colEmail.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmail()));
-        colSex.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getSex()));
-        colAge.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getAge()).asObject());
 
         tvMembers.setItems(userList);
     }
 
-    private void initializeComboBox() {
-        cbSex.getItems().addAll("Nam", "Nữ", "Khác");
-    }
+   
 
     private void loadUsers() {
-        ThreadManager.execute(() -> {
+        
             List<User> users = UserDao.getInstance().getAll();
             Platform.runLater(() -> {
                 userList.clear();
                 userList.addAll(users);
             });
-        });
+    
     }
 
     @FXML
@@ -96,11 +105,9 @@ public class MemberManagementController {
                 filteredList = FXCollections.observableArrayList(userList);
             } else {
                 filteredList = FXCollections.observableArrayList(userList.filtered(user ->
-                    user.getUsername().toLowerCase().contains(filterText) ||
-                    user.getAddress().toLowerCase().contains(filterText) ||
+                    user.getFullName().toLowerCase().contains(filterText) ||
                     user.getPhone().toLowerCase().contains(filterText) ||
-                    user.getEmail().toLowerCase().contains(filterText) ||
-                    String.valueOf(user.getAge()).contains(filterText)
+                    user.getEmail().toLowerCase().contains(filterText)
                 ));
             }
             
@@ -108,44 +115,7 @@ public class MemberManagementController {
         });
     }
 
-    @FXML
-    private void handleAddUser() {
-        // Validate input fields
-        if (!validateInputFields()) {
-            return;
-        }
-
-        // Create a new User object with input values
-        User newUser = new User(
-            tfUsername.getText(),
-            "", // password (empty for now)
-            tfAddress.getText(),
-            tfPhone.getText(),
-            tfEmail.getText(),
-            cbSex.getValue(),
-            Integer.parseInt(tfAge.getText())
-        );
-
-        // Add user to database
-        ThreadManager.execute(() -> {
-            Platform.runLater(() -> {
-                UserDao.getInstance().insert(newUser);
-                userList.add(newUser);
-                clearInputFields();
-                showAlert("User Added", "The new user has been successfully added.");
-            });
-        });
-    }
-
-    private void clearInputFields() {
-        tfUsername.clear();
-        tfAddress.clear();
-        tfPhone.clear();
-        tfEmail.clear();
-        cbSex.getSelectionModel().clearSelection();
-        tfAge.clear();
-    }
-
+    
     @FXML
     private void handleUpdateUser() {
         User selectedUser = tvMembers.getSelectionModel().getSelectedItem();
@@ -161,13 +131,18 @@ public class MemberManagementController {
         }
 
         // Update user object with new values
-        selectedUser.setUsername(tfUsername.getText());
-        selectedUser.setAddress(tfAddress.getText());
+        selectedUser.setFullName(tfFullname.getText());
         selectedUser.setPhone(tfPhone.getText());
         selectedUser.setEmail(tfEmail.getText());
-        selectedUser.setSex(cbSex.getValue());
-        selectedUser.setAge(Integer.parseInt(tfAge.getText()));
-
+        int userId = tvMembers.getSelectionModel().getSelectedItem().getAccountID();
+        
+        if (userId == -1) {
+            showAlert("Update Failed", "Failed to update user. Please try again.");
+            return;
+        } else {
+            UserDao.getInstance().update(selectedUser, userId);
+            AccountDao.getInstance().updatePassword(userId, pfPassword.getText());
+        }
         // Update user in database
         ThreadManager.execute(() -> {
             Platform.runLater(() -> {
@@ -182,21 +157,11 @@ public class MemberManagementController {
 
     private boolean validateInputFields() {
         // Perform validation on input fields
-        if (tfUsername.getText().isEmpty() || tfAddress.getText().isEmpty() || 
-            tfPhone.getText().isEmpty() || tfEmail.getText().isEmpty() || 
-            cbSex.getValue() == null || tfAge.getText().isEmpty()) {
+        if (tfUsername.getText().isEmpty() || tfPhone.getText().isEmpty() || tfEmail.getText().isEmpty() ) {
             showAlert("Invalid Input", "Please fill in all fields.");
             return false;
         }
 
-        try {
-            Integer.parseInt(tfAge.getText());
-        } catch (NumberFormatException e) {
-            showAlert("Invalid Age", "Please enter a valid number for age.");
-            return false;
-        }
-
-        // Add more specific validation as needed (e.g., email format, phone number format)
 
         return true;
     }
@@ -210,9 +175,13 @@ public class MemberManagementController {
     }
 
     private void refreshTableView() {
-        int selectedIndex = tvMembers.getSelectionModel().getSelectedIndex();
-        tvMembers.getItems().set(selectedIndex, tvMembers.getItems().get(selectedIndex));
-        tvMembers.refresh();
+    userList.setAll(UserDao.getInstance().getAll());
+    tfUsername.clear();
+    pfPassword.clear();
+    tfFullname.clear();
+    tfEmail.clear();
+    tfPhone.clear();
+
     }
 
     @FXML
@@ -227,20 +196,36 @@ public class MemberManagementController {
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Confirm Deletion");
         confirmAlert.setHeaderText(null);
-        confirmAlert.setContentText("Are you sure you want to delete the user: " + selectedUser.getUsername() + "?");
+        confirmAlert.setContentText("Are you sure you want to delete the user: " + selectedUser.getFullName() + "?");
 
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 // Perform deletion
                 ThreadManager.execute(() -> {
-                    UserDao.getInstance().delete(selectedUser);
+                    
                     Platform.runLater(() -> {
                         userList.remove(selectedUser);
+                        UserDao.getInstance().delete(UserDao.getInstance().getID(selectedUser));
+                        refreshTableView();
                         showAlert("User Deleted", "The user has been successfully deleted.");
                     });
                 });
             }
         });
+    }
+    @FXML
+    private void handleShowPassword() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Password");
+        alert.setHeaderText(null);
+        alert.setContentText(pfPassword.getText());
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void handleRefresh() {
+        refreshTableView();
+        loadUsers();
     }
 
    

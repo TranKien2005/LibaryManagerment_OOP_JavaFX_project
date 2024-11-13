@@ -1,23 +1,18 @@
 package DAO;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
+import java.util.concurrent.Future;
 
 import model.Document;
+import util.ThreadManager;
 
 public final class BookDao implements DaoInterface<Document> {
-    private static final String PATH = "src/main/java/data/book.json";
     private static BookDao instance;
-    private final Gson gson;
 
     private BookDao() {
-        this.gson = new GsonBuilder().setPrettyPrinting().create();
+        // Private constructor to prevent instantiation
     }
 
     public static BookDao getInstance() {
@@ -28,88 +23,171 @@ public final class BookDao implements DaoInterface<Document> {
     }
 
     @Override
-    public void insert(Document t) {
-        List<Document> documents = getAll();
-        documents.add(t);
-        saveDocumentsToJson(documents);
-    }
-
-    @Override
-    public void update(Document t) {
-        List<Document> documents = getAll();
-        for (int i = 0; i < documents.size(); i++) {
-            if (documents.get(i).getName().equals(t.getName())) {
-                documents.set(i, t);
-
-                saveDocumentsToJson(documents);
-
-                break;
+public List<Document> getAll() {
+    List<Document> documents = new ArrayList<>();
+    String query = "SELECT * FROM Book";
+    Future<?> future = ThreadManager.submitSqlTask(() -> {
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                Document document = new Document(
+                    rs.getString("Title"),
+                    rs.getString("Author"),
+                    rs.getString("Category"),
+                    rs.getString("Publisher"),
+                    rs.getInt("YearPublished"),
+                    rs.getInt("AvailableCopies")
+                );
+                synchronized (documents) {
+                    documents.add(document);
+                }
             }
-        }
-        saveDocumentsToJson(documents);
-    }
-
-    @Override
-    public void delete(Document t) {
-        List<Document> documents = getAll();
-        documents.removeIf(d -> d.getName().equals(t.getName()));
-        saveDocumentsToJson(documents);
-    }
-
-    @Override
-    public Document get(Document t) {
-       List<Document> documents = getAll();
-       for (Document document : documents) {
-        if (document.getName().equals(t.getName())) {
-            return document;
-        }
-       }
-       return null;
-    }
-
-    @Override
-    public List<Document> getAll() {
-        List<Document> documents = new ArrayList<>();
-        try (JsonReader reader = new JsonReader(new FileReader(PATH))) {
-            reader.beginArray();
-            while (reader.hasNext()) {
-                Document document = gson.fromJson(reader, Document.class);
-                documents.add(document);
-            }
-            reader.endArray();
-        } catch (IOException e) {
-            System.err.println("Error reading JSON file: " + e.getMessage());
-        }
-        return documents;
-    }
-
-    private void saveDocumentsToJson(List<Document> documents) {
-        try( FileWriter writer = new FileWriter(PATH)) {
-          gson.toJson(documents,writer);
-        } catch (IOException e) {
-            System.err.println("Error writing to JSON file: " + e.getMessage());
-        }
-    }
-
-
-    public boolean add(Document document) {
-        try {
-            insert(document);
-            return true;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+        }
+    });
+    try {
+        future.get(); // Đợi cho đến khi tác vụ hoàn thành
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return documents;
+}
+    @Override
+    public void insert(Document document) {
+        String query = "INSERT INTO Book (Title, Author, Category, Publisher, YearPublished, AvailableCopies) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, document.getTitle());
+            pstmt.setString(2, document.getAuthor());
+            pstmt.setString(3, document.getCategory());
+            pstmt.setString(4, document.getPublisher());
+            pstmt.setInt(5, document.getYearPublished());
+            pstmt.setInt(6, document.getAvailableCopies());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    public Document getByName(String name) {
-        List<Document> documents = getAll();
-        for (Document document : documents) {
-            if (document.getName().equals(name)) {
-                return document;
+    @Override
+    public void update(Document document, int id) {
+        String query = "UPDATE Book SET Title = ?, Author = ?, Category = ?, Publisher = ?, YearPublished = ?, AvailableCopies = ? WHERE ID = ?";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, document.getTitle());
+            pstmt.setString(2, document.getAuthor());
+            pstmt.setString(3, document.getCategory());
+            pstmt.setString(4, document.getPublisher());
+            pstmt.setInt(5, document.getYearPublished());
+            pstmt.setInt(6, document.getAvailableCopies());
+            pstmt.setInt(7, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void delete(int id) {
+        String query = "DELETE FROM Book WHERE ID = ?";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Document get(int id) {
+        String query = "SELECT * FROM Book WHERE ID = ?";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Document(
+                        rs.getString("Title"),
+                        rs.getString("Author"),
+                        rs.getString("Category"),
+                        rs.getString("Publisher"),
+                        rs.getInt("YearPublished"),
+                        rs.getInt("AvailableCopies")
+                    );
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
+    }
 
+    public int getID(Document document) {
+        String query = "SELECT ID FROM Book WHERE Title = ? AND Author = ? AND Category = ? AND Publisher = ? AND YearPublished = ? AND AvailableCopies = ?";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, document.getTitle());
+            pstmt.setString(2, document.getAuthor());
+            pstmt.setString(3, document.getCategory());
+            pstmt.setString(4, document.getPublisher());
+            pstmt.setInt(5, document.getYearPublished());
+            pstmt.setInt(6, document.getAvailableCopies());
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("ID");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Return -1 if the document is not found
+    }
+
+    public List<Integer> getAllID() {
+        List<Integer> ids = new ArrayList<>();
+        String query = "SELECT ID FROM Book";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                ids.add(rs.getInt("ID"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ids;
+    }
+
+    public static void main(String[] args) {
+        BookDao bookDao = BookDao.getInstance();
+
+        // Create a new document
+        Document newDocument = new Document("Sample Title", "Sample Author", "Sample Category", "Sample Publisher", 2023, 10);
+        bookDao.insert(newDocument);
+
+        // Get all documents
+        List<Document> documents = bookDao.getAll();
+        for (Document doc : documents) {
+            System.out.println(doc);
+        }
+
+        // Get a document by ID
+        int id = bookDao.getID(newDocument);
+        Document document = bookDao.get(id);
+        System.out.println("Retrieved Document: " + document);
+
+        // Update the document
+        document.setTitle("Updated Title");
+        bookDao.update(document, id);
+
+        // Get all IDs
+        List<Integer> ids = bookDao.getAllID();
+        System.out.println("All IDs: " + ids);
+
+        // Delete the document
+        bookDao.delete(id);
     }
 }

@@ -1,139 +1,160 @@
 package DAO;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.lang.reflect.Type;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
+import java.util.concurrent.Future;
 
 import model.Borrow;
+import util.ThreadManager;
 
 public class BorrowDao implements DaoInterface<Borrow> {
-    private static final String FILE_PATH = "src/main/java/data/borrow.json";
     private static BorrowDao instance;
-    private static final Gson gson = new GsonBuilder()
-        .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-        .create();
 
-    private static class LocalDateAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
-        @Override
-        public JsonElement serialize(LocalDate date, Type typeOfSrc, JsonSerializationContext context) {
-            return new JsonPrimitive(date.toString());
-        }
-
-        @Override
-        public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            return LocalDate.parse(json.getAsString());
-        }
+    private BorrowDao() {
+        // Private constructor to prevent instantiation
     }
-    private BorrowDao() {}
 
     public static BorrowDao getInstance() {
         if (instance == null) {
             instance = new BorrowDao();
         }
         return instance;
-    }
-
-    @Override
-    public void insert(Borrow borrow) {
-        List<Borrow> borrows = getAll();
-        borrows.add(borrow);
-        saveBorrowsToJson(borrows);
-    }
-
-    @Override
-    public void update(Borrow borrow) {
-        List<Borrow> borrows = getAll();
-        for (int i = 0; i < borrows.size(); i++) {
-            if (borrows.get(i).getUser_id() == borrow.getUser_id() && 
-                borrows.get(i).getBookname().equals(borrow.getBookname())) {
-                borrows.set(i, borrow);
-                break;
-            }
         }
-        saveBorrowsToJson(borrows);
-    }
 
-    @Override
-    public void delete(Borrow borrow) {
-        List<Borrow> borrows = getAll();
-        borrows.removeIf(b -> b.equals(borrow));
-        saveBorrowsToJson(borrows);
-    }
-
-    @Override
-    public Borrow get(Borrow borrow) {
-        List<Borrow> borrows = getAll();
-        for (Borrow b : borrows) {
-            if (b.getUser_id() == borrow.getUser_id() && 
-                b.getBookname().equals(borrow.getBookname())) {
-                return b;
+        @Override
+public List<Borrow> getAll() {
+    List<Borrow> borrows = new ArrayList<>();
+    String query = "SELECT * FROM Borrow";
+    Future<?> future = ThreadManager.submitSqlTask(() -> {
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                Borrow borrow = new Borrow(
+                    rs.getInt("AccountID"),
+                    rs.getInt("BookID"),
+                    rs.getDate("BorrowDate").toLocalDate(),
+                    rs.getDate("ExpectedReturnDate").toLocalDate(),
+                    rs.getString("Status")
+                );
+                synchronized (borrows) {
+                    borrows.add(borrow);
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    });
+    try {
+        future.get(); // Đợi cho đến khi tác vụ hoàn thành
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return borrows;
+}
+
+        @Override
+        public void insert(Borrow borrow) {
+        String query = "INSERT INTO Borrow (AccountID, BookID, BorrowDate, ExpectedReturnDate, Status) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, borrow.getAccountID());
+            pstmt.setInt(2, borrow.getBookID());
+            pstmt.setDate(3, Date.valueOf(borrow.getBorrowDate()));
+            pstmt.setDate(4, Date.valueOf(borrow.getExpectedReturnDate()));
+            pstmt.setString(5, borrow.getStatus());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void update(Borrow borrow, int id) {
+        String query = "UPDATE Borrow SET AccountID = ?, BookID = ?, BorrowDate = ?, ExpectedReturnDate = ?, Status = ? WHERE BorrowID = ?";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, borrow.getAccountID());
+            pstmt.setInt(2, borrow.getBookID());
+            pstmt.setDate(3, Date.valueOf(borrow.getBorrowDate()));
+            pstmt.setDate(4, Date.valueOf(borrow.getExpectedReturnDate()));
+            pstmt.setString(5, borrow.getStatus());
+            pstmt.setInt(6, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void delete(int id) {
+        String query = "DELETE FROM Borrow WHERE BorrowID = ?";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Borrow get(int id) {
+        String query = "SELECT * FROM Borrow WHERE BorrowID = ?";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Borrow(
+                        rs.getInt("AccountID"),
+                        rs.getInt("BookID"),
+                        rs.getDate("BorrowDate").toLocalDate(),
+                        rs.getDate("ExpectedReturnDate").toLocalDate(),
+                        rs.getString("Status")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
 
-    @Override
-    public List<Borrow> getAll() {
-        List<Borrow> borrows = new ArrayList<>();
-        try (Reader reader = new FileReader(FILE_PATH)) {
-            if (reader.ready()) {
-                String jsonContent = readFileContent(reader);
-                if (!jsonContent.trim().isEmpty()) {
-                    Type listType = new TypeToken<ArrayList<Borrow>>(){}.getType();
-                    borrows = gson.fromJson(jsonContent, listType);
-                } else {
-                    System.out.println("The JSON file is empty.");
+    public int getID(Borrow borrow) {
+        String query = "SELECT BorrowID FROM Borrow WHERE AccountID = ? AND BookID = ? AND BorrowDate = ? AND ExpectedReturnDate = ? AND Status = ?";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, borrow.getAccountID());
+            pstmt.setInt(2, borrow.getBookID());
+            pstmt.setDate(3, Date.valueOf(borrow.getBorrowDate()));
+            pstmt.setDate(4, Date.valueOf(borrow.getExpectedReturnDate()));
+            pstmt.setString(5, borrow.getStatus());
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("BorrowID");
                 }
             }
-        } catch (JsonSyntaxException e) {
-            System.err.println("Error parsing JSON: " + e.getMessage());
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.err.println("Error reading file: " + e.getMessage());
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        return borrows;
+        return -1; // Return -1 if no ID is found
     }
 
-    private void saveBorrowsToJson(List<Borrow> borrows) {
-        try (Writer writer = new FileWriter(FILE_PATH)) {
-            Gson prettyGson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-                .setPrettyPrinting()
-                .create();
-            prettyGson.toJson(borrows, writer);
-        } catch (IOException e) {
+    public List<Integer> getAllID() {
+        List<Integer> ids = new ArrayList<>();
+        String query = "SELECT BorrowID FROM Borrow";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                ids.add(rs.getInt("BorrowID"));
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    private String readFileContent(Reader reader) throws IOException {
-        StringBuilder content = new StringBuilder();
-        char[] buffer = new char[1024];
-        int charsRead;
-        while ((charsRead = reader.read(buffer)) != -1) {
-            content.append(buffer, 0, charsRead);
-        }
-        return content.toString();
+        return ids;
     }
 }
-
-

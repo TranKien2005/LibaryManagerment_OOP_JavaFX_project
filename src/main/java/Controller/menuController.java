@@ -5,10 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import DAO.BookDao;
-import DAO.BorrowDao;
-import DAO.UserDao;
-import googleAPI.GoogleApiBookController;
+import DAO.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -35,10 +32,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import model.Borrow;
-import model.Document;
-import model.User;
-import thread.ThreadManager;
+import model.*;
+
+import util.ThreadManager;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
@@ -72,6 +68,8 @@ public class menuController {
     private BorderPane borrowAndReturnTab;
     @FXML
     private TableView<Document> tvDocuments;
+    @FXML
+    private TableColumn<Document, Integer> colId;
     
     @FXML
     private TableColumn<Document, String> colName;
@@ -127,6 +125,15 @@ public class menuController {
     private TableColumn<Borrow, String> colStatus;
 
     @FXML
+    private TableColumn<Borrow, LocalDate> colActualReturnDate;
+
+    @FXML
+    private TableColumn<Borrow, Double> colDamagePercentage;
+
+    @FXML
+    private TableColumn<Borrow, Double> colPenaltyFee;
+
+    @FXML
     private Label scoreLabel;
 
     @FXML
@@ -136,6 +143,12 @@ public class menuController {
     private Label accuracyLabel;
 
     @FXML
+    private TextField tfSearch;
+
+    @FXML
+    private ComboBox<String> cbSearchCriteria;
+
+    @FXML
     private void initialize() {
 
         instance = this;
@@ -143,16 +156,23 @@ public class menuController {
         dpBorrowDate.setValue(LocalDate.now());
 
         // Khởi tạo các cột cho TableView
-        colName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colId.setCellValueFactory(cellData -> {
+            Document document = cellData.getValue();
+            int bookId = BookDao.getInstance().getID(document);
+            return new SimpleObjectProperty<>(bookId);
+        });
+        colName.setCellValueFactory(new PropertyValueFactory<>("title"));
         colAuthor.setCellValueFactory(new PropertyValueFactory<>("author"));
         colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
         colPublisher.setCellValueFactory(new PropertyValueFactory<>("publisher"));
-        colYear.setCellValueFactory(new PropertyValueFactory<>("year"));
-        colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-        ThreadManager.execute(() -> {
-            List<Document> documents = BookDao.getInstance().getAll();
-            Platform.runLater(() -> tvDocuments.setItems(FXCollections.observableArrayList(documents)));
-        });
+        colYear.setCellValueFactory(new PropertyValueFactory<>("yearPublished"));
+        colQuantity.setCellValueFactory(new PropertyValueFactory<>("availableCopies"));
+        
+      
+        List<Document> documents = BookDao.getInstance().getAll();
+        Platform.runLater(() -> tvDocuments.setItems(FXCollections.observableArrayList(documents)));
+        
         
         
         // Thêm listener cho việc chọn tài liệu
@@ -165,19 +185,19 @@ public class menuController {
                     "Nhà xuất bản: %s\n" +
                     "Năm xuất bản: %d\n" +
                     "Số lượng: %d",
-                    newSelection.getName(),
+                    newSelection.getTitle(),
                     newSelection.getAuthor(),
                     newSelection.getCategory(),
                     newSelection.getPublisher(),
-                    newSelection.getYear(),
-                    newSelection.getQuantity()
+                    newSelection.getYearPublished(),
+                    newSelection.getAvailableCopies()
                 );
                 taDocumentDetails.setText(details);
 
                 // Fetch score and review from GoogleApiBookController
                 ThreadManager.execute(() -> {
                
-                        String bookName = newSelection.getName();
+                        String bookName = newSelection.getTitle();
                         String authorName = newSelection.getAuthor();
                         System.out.println(bookName);
                         System.out.println(authorName);
@@ -206,51 +226,158 @@ public class menuController {
             }
         });
         
-        // Populate ComboBoxes with data from UserDao and BookDao
-        ThreadManager.execute(() -> {
+       
             List<User> users = UserDao.getInstance().getAll();
-            List<Document> documents = BookDao.getInstance().getAll();
+           
+        
             
             Platform.runLater(() -> {
-                cbMembers.getItems().clear();
+                
+        
                 if (users != null) {
                     cbMembers.getItems().addAll(users.stream()
-                        .map((User user) -> user.getUserId() + " - " + user.getUsername())
+                        .map(user -> user.getAccountID() + " - " + user.getFullName())
                         .collect(Collectors.toList()));
                 }
-                
-                cbDocuments.getItems().clear();
+
                 if (documents != null) {
-                    cbDocuments.getItems().addAll(documents.stream().map(Document::getName).collect(Collectors.toList()));
+                    cbDocuments.getItems().addAll(documents.stream()
+                        .map(document -> BookDao.getInstance().getID(document) + " - " + document.getTitle())
+                        .collect(Collectors.toList()));
                 }
             });
-        });
 
-        // Add AutoCompleteComboBoxListener to ComboBoxes
-        new AutoCompleteComboBoxListener<>(cbMembers);
-        new AutoCompleteComboBoxListener<>(cbDocuments);
+           
+           
 
-        // Initialize borrowed documents table
-        colMember.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getUser_id())));
-        colDocument.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getBookname()));
-        colBorrowDate.setCellValueFactory(cellData -> {
-            LocalDate borrowDate = cellData.getValue().getBorrow_date();
-            return new SimpleObjectProperty<>(borrowDate);
-        });
-        colReturnDate.setCellValueFactory(cellData -> {
-            LocalDate returnDate = cellData.getValue().getReturn_date();
-            return new SimpleObjectProperty<>(returnDate);
-        });
-        colStatus.setCellValueFactory(cellData -> {
-            LocalDate returnDate = cellData.getValue().getReturn_date();
-            LocalDate now = LocalDate.now();
-            if (returnDate == null) {
-                return new SimpleStringProperty("Đang mượn");
+           
+        cbMembers.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                String newText = cbMembers.getEditor().getText().toLowerCase();
+                ObservableList<String> filteredList = FXCollections.observableArrayList(users.stream()
+                    .map(user -> user.getAccountID() + " - " + user.getFullName())
+                    .filter(name -> name.toLowerCase().contains(newText))
+                    .collect(Collectors.toList()));
+                cbMembers.setItems(filteredList);
+                cbMembers.show();
+                break;
+                default:
+                   
             }
-            return new SimpleStringProperty(returnDate.isBefore(now) ? "Quá hạn" : "Đang mượn");
         });
 
-        loadBorrowedDocuments();
+        cbDocuments.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    String newText = cbDocuments.getEditor().getText().toLowerCase();
+                    ObservableList<String> filteredList = FXCollections.observableArrayList(documents.stream()
+                        .map(document -> BookDao.getInstance().getID(document) + " - " + document.getTitle())
+                        .filter(title -> title.toLowerCase().contains(newText))
+                        .collect(Collectors.toList()));
+                    cbDocuments.setItems(filteredList);
+                    cbDocuments.show();
+                    break;
+                default:
+                    break;
+            }
+        });
+       
+  
+    
+
+    // Initialize borrowed documents table
+    colMember.setCellValueFactory(cellData -> {
+        int accountId = cellData.getValue().getAccountID();
+        User user = UserDao.getInstance().get(accountId);
+        String fullName = user != null ? user.getFullName() : "";
+        return new SimpleStringProperty(accountId + " - " + fullName);
+    });
+    colDocument.setCellValueFactory(cellData -> {
+        int bookId = cellData.getValue().getBookID();
+        Document document = BookDao.getInstance().get(bookId);
+        String bookTitle = document != null ? document.getTitle() : "";
+        return new SimpleStringProperty(bookId + " - " + bookTitle);
+    });
+    colBorrowDate.setCellValueFactory(cellData -> {
+        LocalDate borrowDate = cellData.getValue().getBorrowDate();
+        return new SimpleObjectProperty<>(borrowDate);
+    });
+    colReturnDate.setCellValueFactory(cellData -> {
+        LocalDate returnDate = cellData.getValue().getExpectedReturnDate();
+        return new SimpleObjectProperty<>(returnDate);
+    });
+    colStatus.setCellValueFactory(cellData -> {
+        Borrow borrow = cellData.getValue();
+        LocalDate expectedReturnDate = borrow.getExpectedReturnDate();
+        LocalDate actualReturnDate = null;
+        Return returnRecord = ReturnDao.getInstance().get(BorrowDao.getInstance().getID(borrow));
+        if (returnRecord != null) {
+            actualReturnDate = returnRecord.getReturnDate();
+        }
+        String status;
+        if (actualReturnDate != null) {
+            status = borrow.getStatus();
+        } else if (LocalDate.now().isAfter(expectedReturnDate)) {
+            status = "Quá hạn";
+        } else {
+            status = borrow.getStatus();
+        }
+        return new SimpleStringProperty(status);
+    });
+
+    colActualReturnDate.setCellValueFactory(cellData -> {
+        Borrow borrow = cellData.getValue();
+        BorrowDao borrowDao = BorrowDao.getInstance();
+        int borrowID = borrowDao.getID(borrow);
+        Return returnRecord = ReturnDao.getInstance().get(borrowID);
+        LocalDate actualReturnDate = null;
+        if (returnRecord != null) {
+            actualReturnDate = returnRecord.getReturnDate();
+        }
+        return new SimpleObjectProperty<>(actualReturnDate);
+    });
+
+    colDamagePercentage.setCellValueFactory(cellData -> {
+        Borrow borrow = cellData.getValue();
+        BorrowDao borrowDao = BorrowDao.getInstance();
+        int borrowID = borrowDao.getID(borrow);
+        Return returnRecord = ReturnDao.getInstance().get(borrowID);
+        if (returnRecord != null) {
+            Integer damagePercentage = returnRecord.getDamagePercentage();
+            Double damagePercentageDouble = damagePercentage != null ? damagePercentage.doubleValue() : null;
+            return new SimpleObjectProperty<>(damagePercentageDouble);
+        } else {
+            return new SimpleObjectProperty<>(null);
+        }
+    });
+
+    colPenaltyFee.setCellValueFactory(cellData -> {
+        Borrow borrow = cellData.getValue();
+        BorrowDao borrowDao = BorrowDao.getInstance();
+        int borrowID = borrowDao.getID(borrow);
+        Return returnRecord = ReturnDao.getInstance().get(borrowID);
+        if (returnRecord != null) {
+            LocalDate expectedReturnDate = borrow.getExpectedReturnDate();
+            LocalDate actualReturnDate = returnRecord.getReturnDate();
+            int damagePercentage = returnRecord.getDamagePercentage();
+            double penaltyFee = 0.0;
+
+            if (actualReturnDate != null && actualReturnDate.isAfter(expectedReturnDate)) {
+                long daysLate = java.time.temporal.ChronoUnit.DAYS.between(expectedReturnDate, actualReturnDate);
+                penaltyFee = daysLate * 1.0 + damagePercentage * 0.5; // Example calculation: $1 per day late + $0.5 per damage percentage
+            }
+
+            return new SimpleObjectProperty<>(penaltyFee);
+        } else {
+            return new SimpleObjectProperty<>(0.0);
+        }
+    });
+
+
+    
+
+    loadBorrowedDocuments();
 
         //add subscene
          // Tải và thêm các cảnh phụ vào managementStackPane
@@ -272,6 +399,7 @@ public class menuController {
             FXMLLoader manageMembersLoader = new FXMLLoader(getClass().getResource("/view/member_management.fxml"));
             Parent manageMembersPane = manageMembersLoader.load();
             managementStackPane.getChildren().add(manageMembersPane);
+
 
             // Đặt cảnh báo là pane mặc định hiển thị
             managementStackPane.getChildren().get(0).setVisible(true);
@@ -309,13 +437,15 @@ public class menuController {
         showPane(0);
         }
 
+        
+
         private void loadBorrowedDocuments() {
-        ThreadManager.execute(() -> {
+      
             List<Borrow> borrowedDocuments = BorrowDao.getInstance().getAll();
             Platform.runLater(() -> {
                 tvBorrowedDocuments.setItems(FXCollections.observableArrayList(borrowedDocuments));
             });
-        });
+     
     }
 
     private void showErrorAlert(String title, String content) {
@@ -343,28 +473,9 @@ public class menuController {
     }
 
     @FXML
-    private void handleReload() {
-        refreshDocumentList();
-        loadBorrowedDocuments();
-        cbMembers.getItems().clear();
-        cbDocuments.getItems().clear();
-        
-        ThreadManager.execute(() -> {
-            List<User> users = UserDao.getInstance().getAll();
-            List<Document> documents = BookDao.getInstance().getAll();
-            
-            Platform.runLater(() -> {
-                if (users != null) {
-                    cbMembers.getItems().addAll(users.stream()
-                        .map((User user) -> user.getUserId() + " - " + user.getUsername())
-                        .collect(Collectors.toList()));
-                }
-                
-                if (documents != null) {
-                    cbDocuments.getItems().addAll(documents.stream().map(Document::getName).collect(Collectors.toList()));
-                }
-            });
-        });
+private void handleReload() {
+    refreshDocumentList();
+    loadBorrowedDocuments();
     }
     
     public void refreshTableView() {
@@ -419,7 +530,7 @@ private void onManageMembers() {
         ObservableList<Document> filteredDocuments = FXCollections.observableArrayList();
 
         for (Document doc : allDocuments) {
-            if (doc.getName().toLowerCase().contains(filterText)) {
+            if (doc.getTitle().toLowerCase().contains(filterText)) {
                 filteredDocuments.add(doc);
             }
         }
@@ -444,22 +555,24 @@ private void onManageMembers() {
 
     @FXML
     private void handleBorrowDocument() {
+        cbDocuments.getParent().requestFocus();
         String nameDocument = cbDocuments.getValue();
+        nameDocument = nameDocument.split(" - ")[0];
         String selectedMemberIdString = cbMembers.getValue();
         if (selectedMemberIdString != null && selectedMemberIdString.contains(" - ")) {
             selectedMemberIdString = selectedMemberIdString.split(" - ")[0];
         }
-
+    
         if (nameDocument == null || nameDocument.isEmpty()) {
             showErrorAlert("Lỗi", "Vui lòng chọn một tài liệu từ danh sách.");
             return;
         }
-
+    
         if (selectedMemberIdString == null || selectedMemberIdString.isEmpty()) {
             showErrorAlert("Lỗi", "Vui lòng chọn một thành viên từ danh sách.");
             return;
         }
-
+    
         LocalDate borrowDate = dpBorrowDate.getValue();
         LocalDate returnDate = dpReturnDate.getValue();
         
@@ -472,7 +585,7 @@ private void onManageMembers() {
             showErrorAlert("Lỗi", "Ngày mượn không thể sau ngày trả.");
             return;
         }
-
+    
         Integer selectedMemberId;
         try {
             selectedMemberId = Integer.parseInt(selectedMemberIdString);
@@ -480,45 +593,42 @@ private void onManageMembers() {
             showErrorAlert("Lỗi", "ID thành viên không hợp lệ.");
             return;
         }
-
-        Document selectedDocument = BookDao.getInstance().getByName(nameDocument);
+    
+        int selectedDocumentId = Integer.parseInt(nameDocument);
+        Document selectedDocument = BookDao.getInstance().get(selectedDocumentId);
         if (selectedDocument == null) {
             showErrorAlert("Lỗi", "Không tìm thấy tài liệu.");
             return;
         }
-
-        if (selectedDocument.getQuantity() <= 0) {
+    
+        if (selectedDocument.getAvailableCopies() <= 0) {
             showErrorAlert("Lỗi", "Tài liệu này hiện không có sẵn để mượn.");
             return;
         }
-
-        User user = UserDao.getInstance().getAll().stream()
-                .filter(u -> u.getUserId() == selectedMemberId)
-                .findFirst()
-                .orElse(null);
-
+    
+        User user = UserDao.getInstance().get(selectedMemberId);
         if (user == null) {
             showErrorAlert("Lỗi", "Không tìm thấy thành viên.");
             return;
         }
-
+    
         Borrow newBorrow = new Borrow(
             selectedMemberId,
-            nameDocument,
-            dpBorrowDate.getValue(),
-            dpReturnDate.getValue()
+            selectedDocumentId,
+            borrowDate,
+            returnDate,
+            "Borrowed"
         );
-
+    
         BorrowDao.getInstance().insert(newBorrow);
-        selectedDocument.setQuantity(selectedDocument.getQuantity() - 1);
-        BookDao.getInstance().update(selectedDocument);
+       
         showInfoAlert("Thành công", "Tài liệu đã được mượn thành công.");
         refreshDocumentList();
         loadBorrowedDocuments(); // Refresh the borrowed documents list
-    }
+        }
 
-    @FXML
-    private void handleReturnDocument() {
+        @FXML
+        private void handleReturnDocument() {
         Borrow selectedBorrow = tvBorrowedDocuments.getSelectionModel().getSelectedItem();
         
         if (selectedBorrow == null) {
@@ -526,31 +636,93 @@ private void onManageMembers() {
             return;
         }
 
-        Document selectedDocument = BookDao.getInstance().getByName(selectedBorrow.getBookname());
+        // Check if the document has already been returned
+        Return existingReturnRecord = ReturnDao.getInstance().get(BorrowDao.getInstance().getID(selectedBorrow));
+        if (existingReturnRecord != null) {
+            showErrorAlert("Lỗi", "Tài liệu này đã được trả trước đó.");
+            return;
+        }
+
+        Document selectedDocument = BookDao.getInstance().get(selectedBorrow.getBookID());
         if (selectedDocument == null) {
             showErrorAlert("Lỗi", "Không tìm thấy tài liệu.");
             return;
         }
 
-        BorrowDao.getInstance().delete(selectedBorrow);
-        
-        // Update the document quantity
-        selectedDocument.setQuantity(selectedDocument.getQuantity() + 1);
-        BookDao.getInstance().update(selectedDocument);
-
+        int damagePercentage = (int) (Math.random() * 100); // Random damage percentage between 0 and 100
+        Return returnRecord = new Return(BorrowDao.getInstance().getID(selectedBorrow), 
+        LocalDate.now(), damagePercentage);
+        ReturnDao.getInstance().insert(returnRecord);
         showInfoAlert("Thành công", "Tài liệu đã được trả thành công.");
         refreshDocumentList();
         loadBorrowedDocuments();
-    }
+        }
 
-    private void refreshDocumentList() {
-        ThreadManager.execute(() -> {
-            List<Document> documents = BookDao.getInstance().getAll();
-            Platform.runLater(() -> {
-                tvDocuments.setItems(FXCollections.observableArrayList(documents));
-                tvDocuments.refresh(); 
-            });
-        });
-    }
+            private void refreshDocumentList() {
+          
+                List<Document> documents = BookDao.getInstance().getAll();
+                Platform.runLater(() -> {
+                    tvDocuments.setItems(FXCollections.observableArrayList(documents));
+                    tvDocuments.refresh(); 
+                });
 
+         
+        }
+    
+    
+
+        @FXML
+        private void handleRefreshAction() {
+           
+                refreshDocumentList();
+                cbMembers.setValue("");
+                cbDocuments.setValue("");
+
+               
+               
+           
+        }
+
+        @FXML
+        private void handleSearchAction() {
+        String searchText = tfSearch.getText().toLowerCase().trim();
+        String searchCriteria = cbSearchCriteria.getValue();
+
+        if (searchCriteria == null || searchText.isEmpty()) {
+            showErrorAlert("Lỗi", "Vui lòng nhập nội dung tìm kiếm và chọn tiêu chí tìm kiếm.");
+            return;
+        }
+
+        if (searchCriteria.equals("Thành viên")) {
+            ObservableList<Borrow> allBorrows = FXCollections.observableArrayList(BorrowDao.getInstance().getAll());
+            ObservableList<Borrow> filteredBorrows = allBorrows.stream()
+                .filter(borrow -> {
+                    User user = UserDao.getInstance().get(borrow.getAccountID());
+                    return user != null && user.getFullName().toLowerCase().contains(searchText);
+                })
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+
+            tvBorrowedDocuments.setItems(filteredBorrows);
+
+            if (filteredBorrows.isEmpty()) {
+                showInfoAlert("Không tìm thấy", "Không có thành viên nào phù hợp với từ khóa tìm kiếm.");
+                tvBorrowedDocuments.setItems(allBorrows); // Đưa bảng về trạng thái ban đầu
+            }
+            } else if (searchCriteria.equals("Tài liệu")) {
+            ObservableList<Borrow> allBorrows = FXCollections.observableArrayList(BorrowDao.getInstance().getAll());
+            ObservableList<Borrow> filteredBorrows = allBorrows.stream()
+                .filter(borrow -> {
+                    Document document = BookDao.getInstance().get(borrow.getBookID());
+                    return document != null && document.getTitle().toLowerCase().contains(searchText);
+                })
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+
+            tvBorrowedDocuments.setItems(filteredBorrows);
+
+            if (filteredBorrows.isEmpty()) {
+                showInfoAlert("Không tìm thấy", "Không có tài liệu nào phù hợp với từ khóa tìm kiếm.");
+                tvBorrowedDocuments.setItems(allBorrows); // Đưa bảng về trạng thái ban đầu
+            }
+        }
+    }
 }

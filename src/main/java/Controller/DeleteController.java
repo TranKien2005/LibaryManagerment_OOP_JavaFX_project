@@ -1,7 +1,9 @@
 package Controller;
 
 import model.Document;
+import util.ThreadManager;
 import DAO.BookDao;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import java.io.IOException;
 import javafx.fxml.FXML;
@@ -17,13 +19,13 @@ import javafx.collections.ObservableList;
 
 public class DeleteController extends menuController {
     @FXML
-    private TextField tenTaiLieuTextField;
+    private TextField nameField;
     @FXML
-    private TableView<Document> taiLieuTableView;
+    private TableView<Document> SearchView;
     @FXML
     private TableColumn<Document, String> tenColumn;
     @FXML
-    private TableColumn<Document, String> tacGiaColumn;
+    private TableColumn<Document, String> idColumn;
     @FXML
     private ListView<String> suggestionListView;
 
@@ -35,55 +37,88 @@ public class DeleteController extends menuController {
 
     @FXML
     public void initialize() {
-        tenColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        tacGiaColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
+        tenColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        idColumn.setCellValueFactory(cellData -> {
+            Document document = cellData.getValue();
+            int bookId = BookDao.getInstance().getID(document);
+            return new SimpleObjectProperty<>(String.valueOf(bookId));
+        });
+        
+        
         capNhatBangTaiLieu();
         
-        tenTaiLieuTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            updateSuggestions(newValue);
-        });
-
-        suggestionListView.setOnMouseClicked(event -> {
-            String selectedItem = suggestionListView.getSelectionModel().getSelectedItem();
-            if (selectedItem != null) {
-                tenTaiLieuTextField.setText(selectedItem);
-                suggestionListView.setVisible(false);
-            }
-        });
-    }
-
-    @FXML
-    public void xoaTaiLieu() {
-        String tenTaiLieu = tenTaiLieuTextField.getText().trim();
-        if (tenTaiLieu.isEmpty()) {
-            hienThiThongBao("Lỗi", "Vui lòng nhập tên tài liệu.");
-            return;
-        }
-
-        Document documentToDelete = bookDao.get(new Document(tenTaiLieu, "", "", "", 0, 0));
-        if (documentToDelete == null) {
-            hienThiThongBao("Lỗi", "Tài liệu không tồn tại.");
-            return;
-        }
-
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Xác nhận xóa");
-        confirmAlert.setHeaderText(null);
-        confirmAlert.setContentText("Bạn có chắc chắn muốn xóa tài liệu này không?");
         
-        confirmAlert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                bookDao.delete(documentToDelete);
-                hienThiThongBao("Xóa thành công", "Tài liệu đã được xóa.");
-                capNhatBangTaiLieu();
-                tenTaiLieuTextField.clear();
-            }
+
+        final long[] lastTypingTime = {System.currentTimeMillis()};
+        final long typingDelay = 100;
+        
+        nameField.textProperty().addListener((observable, oldValue, newValue) -> {
+            lastTypingTime[0] = System.currentTimeMillis();
+        
+            ThreadManager.execute(() -> {
+                try {
+                    Thread.sleep(typingDelay);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (System.currentTimeMillis() - lastTypingTime[0] >= typingDelay) {
+                    updateSuggestions(newValue);
+                }
+            });
         });
-       
-    }
+
+            suggestionListView.setOnMouseClicked(event -> {
+                String selectedDocumentID = suggestionListView.getSelectionModel().getSelectedItem();
+                if (selectedDocumentID != null) {
+                nameField.setText(selectedDocumentID);
+                suggestionListView.setVisible(false);
+                nameField.getParent().requestFocus();
+                }
+            });
+        }
+    
+        @FXML
+        public void xoaTaiLieu() {
+                String selectedDocumentID = nameField.getText().trim();
+                String[] parts = selectedDocumentID.split(" - ");
+                if (parts.length > 0) {
+                    selectedDocumentID = parts[0];
+                }
+                if (selectedDocumentID.isEmpty()) {
+                    hienThiThongBao("Lỗi", "Vui lòng chọn tài liệu.");
+                    return;
+                }
+
+                int documentID;
+                try {
+                    documentID = Integer.parseInt(selectedDocumentID);
+                } catch (NumberFormatException e) {
+                    hienThiThongBao("Lỗi", "ID tài liệu không hợp lệ.");
+                    return;
+                }
+                Document documentToDelete = bookDao.get(documentID);
+                if (documentToDelete == null) {
+                    hienThiThongBao("Lỗi", "Tài liệu không tồn tại.");
+                    return;
+                }
+
+                Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmAlert.setTitle("Xác nhận xóa");
+                confirmAlert.setHeaderText(null);
+                confirmAlert.setContentText("Bạn có chắc chắn muốn xóa tài liệu này không?");
+                
+                confirmAlert.showAndWait().ifPresent(response -> {
+                    if (response == ButtonType.OK) {
+                        bookDao.delete(documentID);
+                        hienThiThongBao("Xóa thành công", "Tài liệu đã được xóa.");
+                        capNhatBangTaiLieu();
+                        nameField.clear();
+                    }
+                });
+            }
 
     private void capNhatBangTaiLieu() {
-        taiLieuTableView.setItems(FXCollections.observableArrayList(bookDao.getAll()));
+        SearchView.setItems(FXCollections.observableArrayList(bookDao.getAll()));
     }
 
     private void hienThiThongBao(String tieuDe, String noiDung) {
@@ -92,28 +127,36 @@ public class DeleteController extends menuController {
         alert.setHeaderText(null);
         alert.setContentText(noiDung);
         alert.showAndWait();
-    }
+        }
 
-    private void updateSuggestions(String searchText) {
-        if (searchText == null || searchText.isEmpty()) {
+        private void updateSuggestions(String searchText) {
+       
+            if (searchText == null || searchText.isEmpty()) {
             suggestionListView.setVisible(false);
             return;
-        }
-
-        ObservableList<String> suggestions = FXCollections.observableArrayList();
-        for (Document doc : bookDao.getAll()) {
-            if (doc.getName().toLowerCase().contains(searchText.toLowerCase())) {
-                suggestions.add(doc.getName());
             }
+
+            ObservableList<String> suggestions = FXCollections.observableArrayList();
+            for (Document doc : bookDao.getAll()) {
+            if (doc.getTitle().toLowerCase().contains(searchText.toLowerCase())) {
+                suggestions.add(bookDao.getID(doc) + " - " + doc.getTitle());
+            }
+            }
+
+            javafx.application.Platform.runLater(() -> {
+            suggestionListView.setItems(suggestions);
+            suggestionListView.setVisible(!suggestions.isEmpty());
+            });
+      
         }
 
-        suggestionListView.setItems(suggestions);
-        suggestionListView.setVisible(!suggestions.isEmpty());
-    }
-    @FXML
-    private void handleCancel() {
-        tenTaiLieuTextField.clear();
+        @FXML
+        private void handleCancel() {
+        nameField.clear();
         suggestionListView.setVisible(false);
+        SearchView.setItems(FXCollections.observableArrayList(bookDao.getAll()));
     }
+
+    
    
 }

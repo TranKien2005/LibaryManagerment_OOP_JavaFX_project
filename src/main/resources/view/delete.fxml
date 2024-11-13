@@ -27,8 +27,8 @@
             <VBox spacing="20" alignment="CENTER" styleClass="form-container">
                 <VBox spacing="10" alignment="CENTER" styleClass="form-box">
                     <HBox spacing="10" alignment="CENTER">
-                        <Label text="Tên Tài Liệu:" styleClass="form-label"/>
-                        <TextField fx:id="tenTaiLieuTextField" styleClass="text-field" prefWidth="300"/>
+                        <Label text="Document Name:" styleClass="form-label"/>
+                        <TextField fx:id="nameField" styleClass="text-field" prefWidth="300"/>
                     </HBox>
                     <ListView fx:id="suggestionListView" visible="false" prefHeight="100" prefWidth="300"/>
                 </VBox>
@@ -47,11 +47,12 @@
                             </ImageView>
                         </graphic>
                     </Button>
+                    
                 </HBox>
-                <TableView fx:id="taiLieuTableView" styleClass="table-view" prefHeight="200" prefWidth="400">
+                <TableView fx:id="SearchView" styleClass="table-view" prefHeight="200" prefWidth="400">
                     <columns>
+                        <TableColumn text="ID" fx:id="idColumn" prefWidth="100"/>
                         <TableColumn text="Tên" fx:id="tenColumn" prefWidth="200"/>
-                        <TableColumn text="Tác giả" fx:id="tacGiaColumn" prefWidth="200"/>
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
