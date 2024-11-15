@@ -1,5 +1,10 @@
 package DAO;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -159,35 +164,82 @@ public List<Document> getAll() {
             e.printStackTrace();
         }
         return ids;
-    }
-
-    public static void main(String[] args) {
-        BookDao bookDao = BookDao.getInstance();
-
-        // Create a new document
-        Document newDocument = new Document("Sample Title", "Sample Author", "Sample Category", "Sample Publisher", 2023, 10);
-        bookDao.insert(newDocument);
-
-        // Get all documents
-        List<Document> documents = bookDao.getAll();
-        for (Document doc : documents) {
-            System.out.println(doc);
         }
 
-        // Get a document by ID
-        int id = bookDao.getID(newDocument);
-        Document document = bookDao.get(id);
-        System.out.println("Retrieved Document: " + document);
+        public InputStream getBookImage(int bookId) {
+        String query = "SELECT Image FROM Book WHERE ID = ?";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, bookId);
+            try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                InputStream is = rs.getBinaryStream("Image");
+                if (is != null) {
+                return is;
+                }
+            }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+        }
 
-        // Update the document
-        document.setTitle("Updated Title");
-        bookDao.update(document, id);
-
-        // Get all IDs
-        List<Integer> ids = bookDao.getAllID();
-        System.out.println("All IDs: " + ids);
-
-        // Delete the document
-        bookDao.delete(id);
+        public void setBookImage(int bookId, String imagePath) {
+        String query = "UPDATE Book SET Image = ? WHERE ID = ?";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             FileInputStream fis = new FileInputStream(imagePath)) {
+            stmt.setBinaryStream(1, fis, (int) new File(imagePath).length());
+            stmt.setInt(2, bookId);
+            stmt.executeUpdate();
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
     }
+
+public InputStream getBookImage(Document document) {
+    String query = "SELECT Image FROM Book WHERE Title = ? AND Author = ? AND Category = ? AND Publisher = ? AND YearPublished = ? AND AvailableCopies = ?";
+    try (Connection conn = DatabaseConnection.getInstance().getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setString(1, document.getTitle());
+        stmt.setString(2, document.getAuthor());
+        stmt.setString(3, document.getCategory());
+        stmt.setString(4, document.getPublisher());
+        stmt.setInt(5, document.getYearPublished());
+        stmt.setInt(6, document.getAvailableCopies());
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                InputStream is = rs.getBinaryStream("Image");
+                if (is != null) {
+                    return is;
+                }
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+
+public void setBookImage(Document document, String imagePath) {
+    String query = "UPDATE Book SET Image = ? WHERE Title = ? AND Author = ? AND Category = ? AND Publisher = ? AND YearPublished = ? AND AvailableCopies = ?";
+    try (Connection conn = DatabaseConnection.getInstance().getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query);
+         FileInputStream fis = new FileInputStream(imagePath)) {
+        stmt.setBinaryStream(1, fis, (int) new File(imagePath).length());
+        stmt.setString(2, document.getTitle());
+        stmt.setString(3, document.getAuthor());
+        stmt.setString(4, document.getCategory());
+        stmt.setString(5, document.getPublisher());
+        stmt.setInt(6, document.getYearPublished());
+        stmt.setInt(7, document.getAvailableCopies());
+        stmt.executeUpdate();
+    } catch (SQLException | IOException e) {
+        e.printStackTrace();
+    }
+}
+
+    
+    
 }

@@ -121,15 +121,31 @@
         <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" styleClass="h4 title-text" text="Chi tiết tài liệu" />
       </HBox>
       <TextArea fx:id="taDocumentDetails" editable="false" prefHeight="200.0" prefWidth="350.0" style="-fx-font-size: 14px;" styleClass="form-control large-text" wrapText="true" />
-      <Button alignment="CENTER" onAction="#handleReload" prefHeight="50" prefWidth="50" >
-          <graphic>
-            <ImageView fitHeight="50" fitWidth="50" preserveRatio="true" smooth="true">
-              <Image url="@/icons/update.png" />
-            </ImageView>
-          </graphic>
-        </Button>
+      <Button alignment="CENTER" onAction="#handleReload" prefHeight="50" prefWidth="50">
+        <graphic>
+          <ImageView fitHeight="50" fitWidth="50" preserveRatio="true" smooth="true">
+            <Image url="@/icons/update.png" />
+          </ImageView>
+        </graphic>
+      </Button>
+      <HBox alignment="CENTER">
+        <ImageView fx:id="bookCoverImageView" fitHeight="300.0" fitWidth="200.0" preserveRatio="false" smooth="true" />
+      </HBox>
+      <Button onAction="#handleChangeCover" text="Thay bìa sách" styleClass="btn, btn-secondary" alignment="CENTER">
+        <graphic>
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+            <Image url="@/icons/edit.png" />
+          </ImageView>
+        </graphic>
+      </Button>
+      <Button onAction="#handleFetchIncorrectInfo" text="Lấy thông tin không chính xác từ Google" styleClass="btn, btn-warning" alignment="CENTER">
+        <graphic>
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+            <Image url="@/icons/google.png" />
+          </ImageView>
+        </graphic>
+      </Button>
     </VBox>
-     
   </right>
 </BorderPane>
         <BorderPane fx:id="managementTab" styleClass="bg-white" visible="false">

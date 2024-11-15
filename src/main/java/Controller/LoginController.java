@@ -64,10 +64,10 @@ public class LoginController {
                             mainStage.setScene(mainScene);
                             mainStage.setTitle("Menu");
                             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-                            mainStage.setX((screenBounds.getWidth() - 1600) / 2);
-                            mainStage.setY((screenBounds.getHeight() - 900) / 2);
-                            mainStage.setWidth(1600);
-                            mainStage.setHeight(900);
+                            mainStage.setX((screenBounds.getWidth() - 1500) / 2);
+                            mainStage.setY((screenBounds.getHeight() - 800) / 2);
+                            mainStage.setWidth(1500);
+                            mainStage.setHeight(800);
                             mainStage.setResizable(false);
                              // Sử dụng đường dẫn tuyệt đối cho tệp hình ảnh
                             Image icon = new Image(getClass().getResourceAsStream("/images/login/logo.png"));

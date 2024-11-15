@@ -1,5 +1,10 @@
 package Controller;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.sql.SQLException;
+
 import javafx.scene.control.Label;
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +21,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
@@ -27,13 +33,19 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import model.*;
-
+import util.ErrorDialog;
 import util.ThreadManager;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -149,6 +161,11 @@ public class menuController {
     private ComboBox<String> cbSearchCriteria;
 
     @FXML
+    private ImageView bookCoverImageView;
+
+   
+
+    @FXML
     private void initialize() {
 
         instance = this;
@@ -211,19 +228,47 @@ public class menuController {
                         }
                         System.out.println(review);
                         System.out.println(score);
+                        InputStream imageStream = BookDao.getInstance().getBookImage(newSelection);
+                        String imageString = bookinfo.getImageUrl();
+
 
                         Platform.runLater(() -> {
                             reviewTextArea.setText(review);
                             scoreLabel.setText(String.valueOf(score));
                             accuracyLabel.setText(doChinhXac);
-                        });
+                            if (imageStream != null) {
+                                Image image = new Image(imageStream);
+                                bookCoverImageView.setImage(image);
+                            } else if (imageString != null && !imageString.isEmpty()) {
+                                Image image = new Image(imageString);
+                                bookCoverImageView.setImage(image);
+                            } else {
+                                StackPane defaultCover = new StackPane();
+                                defaultCover.setStyle("-fx-background-color: gray; -fx-alignment: center; -fx-padding: 10; -fx-border-color: black; -fx-border-width: 2;");
+                
+                                Label titleLabel = new Label(bookName);
+                                titleLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: white; -fx-wrap-text: true; -fx-text-alignment: center;");
+                                titleLabel.setTextAlignment(TextAlignment.CENTER);
+                
+                                defaultCover.getChildren().add(titleLabel);
+                                bookCoverImageView.setImage(null); // Xóa ảnh hiện tại nếu có
+                                WritableImage writableImage = new WritableImage((int) bookCoverImageView.getFitWidth(), (int) bookCoverImageView.getFitHeight());
+                                SnapshotParameters params = new SnapshotParameters();
+                                params.setFill(Color.TRANSPARENT);
+                                defaultCover.snapshot(params, writableImage);
+                                bookCoverImageView.setImage(writableImage); // Đặt bìa sách mặc định
+                            }
+                    });
                     
                 });
+                
+                
             } else {
                 taDocumentDetails.clear();
                 scoreLabel.setText("");
                 reviewTextArea.clear();
             }
+
         });
         
        
@@ -473,9 +518,10 @@ public class menuController {
     }
 
     @FXML
-private void handleReload() {
-    refreshDocumentList();
-    loadBorrowedDocuments();
+    private void handleReload() {
+        refreshDocumentList();
+        loadBorrowedDocuments();
+        tvDocuments.getSelectionModel().clearSelection();
     }
     
     public void refreshTableView() {
@@ -509,18 +555,60 @@ private void handleReload() {
     }
     
    @FXML
-private void onManageMembers() {
+    private void onManageMembers() {
     showPane(4);
-}
-    
-    @FXML
-    private void onBorrowDocument() {
-        // Xử lý mượn tài liệu
     }
     
     @FXML
-    private void onReturnDocument() {
-        // Xử lý trả tài liệu
+private void handleChangeCover() {
+    // Mở cửa sổ chọn tệp
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Chọn ảnh bìa sách");
+    fileChooser.getExtensionFilters().addAll(
+        new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
+    );
+
+    // Lấy cửa sổ hiện tại
+    Stage stage = (Stage) tvBorrowedDocuments.getScene().getWindow(); 
+
+    // Hiển thị cửa sổ chọn tệp và lấy tệp được chọn
+    File selectedFile = fileChooser.showOpenDialog(stage);
+    if (selectedFile != null) {
+        
+            // Gọi phương thức setBookImage để cập nhật ảnh bìa cho sách
+            BookDao bookDao = BookDao.getInstance();
+            int bookId = BookDao.getInstance().getID(tvDocuments.getSelectionModel().getSelectedItem());
+            bookDao.setBookImage(bookId, selectedFile.getAbsolutePath());
+            System.out.println("Book cover image updated successfully.");
+       
+    }
+    else {
+         ErrorDialog.showError("Filee Error", "Error load file", "select another file", null);
+    }
+    refreshDocumentList();
+    loadBorrowedDocuments();
+}
+    @FXML
+    private void handleFetchIncorrectInfo() {
+    ThreadManager.execute(() -> {
+        String bookName = tvDocuments.getSelectionModel().getSelectedItem().getTitle();
+        BookInfo bookinfo = googleAPI.GoogleApiBookController.getBookInfoByNoTruly(bookName);
+        String score = bookinfo.getRating();
+        String review = bookinfo.getDescription();
+        String doChinhXac = bookinfo.truly ? "Cao" : "Thấp";
+        
+        String imageString = bookinfo.getImageUrl();
+
+        Platform.runLater(() -> {
+            reviewTextArea.setText(review);
+            scoreLabel.setText(String.valueOf(score));
+            accuracyLabel.setText(doChinhXac);
+            Image image = new Image(imageString);
+            bookCoverImageView.setImage(image);
+           
+        });
+    });
+    
     }
     
     @FXML
@@ -528,6 +616,7 @@ private void onManageMembers() {
         String filterText = tfFilter.getText().toLowerCase().trim();
         ObservableList<Document> allDocuments = FXCollections.observableArrayList(BookDao.getInstance().getAll());
         ObservableList<Document> filteredDocuments = FXCollections.observableArrayList();
+       
 
         for (Document doc : allDocuments) {
             if (doc.getTitle().toLowerCase().contains(filterText)) {

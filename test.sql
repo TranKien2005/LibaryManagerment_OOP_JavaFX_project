@@ -29,7 +29,8 @@ CREATE TABLE IF NOT EXISTS Book (
     Category VARCHAR(50),
     Publisher VARCHAR(100), -- nhà sản xuất
     YearPublished YEAR, -- năm phát hành
-    AvailableCopies INT NOT NULL CHECK (AvailableCopies >= 0)
+    AvailableCopies INT NOT NULL CHECK (AvailableCopies >= 0),
+    Image LONGBLOB DEFAULT NULL -- Lưu trữ hình ảnh dưới dạng BLOB
 );
 
 -- Tạo bảng Borrow (Mượn tài liệu)
