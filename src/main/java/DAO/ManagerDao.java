@@ -8,7 +8,7 @@ import java.util.concurrent.Future;
 import model.Manager;
 import util.ThreadManager;
 
-public class ManagerDao implements DaoInterface<Manager> {
+public class ManagerDao {
     private static ManagerDao instance;
 
     private ManagerDao() {
@@ -22,39 +22,37 @@ public class ManagerDao implements DaoInterface<Manager> {
         return instance;
     }
 
-    @Override
-public List<Manager> getAll() {
-    List<Manager> managers = new ArrayList<>();
-    String query = "SELECT * FROM Manager";
-    Future<?> future = ThreadManager.submitSqlTask(() -> {
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                Manager manager = new Manager(
-                    rs.getInt("AccountID"),
-                    rs.getString("FullName"),
-                    rs.getString("Email"),
-                    rs.getString("Phone")
-                );
-                synchronized (managers) {
-                    managers.add(manager);
+    public List<Manager> getAll() throws SQLException {
+        List<Manager> managers = new ArrayList<>();
+        String query = "SELECT * FROM Manager";
+        Future<?> future = ThreadManager.submitSqlTask(() -> {
+            try (Connection conn = DatabaseConnection.getInstance().getConnection();
+                 Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(query)) {
+                while (rs.next()) {
+                    Manager manager = new Manager(
+                        rs.getInt("AccountID"),
+                        rs.getString("FullName"),
+                        rs.getString("Email"),
+                        rs.getString("Phone")
+                    );
+                    synchronized (managers) {
+                        managers.add(manager);
+                    }
                 }
+            } catch (SQLException e) {
+                throw new RuntimeException(e.getMessage());
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        });
+        try {
+            future.get(); // Đợi cho đến khi tác vụ hoàn thành
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
         }
-    });
-    try {
-        future.get(); // Đợi cho đến khi tác vụ hoàn thành
-    } catch (Exception e) {
-        e.printStackTrace();
+        return managers;
     }
-    return managers;
-}
 
-    @Override
-    public void insert(Manager manager) {
+    public void insert(Manager manager) throws SQLException {
         String query = "INSERT INTO Manager (AccountID, FullName, Email, Phone) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -64,12 +62,11 @@ public List<Manager> getAll() {
             pstmt.setString(4, manager.getPhone());
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Database Error: " + e.getMessage(), e);
         }
     }
 
-    @Override
-    public void update(Manager manager, int id) {
+    public void update(Manager manager, int id) throws SQLException {
         String query = "UPDATE Manager SET FullName = ?, Email = ?, Phone = ? WHERE AccountID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -79,24 +76,22 @@ public List<Manager> getAll() {
             pstmt.setInt(4, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Database Error: " + e.getMessage(), e);
         }
     }
 
-    @Override
-    public void delete(int id) {
+    public void delete(int id) throws SQLException {
         String query = "DELETE FROM Manager WHERE AccountID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Database Error: " + e.getMessage(), e);
         }
     }
 
-    @Override
-    public Manager get(int id) {
+    public Manager get(int id) throws SQLException {
         String query = "SELECT * FROM Manager WHERE AccountID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -112,12 +107,12 @@ public List<Manager> getAll() {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Database Error: " + e.getMessage(), e);
         }
         return null;
     }
 
-    public int getID(Manager manager) {
+    public int getID(Manager manager) throws SQLException {
         String query = "SELECT AccountID FROM Manager WHERE FullName = ? AND Email = ? AND Phone = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -130,12 +125,12 @@ public List<Manager> getAll() {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Database Error: " + e.getMessage(), e);
         }
         return -1; // Return -1 if no matching record is found
     }
 
-    public List<Integer> getAllID() {
+    public List<Integer> getAllID() throws SQLException {
         List<Integer> ids = new ArrayList<>();
         String query = "SELECT AccountID FROM Manager";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
@@ -145,7 +140,7 @@ public List<Manager> getAll() {
                 ids.add(rs.getInt("AccountID"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Database Error: " + e.getMessage(), e);
         }
         return ids;
     }

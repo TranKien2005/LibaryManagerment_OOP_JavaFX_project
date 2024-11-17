@@ -3,6 +3,7 @@ package model;
 import java.time.LocalDate;
 
 public class Borrow {
+    private int borrowID;
     private int accountID;
     private int bookID;
     private LocalDate borrowDate;
@@ -15,7 +16,16 @@ public class Borrow {
         this.borrowDate = borrowDate;
         this.expectedReturnDate = expectedReturnDate;
         this.status = status;
-    }
+        }
+
+        public Borrow(int borrowID, int accountID, int bookID, LocalDate borrowDate, LocalDate expectedReturnDate, String status) {
+        this.borrowID = borrowID;
+        this.accountID = accountID;
+        this.bookID = bookID;
+        this.borrowDate = borrowDate;
+        this.expectedReturnDate = expectedReturnDate;
+        this.status = status;
+        }
 
     // Getters and setters
     public int getAccountID() {
@@ -56,5 +66,9 @@ public class Borrow {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getBorrowID() {
+        return borrowID;
     }
 }

@@ -6,6 +6,10 @@ import DAO.BookDao;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -34,15 +38,11 @@ public class DeleteController extends menuController {
     public DeleteController() {
         this.bookDao = BookDao.getInstance();
     }
-
+    public List<Document> bookList = new ArrayList<>();
     @FXML
     public void initialize() {
         tenColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
-        idColumn.setCellValueFactory(cellData -> {
-            Document document = cellData.getValue();
-            int bookId = BookDao.getInstance().getID(document);
-            return new SimpleObjectProperty<>(String.valueOf(bookId));
-        });
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("bookID"));
         
         
         capNhatBangTaiLieu();
@@ -59,6 +59,7 @@ public class DeleteController extends menuController {
                 try {
                     Thread.sleep(typingDelay);
                 } catch (InterruptedException e) {
+                    
                     e.printStackTrace();
                 }
                 if (System.currentTimeMillis() - lastTypingTime[0] >= typingDelay) {
@@ -85,22 +86,13 @@ public class DeleteController extends menuController {
                     selectedDocumentID = parts[0];
                 }
                 if (selectedDocumentID.isEmpty()) {
-                    hienThiThongBao("Lỗi", "Vui lòng chọn tài liệu.");
+
+                    util.ErrorDialog.showError("Lỗi", "Vui lòng chọn tài liệu.", null);
                     return;
                 }
 
-                int documentID;
-                try {
-                    documentID = Integer.parseInt(selectedDocumentID);
-                } catch (NumberFormatException e) {
-                    hienThiThongBao("Lỗi", "ID tài liệu không hợp lệ.");
-                    return;
-                }
-                Document documentToDelete = bookDao.get(documentID);
-                if (documentToDelete == null) {
-                    hienThiThongBao("Lỗi", "Tài liệu không tồn tại.");
-                    return;
-                }
+                int documentID = Integer.parseInt(selectedDocumentID);
+                
 
                 Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
                 confirmAlert.setTitle("Xác nhận xóa");
@@ -109,25 +101,32 @@ public class DeleteController extends menuController {
                 
                 confirmAlert.showAndWait().ifPresent(response -> {
                     if (response == ButtonType.OK) {
-                        bookDao.delete(documentID);
-                        hienThiThongBao("Xóa thành công", "Tài liệu đã được xóa.");
-                        capNhatBangTaiLieu();
-                        nameField.clear();
+                        try {
+                            bookDao.delete(documentID);
+                            util.ErrorDialog.showSuccess("Xóa thành công", "Tài liệu đã được xóa.", null);
+                            capNhatBangTaiLieu();
+                            nameField.clear();
+                        } catch (SQLException e) {
+                            util.ErrorDialog.showError("Lỗi",  e.getMessage(), null);
+                        } catch (Exception e) {
+                            util.ErrorDialog.showError("Lỗi", e.getMessage(), null);
+                        }
                     }
                 });
             }
 
     private void capNhatBangTaiLieu() {
-        SearchView.setItems(FXCollections.observableArrayList(bookDao.getAll()));
+        try {
+            bookList = BookDao.getInstance().getAll();
+            SearchView.setItems(FXCollections.observableArrayList(bookList));
+        } catch (SQLException e) {
+            util.ErrorDialog.showError("Lỗi",  e.getMessage(), null);
+        } catch (Exception e) {
+            util.ErrorDialog.showError("Lỗi",  e.getMessage(), null);
+        }
     }
 
-    private void hienThiThongBao(String tieuDe, String noiDung) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(tieuDe);
-        alert.setHeaderText(null);
-        alert.setContentText(noiDung);
-        alert.showAndWait();
-        }
+    
 
         private void updateSuggestions(String searchText) {
        
@@ -137,9 +136,9 @@ public class DeleteController extends menuController {
             }
 
             ObservableList<String> suggestions = FXCollections.observableArrayList();
-            for (Document doc : bookDao.getAll()) {
+            for (Document doc : bookList) {
             if (doc.getTitle().toLowerCase().contains(searchText.toLowerCase())) {
-                suggestions.add(bookDao.getID(doc) + " - " + doc.getTitle());
+                suggestions.add(doc.getBookID() + " - " + doc.getTitle());
             }
             }
 
@@ -154,8 +153,8 @@ public class DeleteController extends menuController {
         private void handleCancel() {
         nameField.clear();
         suggestionListView.setVisible(false);
-        SearchView.setItems(FXCollections.observableArrayList(bookDao.getAll()));
-    }
+        SearchView.setItems(FXCollections.observableArrayList(bookList));
+        }
 
     
    

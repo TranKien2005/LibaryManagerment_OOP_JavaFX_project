@@ -30,4 +30,22 @@ public class ErrorDialog {
     public static void showError(String title, String content, Stage owner) {
         showError(title, null, content, owner);
     }
+
+    public static void showSuccess(String title, String header, String content, Stage owner) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle(title);
+            alert.setHeaderText(header);
+            alert.setContentText(content);
+            alert.initModality(Modality.WINDOW_MODAL);
+            if (owner != null) {
+                alert.initOwner(owner);
+            }
+            alert.showAndWait(); // Chờ cho đến khi thông báo được tắt
+        });
+    }
+
+    public static void showSuccess(String title, String content, Stage owner) {
+        showSuccess(title, null, content, owner);
+    }
 }

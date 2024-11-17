@@ -1,5 +1,7 @@
 package Controller;
 
+import java.sql.SQLException;
+
 import DAO.AccountDao;
 import DAO.UserDao;
 import DAO.ManagerDao;
@@ -10,8 +12,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
@@ -29,7 +29,9 @@ public class registerController {
     @FXML
     protected PasswordField confirmPasswordField;
 
-   
+    @FXML
+    protected TextField fullnameField;
+
     @FXML
     protected TextField emailField;
 
@@ -45,63 +47,66 @@ public class registerController {
     @FXML
     protected void handleRegister() {
         String username = usernameField.getText();
+
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
+        String fullName = fullnameField.getText();
        
         String email = emailField.getText();
         String phone = phoneField.getText();
         String accountType = accountTypeComboBox.getValue();
 
         if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()  || email.isEmpty() || phone.isEmpty() || accountType == null) {
-            showErrorAlert("Registration Failed", "All fields must be filled out.");
+            util.ErrorDialog.showError("Registration Failed", "All fields must be filled out.", (Stage) registerButton.getScene().getWindow());
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            showErrorAlert("Registration Failed", "Passwords do not match.");
+            util.ErrorDialog.showError("Registration Failed", "Passwords do not match.", (Stage) registerButton.getScene().getWindow());
             return;
         }
 
         if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            showErrorAlert("Registration Failed", "Invalid email format.");
+            util.ErrorDialog.showError("Registration Failed", "Invalid email format.", (Stage) registerButton.getScene().getWindow());
             return;
         }
 
         if (!phone.matches("\\d{10}")) {
-            showErrorAlert("Registration Failed", "Invalid phone number format. It should be 10 digits.");
+            util.ErrorDialog.showError("Registration Failed", "Invalid phone number format. It should be 10 digits.", (Stage) registerButton.getScene().getWindow());
             return;
         }
 
-        AccountDao accountDao = AccountDao.getInstance();
-        Account existingAccount = accountDao.getByUsername(username);
+        try {
+            AccountDao accountDao = AccountDao.getInstance();
+            Account existingAccount = accountDao.getByUsername(username);
 
-        if (existingAccount != null) {
-            showErrorAlert("Registration Failed", "Username already exists.");
+            if (existingAccount != null) {
+            util.ErrorDialog.showError("Registration Failed", "Username already exists.", (Stage) registerButton.getScene().getWindow());
             return;
-        }
+            }
 
-        Account newAccount = new Account(username, password, accountType);
-        accountDao.insert(newAccount);
+            Account newAccount = new Account(username, password, accountType);
+            accountDao.insert(newAccount);
 
-        
-        int accountId = accountDao.getID(newAccount);
+            int accountId = accountDao.getID(newAccount);
 
-        // Cập nhật thông tin người dùng hoặc quản lý
-        if (accountType.equals("User")) {
+            // Cập nhật thông tin người dùng hoặc quản lý
+            if (accountType.equals("User")) {
             UserDao userDao = UserDao.getInstance();
-            User newUser = new User(accountId, username, email, phone);
+            User newUser = new User(accountId, fullName, email, phone);
             userDao.update(newUser, accountId);
-        } else if (accountType.equals("Manager")) {
+            } else if (accountType.equals("Manager")) {
             ManagerDao managerDao = ManagerDao.getInstance();
-            Manager newManager = new Manager(accountId, username, email, phone);
+            Manager newManager = new Manager(accountId, fullName, email, phone);
             managerDao.update(newManager, accountId);
-        }
+            }
 
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Registration Successful");
-        alert.setHeaderText(null);
-        alert.setContentText("Account created successfully. You can now log in.");
-        alert.showAndWait();
+            util.ErrorDialog.showSuccess("Registration Successful", "Account created successfully. You can now log in.", (Stage) registerButton.getScene().getWindow());
+        } catch (SQLException e) {
+            util.ErrorDialog.showError("Database Error", e.getMessage(), (Stage) registerButton.getScene().getWindow());
+        } catch (Exception e) {
+            util.ErrorDialog.showError("Registration Failed",e.getMessage(), (Stage) registerButton.getScene().getWindow());
+        }
 
         // Chuyển đổi sang màn hình đăng nhập
         try {
@@ -118,7 +123,7 @@ public class registerController {
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorAlert("Lỗi không xác định", "Đã xảy ra lỗi: " + e.getMessage());
+            util.ErrorDialog.showError("Lỗi không xác định",  e.getMessage(), (Stage) registerButton.getScene().getWindow());
         }
     }
 
@@ -138,17 +143,11 @@ public class registerController {
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorAlert("Lỗi không xác định", "Đã xảy ra lỗi: " + e.getMessage());
+            util.ErrorDialog.showError("Lỗi không xác định",  e.getMessage(), (Stage) registerButton.getScene().getWindow());
         }
     }
 
-    private void showErrorAlert(String title, String content) {
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
+
 
 
 }

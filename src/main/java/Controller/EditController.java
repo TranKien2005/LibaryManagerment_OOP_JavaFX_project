@@ -14,12 +14,13 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
+    
 public class EditController extends menuController {
     @FXML
     private TextField searchField;
@@ -40,6 +41,7 @@ public class EditController extends menuController {
 
     private BookDao bookDao;
     private Consumer<Void> onEditSuccess; // Callback
+   
 
     public EditController() {
         this.bookDao = BookDao.getInstance();
@@ -49,10 +51,15 @@ public class EditController extends menuController {
         this.onEditSuccess = onEditSuccess;
     }
 
+    public List<Document> bookList = new ArrayList<>();
     @FXML
     public void initialize() {
         suggestionListView.setVisible(false);
-        
+        try {
+            bookList = BookDao.getInstance().getAll();
+        } catch (SQLException e) {
+            util.ErrorDialog.showError("Lỗi", "Đã xảy ra lỗi khi tải danh sách sách: " + e.getMessage(), null);
+        }
 
         final long[] lastTypingTime = {System.currentTimeMillis()};
         final long typingDelay = 100;
@@ -98,17 +105,23 @@ public class EditController extends menuController {
 
         private void loadDocumentDetails(int ID) {
             if (ID == -1) {
-                showAlert("Lỗi", "ID không hợp lệ.");
+                util.ErrorDialog.showError("Lỗi", "ID không hợp lệ.", null);
                 return;
             }
-            Document document = bookDao.get(ID);
-            if (document != null) {
-                titleField.setText(document.getTitle());
-                authorField.setText(document.getAuthor());
-                categoryField.setText(document.getCategory());
-                publisherField.setText(document.getPublisher());
-                yearField.setText(String.valueOf(document.getYearPublished()));
-                quantityField.setText(String.valueOf(document.getAvailableCopies()));
+            try {
+                Document document = bookDao.get(ID);
+                if (document != null) {
+                    titleField.setText(document.getTitle());
+                    authorField.setText(document.getAuthor());
+                    categoryField.setText(document.getCategory());
+                    publisherField.setText(document.getPublisher());
+                    yearField.setText(String.valueOf(document.getYearPublished()));
+                    quantityField.setText(String.valueOf(document.getAvailableCopies()));
+                }
+            } catch (SQLException e) {
+                util.ErrorDialog.showError("Lỗi",  e.getMessage(), null);
+            } catch (Exception e) {
+                util.ErrorDialog.showError("Lỗi",  e.getMessage(), null);
             }
         }
 
@@ -117,9 +130,9 @@ public class EditController extends menuController {
         private void updateSuggestions(String title) {
             
             ObservableList<String> suggestions = FXCollections.observableArrayList();
-            for (Document doc : bookDao.getAll()) {
+            for (Document doc : bookList) {
                 if (doc.getTitle().toLowerCase().contains(title.toLowerCase())) {
-                suggestions.add(bookDao.getID(doc) + " - " + doc.getTitle());
+                suggestions.add(doc.getBookID() + " - " + doc.getTitle());
                 }
             }
             javafx.application.Platform.runLater(() -> {
@@ -144,10 +157,10 @@ public class EditController extends menuController {
             String searchText = searchField.getText();
             String[] parts = searchText.split(" - ");
             if (parts.length > 0) {
-                ID = Integer.parseInt(parts[0]);
+            ID = Integer.parseInt(parts[0]);
             } else {
-                showAlert("Lỗi", "Không thể lấy ID từ trường tìm kiếm.");
-                return;
+            util.ErrorDialog.showError("Lỗi", "Không thể lấy ID từ trường tìm kiếm.", null);
+            return;
             }
             System.out.println(ID);
             System.out.println("Updated Document Details:");
@@ -158,27 +171,21 @@ public class EditController extends menuController {
             System.out.println("Year: " + year);
             System.out.println("Quantity: " + quantity);
 
-            Document updatedDocument = new Document( title, author, category, publisher, year, quantity);
+            Document updatedDocument = new Document(title, author, category, publisher, year, quantity);
             bookDao.update(updatedDocument, ID);
-            showAlert("Thành công", "Tài liệu đã được cập nhật.");
+            util.ErrorDialog.showSuccess("Thành công", "Tài liệu đã được cập nhật.", null);
             handleCancel();
             if (onEditSuccess != null) {
-                onEditSuccess.accept(null); // Gọi callback
+            onEditSuccess.accept(null); // Gọi callback
             }
 
         } catch (NumberFormatException e) {
-            showAlert("Lỗi", "Năm và số lượng phải là số nguyên hợp lệ.");
+            util.ErrorDialog.showError("Lỗi", "Năm và số lượng phải là số nguyên hợp lệ.", null);
+        } catch (SQLException e) {
+            util.ErrorDialog.showError("Lỗi", "Đã xảy ra lỗi khi cập nhật cơ sở dữ liệu: " + e.getMessage(), null);
         } catch (Exception e) {
-            showAlert("Lỗi", "Đã xảy ra lỗi khi cập nhật tài liệu.");
+            util.ErrorDialog.showError("Lỗi", "Đã xảy ra lỗi khi cập nhật tài liệu.", null);
         }
-    }
-
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 
     @FXML

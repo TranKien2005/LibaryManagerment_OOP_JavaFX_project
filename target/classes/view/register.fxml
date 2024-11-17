@@ -28,18 +28,23 @@
             </ImageView>
             
             <Label styleClass="h3, text-light" text="Đăng ký" />
+              <TextField fx:id="usernameField" maxWidth="300" minHeight="35" promptText="Tên đăng nhập" styleClass="form-control" />
+
+            <TextField fx:id="fullnameField" maxWidth="300" minHeight="35" promptText="Họ và tên" styleClass="form-control" />
+
+             <PasswordField fx:id="passwordField" maxWidth="300" minHeight="35" promptText="Mật khẩu" styleClass="form-control" />
+
+              <PasswordField fx:id="confirmPasswordField" maxWidth="300" minHeight="35" promptText="Xác nhận mật khẩu" styleClass="form-control" />
+
+               <HBox spacing="10">
+
+                    <TextField fx:id="phoneField" minHeight="35" promptText="Số điện thoại" styleClass="form-control" HBox.hgrow="ALWAYS" />
+
+                     <TextField fx:id="emailField" minHeight="35" promptText="Email" styleClass="form-control" HBox.hgrow="ALWAYS" />
+
+                  </HBox>
+           
             
-            <TextField fx:id="usernameField" maxWidth="300" minHeight="35" promptText="Tên đăng nhập" styleClass="form-control" />
-            <PasswordField fx:id="passwordField" maxWidth="300" minHeight="35" promptText="Mật khẩu" styleClass="form-control" />
-            <PasswordField fx:id="confirmPasswordField" maxWidth="300" minHeight="35" promptText="Xác nhận mật khẩu" styleClass="form-control" />
-            <HBox spacing="10">
-                <TextField fx:id="addressField" minHeight="35" promptText="Địa chỉ" styleClass="form-control" HBox.hgrow="ALWAYS" />
-                <TextField fx:id="phoneField" minHeight="35" promptText="Số điện thoại" styleClass="form-control" HBox.hgrow="ALWAYS" />
-            </HBox>
-            <HBox spacing="10">
-                <TextField fx:id="emailField" minHeight="35" promptText="Email" styleClass="form-control" HBox.hgrow="ALWAYS" />
-                <ComboBox fx:id="sexComboBox" minHeight="35" promptText="Giới tính" styleClass="form-control" HBox.hgrow="ALWAYS" />
-            </HBox>
             <ComboBox fx:id="accountTypeComboBox" maxWidth="300" minHeight="35" promptText="Chọn vai trò" styleClass="form-control">
                 <items>
                     <FXCollections fx:factory="observableArrayList">

@@ -1,69 +1,92 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<?import javafx.scene.image.Image?>
 
-<StackPane alignment="CENTER" prefHeight="475.0" prefWidth="517.0" stylesheets="@/stylesheet/add.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23" fx:controller="Controller.AddController">
-    <VBox alignment="CENTER" prefHeight="685.0" prefWidth="754.0" spacing="20" styleClass="form-container">
-        <Label alignment="CENTER" styleClass="h2" text="Thêm Tài Liệu Mới" />
-        
-        <GridPane alignment="CENTER" hgap="10" styleClass="form-grid" vgap="10">
-            <Label alignment="CENTER" styleClass="form-label" text="Tiêu đề:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-            <TextField fx:id="titleField" alignment="CENTER" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-            
-            <Label alignment="CENTER" styleClass="form-label" text="Tác giả:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <TextField fx:id="authorField" alignment="CENTER" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            
-            <Label alignment="CENTER" styleClass="form-label" text="Thể loại:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-            <TextField fx:id="categoryField" alignment="CENTER" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            
-            <Label alignment="CENTER" styleClass="form-label" text="Nhà xuất bản:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-            <TextField fx:id="publisherField" alignment="CENTER" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            
-            <Label alignment="CENTER" styleClass="form-label" text="Năm xuất bản:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-            <TextField fx:id="yearField" alignment="CENTER" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            
-            <Label alignment="CENTER" styleClass="form-label" text="Số lượng:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-            <TextField fx:id="quantityField" alignment="CENTER" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-         <columnConstraints>
-            <ColumnConstraints />
-            <ColumnConstraints />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints />
-            <RowConstraints />
-            <RowConstraints />
-            <RowConstraints />
-            <RowConstraints />
-            <RowConstraints />
-         </rowConstraints>
-        </GridPane>
-        
-        <HBox alignment="CENTER" spacing="20">
-            <Button fx:id="addButton" onAction="#handleAddDocument" prefWidth="150" styleClass="btn, btn-primary" text="Thêm tài liệu">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
-                        <Image url="@/icons/add.png" />
-                    </ImageView>
-                </graphic>
-            </Button>
-            <Button fx:id="cancelButton" onAction="#handleCancel" prefWidth="150" styleClass="btn, btn-secondary" text="Hủy bỏ">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
-                        <Image url="@/icons/cancel.png" />
-                    </ImageView>
-                </graphic>
-            </Button>
-            
-        </HBox>
-    </VBox>
+<StackPane alignment="CENTER" prefHeight="685.0" prefWidth="754.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.AddController">
+    <children>
+        <TabPane tabClosingPolicy="UNAVAILABLE" prefHeight="685.0" prefWidth="754.0">
+            <tabs>
+                <Tab text="Thêm Tài Liệu Mới">
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="685.0" prefWidth="754.0">
+                        <children>
+                            <VBox alignment="CENTER" prefHeight="685.0" prefWidth="754.0" spacing="20" styleClass="form-container">
+                                <Label alignment="CENTER" styleClass="h2" text="Thêm Tài Liệu Mới" />
+                                
+                                <GridPane alignment="CENTER" hgap="10" styleClass="form-grid" vgap="10">
+                                    <Label alignment="CENTER" styleClass="form-label" text="Tiêu đề:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                    <TextField fx:id="titleField" alignment="CENTER" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                    
+                                    <Label alignment="CENTER" styleClass="form-label" text="Tác giả:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                    <TextField fx:id="authorField" alignment="CENTER" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    
+                                    <Label alignment="CENTER" styleClass="form-label" text="Thể loại:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                    <TextField fx:id="categoryField" alignment="CENTER" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    
+                                    <Label alignment="CENTER" styleClass="form-label" text="Nhà xuất bản:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                    <TextField fx:id="publisherField" alignment="CENTER" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    
+                                    <Label alignment="CENTER" styleClass="form-label" text="Năm xuất bản:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                                    <TextField fx:id="yearField" alignment="CENTER" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    
+                                    <Label alignment="CENTER" styleClass="form-label" text="Số lượng:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                                    <TextField fx:id="quantityField" alignment="CENTER" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                
+                                </GridPane>
+                                
+                                <HBox alignment="CENTER" spacing="20">
+                                    <Button fx:id="addButton" onAction="#handleAddDocument" prefWidth="150" styleClass="btn, btn-primary" text="Thêm tài liệu">
+                                        <graphic>
+                                            <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                                                <Image url="@/icons/add.png" />
+                                            </ImageView>
+                                        </graphic>
+                                    </Button>
+                                    <Button fx:id="cancelButton" onAction="#handleCancel" prefWidth="150" styleClass="btn, btn-secondary" text="Hủy bỏ">
+                                        <graphic>
+                                            <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                                                <Image url="@/icons/cancel.png" />
+                                            </ImageView>
+                                        </graphic>
+                                    </Button>
+                                </HBox>
+                            </VBox>
+                        </children>
+                    </AnchorPane>
+                </Tab>
+                <Tab text="Thêm Sách Bằng ISBN">
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="685.0" prefWidth="754.0">
+                        <children>
+                            <VBox alignment="CENTER" prefHeight="685.0" prefWidth="754.0" spacing="20" styleClass="form-container">
+                                <Label alignment="CENTER" styleClass="h2" text="Thêm Sách Bằng ISBN" />
+                                
+                                <GridPane alignment="CENTER" hgap="10" styleClass="form-grid" vgap="10">
+                                    <Label alignment="CENTER" styleClass="form-label" text="ISBN:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                    <TextField fx:id="isbnField" alignment="CENTER" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                </GridPane>
+                                
+                                <HBox alignment="CENTER" spacing="20">
+                                    <Button fx:id="addByIsbnButton" onAction="#handleAddByIsbn" prefWidth="150" styleClass="btn, btn-primary" text="Thêm sách">
+                                        <graphic>
+                                            <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                                                <Image url="@/icons/add.png" />
+                                            </ImageView>
+                                        </graphic>
+                                    </Button>
+                                    <Button fx:id="cancelByIsbnButton" onAction="#handleCancel" prefWidth="150" styleClass="btn, btn-secondary" text="Hủy bỏ">
+                                        <graphic>
+                                            <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                                                <Image url="@/icons/cancel.png" />
+                                            </ImageView>
+                                        </graphic>
+                                    </Button>
+                                </HBox>
+                            </VBox>
+                        </children>
+                    </AnchorPane>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </children>
 </StackPane>

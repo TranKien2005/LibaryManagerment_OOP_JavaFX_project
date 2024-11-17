@@ -3,6 +3,7 @@ package model;
 import java.time.LocalDate;
 
 public class Return {
+    private int returnID;
     private int borrowID;
     private LocalDate returnDate;
     private int damagePercentage;
@@ -11,6 +12,17 @@ public class Return {
         this.borrowID = borrowID;
         this.returnDate = returnDate;
         this.damagePercentage = damagePercentage;
+    }
+
+    public Return(int returnID, int borrowID, LocalDate returnDate, int damagePercentage) {
+        this.borrowID = borrowID;
+        this.returnDate = returnDate;
+        this.damagePercentage = damagePercentage;
+        this.returnID = returnID;
+    }
+
+    public int getReturnID() {
+        return returnID;
     }
 
     // Getters and setters

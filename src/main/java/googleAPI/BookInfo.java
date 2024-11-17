@@ -4,20 +4,16 @@ public class BookInfo {
     private String description;
     private String rating;
     private String imageUrl;
-    public boolean truly = true;
+    private String reviewCount;
 
-    public BookInfo(String description, String rating, String imageUrl) {
+    public BookInfo(String description, String rating, String imageUrl, String reviewCount) {
         this.description = description;
         this.rating = rating;
         this.imageUrl = imageUrl;
+        this.reviewCount = reviewCount;
     }
 
-    public BookInfo(String description, String rating, String imageUrl, boolean truly) {
-        this.description = description;
-        this.rating = rating;
-        this.imageUrl = imageUrl;
-        this.truly = truly;
-    }
+  
 
     public String getDescription() {
         return description;
@@ -29,5 +25,9 @@ public class BookInfo {
 
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    public String getReviewCount() {
+        return reviewCount;
     }
 }

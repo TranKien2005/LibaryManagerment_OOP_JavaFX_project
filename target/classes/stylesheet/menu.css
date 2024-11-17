@@ -255,3 +255,20 @@
     -fx-background-radius: 5;
     -fx-background-color: #f9f9f9;
 }
+
+.user-info {
+    -fx-background-color: #34495e;
+    -fx-padding: 10;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.avatar-image {
+    -fx-clip: new Circle(50, 50, 50);
+    -fx-effect: dropshadow(gaussian, black, 10, 0.5, 0, 0);
+}
+
+.user-name {
+    -fx-font-size: 18px;
+    -fx-text-fill: white;
+}
