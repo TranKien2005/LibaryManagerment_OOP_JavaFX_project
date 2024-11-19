@@ -1,0 +1,98 @@
+[
+  {
+    "name": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "category": "Romance",
+    "publisher": "T. Egerton, Whitefriars",
+    "year": 1813,
+    "quantity": 24
+  },
+  {
+    "name": "The Catcher in the Rye",
+    "author": "J.D. Salinger",
+    "category": "Modernism",
+    "publisher": "Little, Brown and Company",
+    "year": 1951,
+    "quantity": 19
+  },
+  {
+    "name": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "category": "Modernism",
+    "publisher": "Charles Scribner’s Sons",
+    "year": 1925,
+    "quantity": 18
+  },
+  {
+    "name": "To Kill a Mockingbird",
+    "author": "Harper Lee",
+    "category": "Fiction",
+    "publisher": "J.B. Lippincott \u0026 Co.",
+    "year": 1960,
+    "quantity": 51
+  },
+  {
+    "name": "To the Lighthouse",
+    "author": "Virginia Woolf",
+    "category": "Modernism",
+    "publisher": "Hogarth Press",
+    "year": 1927,
+    "quantity": 9
+  },
+  {
+    "name": "The Picture of Dorian Gray",
+    "author": "Oscar Wilde",
+    "category": "Gothic",
+    "publisher": "Ward, Lock \u0026 Co.",
+    "year": 1890,
+    "quantity": 12
+  },
+  {
+    "name": "War and peace",
+    "author": "f",
+    "category": "f",
+    "publisher": "f",
+    "year": 1,
+    "quantity": 1
+  },
+  {
+    "name": "chiến tranh và hòa bình",
+    "author": "f",
+    "category": "f",
+    "publisher": "f",
+    "year": 2,
+    "quantity": 1
+  },
+  {
+    "name": "tam quoc",
+    "author": "f",
+    "category": "f",
+    "publisher": "f",
+    "year": 2,
+    "quantity": 100
+  },
+  {
+    "name": "chó",
+    "author": "f",
+    "category": "f",
+    "publisher": "f",
+    "year": 2,
+    "quantity": 2
+  },
+  {
+    "name": "chúa tể của những chiếc nhẫn",
+    "author": "f",
+    "category": "ư",
+    "publisher": "f",
+    "year": 1,
+    "quantity": 1
+  },
+  {
+    "name": "Lord of the ring",
+    "author": "f",
+    "category": "f",
+    "publisher": "f",
+    "year": 1,
+    "quantity": 1
+  }
+]

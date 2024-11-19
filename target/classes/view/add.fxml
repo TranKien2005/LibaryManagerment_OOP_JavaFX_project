@@ -74,6 +74,13 @@
                                             </ImageView>
                                         </graphic>
                                     </Button>
+                                    <Button fx:id="addByFileButton" onAction="#handleAddByFile" prefWidth="150" styleClass="btn, btn-primary" text="Thêm từ file">
+                                        <graphic>
+                                            <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                                                <Image url="@/icons/file.png" />
+                                            </ImageView>
+                                        </graphic>
+                                    </Button>
                                     <Button fx:id="cancelByIsbnButton" onAction="#handleCancel" prefWidth="150" styleClass="btn, btn-secondary" text="Hủy bỏ">
                                         <graphic>
                                             <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">

@@ -194,7 +194,10 @@ public class menuController {
     @FXML
     private Label userName;
    
+    @FXML
+    private BorderPane home;
 
+   
     @FXML
     private void initialize() {
 
@@ -374,7 +377,11 @@ public class menuController {
             FXMLLoader manageMembersLoader = new FXMLLoader(getClass().getResource("/view/member_management.fxml"));
             Parent manageMembersPane = manageMembersLoader.load();
             managementStackPane.getChildren().add(manageMembersPane);
-
+          
+        FXMLLoader homeLoader = new FXMLLoader(getClass().getResource("/view/home.fxml"));
+        Parent homePane = homeLoader.load();
+        stackPane.getChildren().add(homePane);
+        
 
             // Đặt cảnh báo là pane mặc định hiển thị
             managementStackPane.getChildren().get(0).setVisible(true);
@@ -425,7 +432,11 @@ public class menuController {
         handleReload();
         }
 
-        
+        @FXML
+        private void showHomeTab() {
+       
+        stackPane.getChildren().get(stackPane.getChildren().size() - 1).setVisible(true);
+        }
 
         
     
@@ -524,7 +535,8 @@ public class menuController {
             .map(document -> document.getBookID() + " - " + document.getTitle())
             .collect(Collectors.toList()));
         }
-        dpBorrowDate.getEditor().clear();
+        dpBorrowDate.setValue(LocalDate.now());
+       
         dpReturnDate.getEditor().clear(); 
     }
 
@@ -795,5 +807,7 @@ private void handleSearchAction() {
         }
     }
 }
+
+
        
 }

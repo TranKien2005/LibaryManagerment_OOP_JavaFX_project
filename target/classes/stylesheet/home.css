@@ -1,0 +1,93 @@
+/* Đặt nền trắng cho toàn bộ ứng dụng */
+.root {
+    -fx-background-color: #f0f0f0;
+}
+
+/* Đặt kiểu cho các tiêu đề */
+.h1 {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.h2 {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
+
+/* Đặt kiểu cho phần header */
+.header {
+    -fx-background-color: #4CAF50;
+    -fx-padding: 20px;
+    -fx-alignment: center;
+}
+
+/* Đặt kiểu cho các ScrollPane */
+.pane-background {
+    -fx-background-color: #ffffff;
+}
+
+/* Đặt kiểu cho các FlowPane */
+.section {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dddddd;
+    -fx-border-radius: 5px;
+    -fx-padding: 10px;
+}
+
+/* Đặt kiểu cho các mục sách */
+.book-item {
+    -fx-background-color: #ffffff;
+    -fx-padding: 10px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-spacing: 10px;
+    -fx-alignment: center;
+    -fx-pref-width: 150px; /* Đặt chiều rộng cố định */
+    -fx-pref-height: 250px; /* Đặt chiều cao cố định */
+    -fx-position: relative; /* Đặt vị trí tương đối */
+}
+
+/* Đặt kiểu cho các nhãn */
+.label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+    -fx-wrap-text: true; /* Cho phép ngắt dòng văn bản */
+    -fx-alignment: center; /* Căn giữa văn bản */
+}
+
+/* Đặt kiểu cho các hình ảnh */
+.image-view {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0.5, 0.5, 0.5);
+    -fx-padding: 5px;
+    -fx-fit-height: 150px; /* Đặt chiều cao cố định cho hình ảnh */
+    -fx-fit-width: 100px; /* Đặt chiều rộng cố định cho hình ảnh */
+}
+
+/* Đặt kiểu cho thanh tìm kiếm */
+.search-field {
+    -fx-pref-width: 300px;
+    -fx-padding: 10px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-border-color: #cccccc;
+}
+
+.search-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+/* Đặt kiểu cho HBox chứa các sao */
+.stars-box {
+    -fx-alignment: center; /* Căn giữa các sao */
+    -fx-position: absolute; /* Đặt vị trí tuyệt đối */
+    -fx-bottom: 0; /* Đặt ở dưới cùng */
+    -fx-left: 50%; /* Căn giữa theo chiều ngang */
+    -fx-translate-x: -50%; /* Dịch chuyển để căn giữa */
+}

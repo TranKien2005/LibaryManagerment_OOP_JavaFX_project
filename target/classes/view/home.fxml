@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="Controller.HomeController" stylesheets="@/stylesheet/home.css">
+    <top>
+        <VBox alignment="CENTER" styleClass="header">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+            <HBox spacing="10" alignment="CENTER" styleClass="search-bar">
+                <ImageView fitHeight="30" fitWidth="30" pickOnBounds="true" preserveRatio="true" >
+                            <Image url="@/images/login/logo.png"/>
+                </ImageView>
+                <TextField fx:id="tfSearch" promptText="Tìm kiếm sách..." styleClass="search-field"/>
+                <Button text="Tìm" onAction="#handleSearch" styleClass="search-button">
+                    <graphic>
+                        <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                            <Image url="@/icons/search.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button text="Reload" onAction="#handleReload" styleClass="reload-button">
+                    <graphic>
+                        <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                            <Image url="@/icons/update.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </HBox>
+        </VBox>
+    </top>
+    
+
+    <center>
+        <ScrollPane fx:id="scrollPaneMain"  fitToWidth="true" fitToHeight="true" styleClass="main-content">
+            
+            <VBox spacing="30">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+    
+
+                <!-- Top sách -->
+                <VBox fx:id="topBooksSection" spacing="10" styleClass="section">
+                    <Label text="Top sách" styleClass="section-title"/>
+                    <FlowPane fx:id="fpTopBooks" hgap="10" vgap="10" />
+                </VBox>
+
+                <!-- Dành cho bạn -->
+                <VBox fx:id="recommendedBooksSection" spacing="10" styleClass="section">
+                    <Label text="Dành cho bạn" styleClass="section-title"/>
+                    <FlowPane fx:id="fpRecommendedBooks" hgap="10" vgap="10" />
+                </VBox>
+
+                <!-- Trending -->
+                <VBox fx:id="trendingBooksSection" spacing="10" styleClass="section">
+                    <Label text="Trending" styleClass="section-title"/>
+                    <FlowPane fx:id="fpTrendingBooks" hgap="10" vgap="10" />
+                </VBox>
+
+                <!-- New Arrivals -->
+                <VBox spacing="10" styleClass="section">
+                    <Label text="Kho sách" styleClass="section-title"/>
+                    <FlowPane fx:id="fpNewArrivals" hgap="10" vgap="10" />
+                </VBox>
+
+             
+            </VBox>
+        </ScrollPane>
+    </center>
+     <bottom>
+        <HBox spacing="15" alignment="CENTER" styleClass="footer">
+            <Button text="Về chúng tôi" styleClass="footer-button" onAction="#handleAboutUs"/>
+            <Button text="Liên hệ" styleClass="footer-button" onAction="#handleContact"/>
+            <Label text="© 2024 MyLibrary" styleClass="footer-label"/>
+        </HBox>
+    </bottom>
+</BorderPane>

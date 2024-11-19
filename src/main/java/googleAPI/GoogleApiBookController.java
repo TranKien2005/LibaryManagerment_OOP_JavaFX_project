@@ -157,8 +157,8 @@ public class GoogleApiBookController {
     
                 JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
                 JsonArray items = jsonResponse.getAsJsonArray("items");
-    
-                if (items.size() > 0) {
+                
+                if (items != null && items.size() > 0) {
                     JsonObject volumeInfo = items.get(0).getAsJsonObject().getAsJsonObject("volumeInfo");
                     String title = volumeInfo.get("title").getAsString();
                     String author = volumeInfo.has("authors") ? volumeInfo.getAsJsonArray("authors").get(0).getAsString() : "Unknown author";
@@ -180,13 +180,13 @@ public class GoogleApiBookController {
                 return document;
                 } 
                 else {
-                    ErrorDialog.showError("No Results", "No book information found for the provided ISBN.", null);
-                    return null;
+                    throw new Exception("No book information found for the provided ISBN." );
+                   
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                ErrorDialog.showError("No Results", "Can't find book with that IBSN: "+ e.getMessage(), null);
-                return null;
+                throw new RuntimeException("Can't find book with that ISBN: " + e.getMessage(), e);
+                
             }
         }
     }

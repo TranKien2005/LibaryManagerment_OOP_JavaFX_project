@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="630.0" prefWidth="800.0" stylesheets="/stylesheet/menu.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="630.0" prefWidth="800.0" stylesheets="/stylesheet/menu.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1">
   <children>
      <HBox spacing="10" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
       <VBox alignment="CENTER" prefHeight="600.0" prefWidth="200.0" spacing="10" styleClass="sidebar" AnchorPane.leftAnchor="10" AnchorPane.topAnchor="10">
@@ -31,6 +31,14 @@
           </StackPane>
           <Label fx:id="userName" styleClass="user-name" text="Tên người dùng" />
         </VBox>
+        <Button alignment="CENTER_LEFT" onAction="#showHomeTab" prefHeight="100" styleClass="sidebar-button">
+          <graphic>
+            <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+              <Image url="@/icons/home.png" />
+            </ImageView>
+          </graphic>
+          <text>Trang chủ</text>
+        </Button>
         <Button alignment="CENTER_LEFT" onAction="#showDocumentListTab" prefHeight="100" styleClass="sidebar-button">
           <graphic>
             <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
@@ -225,7 +233,7 @@
         <VBox prefWidth="400" spacing="15" styleClass="form-box">
           <ComboBox fx:id="cbMembers" editable="true" prefWidth="250.0" promptText="Chọn thành viên" styleClass="form-control" />
           <ComboBox fx:id="cbDocuments" editable="true" prefWidth="250.0" promptText="Chọn tài liệu" styleClass="form-control" />
-          <DatePicker fx:id="dpBorrowDate" promptText="Ngày mượn" styleClass="form-control" />
+          <DatePicker fx:id="dpBorrowDate" promptText="Ngày mượn" styleClass="form-control"  editable="false" />
           <DatePicker fx:id="dpReturnDate" promptText="Ngày trả" styleClass="form-control" />
           <HBox spacing="10">
             <Button onAction="#handleBorrowDocument" styleClass="btn, btn-primary" text="Mượn tài liệu">
@@ -313,6 +321,7 @@
     </VBox>
   
   </center>
+  
 </BorderPane>
       </StackPane>
     </HBox>
