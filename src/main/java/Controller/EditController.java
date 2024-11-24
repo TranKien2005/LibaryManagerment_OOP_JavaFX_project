@@ -201,6 +201,9 @@ public class EditController extends menuController {
         suggestionListView.setVisible(false);
     }
 
+    public void handleReload() {
+        handleCancel();
+    }
     
    
 }

@@ -14,6 +14,13 @@
                 <Insets top="15" right="15" bottom="15" left="15"/>
             </padding>
             <HBox spacing="10" alignment="CENTER" styleClass="search-bar">
+                <Button text="Back" onAction="#handleBack" styleClass="back-button">
+                    <graphic>
+                        <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                            <Image url="@/icons/back.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
                 <ImageView fitHeight="30" fitWidth="30" pickOnBounds="true" preserveRatio="true" >
                             <Image url="@/images/login/logo.png"/>
                 </ImageView>
@@ -68,10 +75,17 @@
                 <VBox spacing="10" styleClass="section">
                     <Label text="Kho sách" styleClass="section-title"/>
                     <FlowPane fx:id="fpNewArrivals" hgap="10" vgap="10" />
+                    <HBox alignment="CENTER" styleClass="pagination-container">
+                <Button text="Previous" onAction="#handlePreviousPage" styleClass="pagination-button"/>
+                    <Label fx:id="lblCurrentPage" text="1" styleClass="pagination-label"/>
+                <Button text="Next" onAction="#handleNextPage" styleClass="pagination-button"/>
+                </HBox>
                 </VBox>
 
              
             </VBox>
+            <!-- Pagination -->
+            
         </ScrollPane>
     </center>
      <bottom>

@@ -126,6 +126,7 @@ public class AccountDao  {
                 }
             }
         } catch (SQLException e) {
+            
             throw new SQLException("An error occurred while fetching the account: " + e.getMessage(), e);
         }
         return null;

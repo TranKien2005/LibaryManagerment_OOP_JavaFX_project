@@ -45,13 +45,16 @@
                   </HBox>
            
             
-            <ComboBox fx:id="accountTypeComboBox" maxWidth="300" minHeight="35" promptText="Chọn vai trò" styleClass="form-control">
+            <ComboBox fx:id="accountTypeComboBox" maxWidth="300" minHeight="35" promptText="Chọn vai trò" styleClass="form-control" disable="true">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="User" />
                         <String fx:value="Manager" />
                     </FXCollections>
                 </items>
+                <value>
+                    <String fx:value="User" />
+                </value>
             </ComboBox>
             
             <Button fx:id="registerButton" defaultButton="true" maxWidth="300" onAction="#handleRegister" styleClass="btn, btn-primary, btn-block" text="Đăng ký" />

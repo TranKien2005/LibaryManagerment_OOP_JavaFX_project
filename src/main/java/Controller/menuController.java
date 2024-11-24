@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import DAO.*;
+import Main.Main;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -60,6 +61,11 @@ public class menuController {
     public static List<User> userList = new ArrayList<>();
     public static List<BorrowReturn> borrowReturnList = new ArrayList<>();
     public static List<Account> accountList = new ArrayList<>();
+    private MyAccountController myAccountController;
+    private AddController addController;
+    private DeleteController deleteController;
+    private EditController editController;
+    private MemberManagementController memberManagementController;
     public Image defaulImage = new Image(getClass().getResourceAsStream("/images/menu/coverArtUnknown.png"));
     public static int getAccountID() {
         return accountID;
@@ -365,29 +371,31 @@ public class menuController {
             FXMLLoader addBookLoader = new FXMLLoader(getClass().getResource("/view/add.fxml"));
             Parent addBookPane = addBookLoader.load();
             managementStackPane.getChildren().add(addBookPane);
+            addController = addBookLoader.getController();
 
             FXMLLoader deleteBookLoader = new FXMLLoader(getClass().getResource("/view/delete.fxml"));
             Parent deleteBookPane = deleteBookLoader.load();
             managementStackPane.getChildren().add(deleteBookPane);
+            deleteController = deleteBookLoader.getController();
 
             FXMLLoader editBookLoader = new FXMLLoader(getClass().getResource("/view/edit.fxml"));
             Parent editBookPane = editBookLoader.load();
             managementStackPane.getChildren().add(editBookPane);
+            editController = editBookLoader.getController();
 
             FXMLLoader manageMembersLoader = new FXMLLoader(getClass().getResource("/view/member_management.fxml"));
             Parent manageMembersPane = manageMembersLoader.load();
             managementStackPane.getChildren().add(manageMembersPane);
+            memberManagementController = manageMembersLoader.getController();
           
-        FXMLLoader homeLoader = new FXMLLoader(getClass().getResource("/view/home.fxml"));
-        Parent homePane = homeLoader.load();
-        stackPane.getChildren().add(homePane);
-        
+            FXMLLoader myAccountLoader = new FXMLLoader(getClass().getResource("/view/myAccount.fxml"));
+            Parent myAccountPane = myAccountLoader.load();
+            stackPane.getChildren().add(myAccountPane);
+            myAccountController = myAccountLoader.getController();
+           
+           showDocumentListTab();
 
-            // Đặt cảnh báo là pane mặc định hiển thị
-            managementStackPane.getChildren().get(0).setVisible(true);
-            for (int i = 1; i < managementStackPane.getChildren().size(); i++) {
-                managementStackPane.getChildren().get(i).setVisible(false);
-            }
+            
         } catch (IOException e) {
             e.printStackTrace();
             util.ErrorDialog.showError("Lỗi", "Không thể tải subscene: " + e.getMessage(), null);
@@ -411,7 +419,7 @@ public class menuController {
         private void showDocumentListTab() {
         stackPane.getChildren().forEach(node -> node.setVisible(false));
         documentTab.setVisible(true);
-        showPane(0);
+       
         handleReload();
         
         }
@@ -428,8 +436,13 @@ public class menuController {
         private void showBorrowReturnTab() {
         stackPane.getChildren().forEach(node -> node.setVisible(false));
         borrowAndReturnTab.setVisible(true);
-        showPane(0);
         handleReload();
+        }
+
+        @FXML private void showMyAccountTab() {
+            stackPane.getChildren().forEach(node -> node.setVisible(false));
+            stackPane.getChildren().get(stackPane.getChildren().size() - 1).setVisible(true);
+            myAccountController.handleReload();
         }
 
         @FXML
@@ -524,6 +537,31 @@ public class menuController {
         cbDocuments.getItems().clear();
         cbMembers.getEditor().clear();
         cbDocuments.getEditor().clear();
+        myAccountController.handleReload();
+        memberManagementController.reload();
+        addController.reload();
+        deleteController.reload();
+        editController.handleReload();
+        try {
+            Account account = AccountDao.getInstance().get(accountID);
+            if (account != null) {
+                if (account.getAccountType().equals("User")) {
+                    User currentUser = UserDao.getInstance().get(accountID);
+                    if (currentUser != null) {
+                        userName.setText("User: " + currentUser.getFullName());
+                    }
+                } else {
+                    Manager currentUser = ManagerDao.getInstance().get(accountID);
+                    if (currentUser != null) {
+                        userName.setText("Manager: " + currentUser.getFullName());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            util.ErrorDialog.showError("Database Error", e.getMessage(), null);
+        } catch (Exception e) {
+            util.ErrorDialog.showError("Error", e.getMessage(), null);
+        }
         if (userList != null) {
             cbMembers.getItems().addAll(userList.stream()
             .map(user -> user.getAccountID() + " - " + user.getFullName())
@@ -538,6 +576,10 @@ public class menuController {
         dpBorrowDate.setValue(LocalDate.now());
        
         dpReturnDate.getEditor().clear(); 
+    }
+
+    public void reload() {
+        handleReload();
     }
 
     
@@ -605,15 +647,15 @@ public class menuController {
     @FXML
     private void handleFetchIncorrectInfo() {
     ThreadManager.execute(() -> {
-        String bookName = tvDocuments.getSelectionModel().getSelectedItem().getTitle();
-        BookInfo bookinfo = googleAPI.GoogleApiBookController.getBookInfo(bookName);
-        String score = bookinfo.getRating();
-        String review = bookinfo.getDescription();
-        String reviewCount = bookinfo.getReviewCount();
-        
-        String imageString = bookinfo.getImageUrl();
+        try {
+            String bookName = tvDocuments.getSelectionModel().getSelectedItem().getTitle();
+            BookInfo bookinfo = googleAPI.GoogleApiBookController.getBookInfo(bookName);
+            String score = bookinfo.getRating();
+            String review = bookinfo.getDescription();
+            String reviewCount = bookinfo.getReviewCount();
+            String imageString = bookinfo.getImageUrl();
 
-        Platform.runLater(() -> {
+            Platform.runLater(() -> {
             reviewTextArea.setText(review);
             scoreLabel.setText(String.valueOf(score));
             if (review != null) {
@@ -635,8 +677,13 @@ public class menuController {
             }
             Image image = new Image(imageString);
             bookCoverImageView.setImage(image);
-           
-        });
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            Platform.runLater(() -> {
+            util.ErrorDialog.showError("Error", "Failed to fetch book information: " + e.getMessage(), null);
+            });
+        }
     });
     
     }
@@ -701,6 +748,7 @@ public class menuController {
         try {
             selectedMemberId = Integer.parseInt(selectedMemberIdString);
         } catch (NumberFormatException e) {
+            e.printStackTrace();
             util.ErrorDialog.showError("Lỗi", "ID thành viên không hợp lệ.", (Stage) cbMembers.getScene().getWindow());
             return;
         }
@@ -724,8 +772,10 @@ public class menuController {
         
             handleReload();
         } catch (SQLException e) {
+            e.printStackTrace();
             util.ErrorDialog.showError("Database Error",  e.getMessage(), (Stage) cbDocuments.getScene().getWindow());
         } catch (Exception e) {
+            e.printStackTrace();
             util.ErrorDialog.showError("Error",  e.getMessage(), (Stage) cbDocuments.getScene().getWindow());
         }
        
@@ -762,8 +812,10 @@ public class menuController {
             util.ErrorDialog.showSuccess("Thành công", "Tài liệu đã được trả thành công.", (Stage) tvBorrowedDocuments.getScene().getWindow());
             handleReload();
         } catch (SQLException e) {
+            e.printStackTrace();
             util.ErrorDialog.showError("Database Error",  e.getMessage(), (Stage) tvBorrowedDocuments.getScene().getWindow());
         } catch (Exception e) {
+            e.printStackTrace();
             util.ErrorDialog.showError("Error",  e.getMessage(), (Stage) tvBorrowedDocuments.getScene().getWindow());
         }
         
@@ -808,6 +860,37 @@ private void handleSearchAction() {
     }
 }
 
-
-       
+    @FXML
+    private void handleLogout() {
+        try {
+            Stage stage = (Stage) tvDocuments.getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/login.fxml"));
+            if (loader.getLocation() == null) {
+            System.err.println("Error: FXML file not found!");
+            return;
+            }
+            Scene scene = new Scene(loader.load());
+            stage.setTitle("Đăng nhập");
+            stage.setScene(scene);
+            stage.setWidth(1000);
+            stage.setHeight(600);
+            stage.setResizable(false);
+            stage.getScene().getRoot().setStyle("-fx-border-color: black; -fx-border-width: 2px;");
+            stage.centerOnScreen();
+            
+            // Sử dụng đường dẫn tuyệt đối cho tệp hình ảnh
+            Image icon = new Image(getClass().getResourceAsStream("/images/login/logo.png"));
+            if (icon.isError()) {
+            System.err.println("Error: Image file not found!");
+            return;
+            }
+            stage.getIcons().add(icon);
+            
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            
+            
+    }
 }

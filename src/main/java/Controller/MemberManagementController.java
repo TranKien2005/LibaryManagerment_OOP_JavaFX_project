@@ -219,8 +219,10 @@ public class MemberManagementController {
                         refreshTableView();
                     });
                 } catch (SQLException e) {
+                    e.printStackTrace();
                     Platform.runLater(() -> util.ErrorDialog.showError("Database Error",  e.getMessage(), (Stage) rootVBox.getScene().getWindow()));
                 } catch (Exception e) {
+                    e.printStackTrace();
                     Platform.runLater(() -> util.ErrorDialog.showError("Error",  e.getMessage(), (Stage) rootVBox.getScene().getWindow()));
                 }
             });
@@ -235,6 +237,11 @@ public class MemberManagementController {
 
     @FXML
     private void handleRefresh() {
+        refreshTableView();
+        loadUsers();
+    }
+
+    public void reload() {
         refreshTableView();
         loadUsers();
     }

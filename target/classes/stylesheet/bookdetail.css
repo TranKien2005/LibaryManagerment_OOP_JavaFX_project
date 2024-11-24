@@ -1,0 +1,48 @@
+.header-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.detail-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495e;
+}
+
+.detail-value {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+}
+
+.detail-description {
+    -fx-font-size: 14px;
+    -fx-text-fill: #2c3e50;
+}
+
+.action-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.action-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+.star-button {
+    -fx-font-size: 24px;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: gray;
+}
+
+.star-button:hover {
+    -fx-text-fill: gold;
+}
+
+.star-button:pressed {
+    -fx-text-fill: gold;
+}

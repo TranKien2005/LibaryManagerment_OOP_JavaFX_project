@@ -1,6 +1,7 @@
 package Controller;
 
 import model.Document;
+import util.ErrorDialog;
 import util.ThreadManager;
 import DAO.BookDao;
 import javafx.beans.property.SimpleObjectProperty;
@@ -9,6 +10,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.api.client.testing.json.AbstractJsonParserTest.E;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -61,6 +64,7 @@ public class DeleteController extends menuController {
                 } catch (InterruptedException e) {
                     
                     e.printStackTrace();
+                    ErrorDialog.showError("Lỗi", e.getMessage(), (Stage) nameField.getScene().getWindow());
                 }
                 if (System.currentTimeMillis() - lastTypingTime[0] >= typingDelay) {
                     updateSuggestions(newValue);
@@ -107,8 +111,10 @@ public class DeleteController extends menuController {
                             capNhatBangTaiLieu();
                             nameField.clear();
                         } catch (SQLException e) {
+                            e.printStackTrace();
                             util.ErrorDialog.showError("Lỗi",  e.getMessage(), null);
                         } catch (Exception e) {
+                            e.printStackTrace();
                             util.ErrorDialog.showError("Lỗi", e.getMessage(), null);
                         }
                     }
@@ -120,8 +126,10 @@ public class DeleteController extends menuController {
             bookList = BookDao.getInstance().getAll();
             SearchView.setItems(FXCollections.observableArrayList(bookList));
         } catch (SQLException e) {
+            e.printStackTrace();
             util.ErrorDialog.showError("Lỗi",  e.getMessage(), null);
         } catch (Exception e) {
+            e.printStackTrace();
             util.ErrorDialog.showError("Lỗi",  e.getMessage(), null);
         }
     }
@@ -156,6 +164,9 @@ public class DeleteController extends menuController {
         SearchView.setItems(FXCollections.observableArrayList(bookList));
         }
 
+        public void reload() {
+        handleCancel();
+        }
     
    
 }

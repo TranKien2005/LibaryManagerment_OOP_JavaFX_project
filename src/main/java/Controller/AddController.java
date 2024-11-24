@@ -54,6 +54,8 @@ public class AddController extends menuController{
     
     private Consumer<Document> onAddListener;
 
+    
+
     public void setOnAddListener(Consumer<Document> listener) {
         this.onAddListener = listener;
     }
@@ -129,6 +131,11 @@ public class AddController extends menuController{
         isbnField.clear();
     }
 
+    public void reload() {
+        clearFields();
+        isbnField.clear();
+    }
+
     @FXML
     private Button addByIsbnButton;
 
@@ -137,26 +144,53 @@ public class AddController extends menuController{
         String isbn = isbnField.getText();
         if (isbn.isEmpty()) {
             util.ErrorDialog.showError("Lỗi", "Vui lòng nhập ISBN.", (Stage) addByIsbnButton.getScene().getWindow());
+            
             return;
         }
 
         util.ThreadManager.submitSqlTask(() -> {
-            Document document = GoogleApiBookController.getBookInfoByISBN(isbn);
-            if (document == null) {
-                Platform.runLater(() -> util.ErrorDialog.showError("Lỗi", "Không tìm thấy thông tin sách với ISBN đã nhập.", (Stage) addByIsbnButton.getScene().getWindow()));
-                return;
-            }
+            
+            
 
             try {
+                Document document = GoogleApiBookController.getBookInfoByISBN(isbn);
+
                 BookDao.getInstance().insert(document);
                 Platform.runLater(() -> {
                     util.ErrorDialog.showSuccess("Thành công", "Tài liệu đã được thêm thành công.", (Stage) addByIsbnButton.getScene().getWindow());
                     clearFields();
                     isbnField.clear();
                 });
+            Document existingDocument = BookDao.getInstance().get(BookDao.getInstance().getID(document));
+            if (existingDocument != null) {
+                boolean updated = false;
+                if (existingDocument.getDescription() == null || existingDocument.getDescription().isEmpty()) {
+                    existingDocument.setDescription(document.getDescription());
+                    updated = true;
+                }
+                if (existingDocument.getCoverImage() == null || existingDocument.getCoverImage() == null) {
+                    existingDocument.setCoverImage(document.getCoverImage());
+                    updated = true;
+                }
+                if (existingDocument.getRating() == 0) {
+                    existingDocument.setRating(document.getRating());
+                    updated = true;
+                }
+                if (existingDocument.getReviewCount() == 0) {
+                    existingDocument.setReviewCount(document.getReviewCount());
+                    updated = true;
+                }
+                if (updated) {
+                    BookDao.getInstance().update(existingDocument, existingDocument.getBookID());
+                }
+            } else {
+                BookDao.getInstance().insert(document);
+            }
             } catch (SQLException e) {
+                e.printStackTrace();
                 Platform.runLater(() -> util.ErrorDialog.showError("Lỗi SQL", e.getMessage(), (Stage) addByIsbnButton.getScene().getWindow()));
             } catch (Exception e) {
+                e.printStackTrace();
                 Platform.runLater(() -> util.ErrorDialog.showError("Lỗi", e.getMessage(), (Stage) addByIsbnButton.getScene().getWindow()));
             }
         });
@@ -166,7 +200,7 @@ public class AddController extends menuController{
     private Button addByFileButton;
 
     @FXML
-private void handleAddByFile() {
+    private void handleAddByFile() {
     FileChooser fileChooser = new FileChooser();
     fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
     File selectedFile = fileChooser.showOpenDialog(addByFileButton.getScene().getWindow());
@@ -210,6 +244,7 @@ private void handleAddByFile() {
                                 }
                             } catch (Exception e) {
                                 check = false;
+                                e.printStackTrace();
                             }
                             if (check) {
                                 successCount++;
@@ -232,10 +267,12 @@ private void handleAddByFile() {
                     Platform.runLater(() -> {
                         loadingStage.close(); // Đóng màn hình loading
                         util.ErrorDialog.showError("Lỗi", "Không thể đọc file: " + e.getMessage(), (Stage) addByFileButton.getScene().getWindow());
+                        e.printStackTrace();
                     });
                 }
             });
         } catch (IOException e) {
+            e.printStackTrace();
             util.ErrorDialog.showError("Lỗi", "Không thể tải màn hình loading: " + e.getMessage(), (Stage) addByFileButton.getScene().getWindow());
         }
     }

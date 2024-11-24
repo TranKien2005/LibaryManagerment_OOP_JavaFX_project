@@ -64,13 +64,20 @@ public class LoginController {
 
                 Platform.runLater(() -> {
                     try {
-                        FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("../view/menu.fxml"));
+                        
+                        String fxmlFile = account.getAccountType().equals("User") ? "../view/menuUser.fxml" : "../view/menu.fxml";
+                        FXMLLoader mainLoader = new FXMLLoader(getClass().getResource(fxmlFile));
                         
                         int accountId = account.getAccountID();
-                        menuController menuloader = new menuController();
-
-                        menuloader.setAccountID(accountId);
-                        mainLoader.setController(menuloader);
+                        if (account.getAccountType().equals("User")) {
+                            menuUserController userLoader = new menuUserController();
+                            userLoader.setAccountID(accountId);
+                            mainLoader.setController(userLoader);
+                        } else {
+                            menuController menuLoader = new menuController();
+                            menuLoader.setAccountID(accountId);
+                            mainLoader.setController(menuLoader);
+                        }
                         Parent mainRoot = mainLoader.load();
                         Scene mainScene = new Scene(mainRoot);
                         Stage mainStage = new Stage();
@@ -94,6 +101,7 @@ public class LoginController {
                         mainStage.show();
                     } catch (IOException e) {
                         e.printStackTrace();
+                        ErrorDialog.showError("Error", e.getMessage(), currentStage);
                     }
                 });
                 
