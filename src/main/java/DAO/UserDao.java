@@ -53,6 +53,7 @@ public class UserDao {
     try {
         future.get();
     }
+    
     catch (InterruptedException | ExecutionException e) {
         throw new SQLException("Error executing SQL task: " + e.getMessage(), e);
     }

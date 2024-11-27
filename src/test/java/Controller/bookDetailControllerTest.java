@@ -6,17 +6,17 @@ import static org.junit.Assert.*;
 
 public class bookDetailControllerTest {
 
-    private bookDetailController bookDetailController;
+    private BookDetailController bookDetailController;
 
     @Before
     public void setUp() {
-        bookDetailController = new bookDetailController();
+        bookDetailController = new BookDetailController();
     }
 
     @Test
     public void testSetBookDetails() {
         Document book = new Document("Title", "Author", "Category", "Publisher", 2023, 10);
-        bookDetailController.setBookDetails(book);
+        BookDetailController.setBookDetails(book);
         assertEquals("Title", bookDetailController.getBookTitleLabel().getText());
         assertEquals("Author", bookDetailController.getBookAuthorLabel().getText());
     }

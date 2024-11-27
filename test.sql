@@ -306,6 +306,27 @@ BEGIN
     END IF;
 END;
 //
+
+DELIMITER ;
+
+-- Tạo trigger để ngăn mượn sách khi người dùng vẫn còn đang mượn sách đó
+DELIMITER //
+CREATE TRIGGER before_borrow_insert_check
+BEFORE INSERT ON Borrow
+FOR EACH ROW
+BEGIN
+    DECLARE count_borrowed INT;
+    SELECT COUNT(*) INTO count_borrowed 
+    FROM Borrow 
+    WHERE AccountID = NEW.AccountID 
+    AND BookID = NEW.BookID 
+    AND Status = 'Borrowed';
+    
+    IF count_borrowed > 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Người dùng vẫn còn đang mượn sách này.';
+    END IF;
+END;
+//
 DELIMITER ;
 -- Tạo trigger để tự động thêm một người dùng hoặc quản lý khi tạo một tài khoản
 DELIMITER //
@@ -322,6 +343,46 @@ BEGIN
     END IF;
 END;
 //
+DELIMITER ;
+
+-- Tạo trigger để ngăn cập nhật người dùng có số điện thoại có ký tự không phải số hoặc email không đúng định dạng
+DELIMITER //
+CREATE TRIGGER before_user_update_validation
+BEFORE UPDATE ON User
+FOR EACH ROW
+BEGIN
+    -- Kiểm tra số điện thoại chỉ chứa ký tự số
+    IF NEW.Phone REGEXP '[^0-9]' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Số điện thoại chỉ được chứa ký tự số.';
+    END IF;
+
+    -- Kiểm tra định dạng email
+    IF NEW.Email NOT REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Email không đúng định dạng.';
+    END IF;
+END;
+//
+DELIMITER ;
+
+-- Tạo trigger để ngăn cập nhật người quản lý có số điện thoại có ký tự không phải số hoặc email không đúng định dạng
+DELIMITER //
+CREATE TRIGGER before_manager_update_validation
+BEFORE UPDATE ON Manager
+FOR EACH ROW
+BEGIN
+    -- Kiểm tra số điện thoại chỉ chứa ký tự số
+    IF NEW.Phone REGEXP '[^0-9]' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Số điện thoại chỉ được chứa ký tự số.';
+    END IF;
+
+    -- Kiểm tra định dạng email
+    IF NEW.Email NOT REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Email không đúng định dạng.';
+    END IF;
+END;
+//
+
+
 DELIMITER ;
 
 -- Tạo trigger để xóa người dùng hoặc quản lý thì xóa luôn account đó
@@ -348,9 +409,9 @@ DELIMITER ;
 -- Thêm dữ liệu ví dụ vào bảng Account
 INSERT INTO Account (Username, Password, AccountType)
 VALUES 
-('user1', 'password1', 'User'),
+('2', '2', 'User'),
 ('user2', 'password2', 'User'),
-('manager1', 'password3', 'Manager');
+('1', '1', 'Manager');
 
 -- Chỉnh sửa thông tin người dùng đã được tạo tự động khi thêm tài khoản
 UPDATE User
@@ -364,18 +425,185 @@ WHERE AccountID = 2;
 UPDATE Manager
 SET FullName = 'Le Van C', Email = 'levanc@yahoo.com', Phone = '0909111222'
 WHERE AccountID = 3;
+-- Thêm dữ liệu ví dụ vào bảng Account
+INSERT INTO Account (Username, Password, AccountType)
+VALUES 
+('user3', 'password3', 'User'),
+('user4', 'password4', 'User'),
+('user5', 'password5', 'User'),
+('user6', 'password6', 'User'),
+('user7', 'password7', 'User'),
+('user8', 'password8', 'User'),
+('user9', 'password9', 'User'),
+('user10', 'password10', 'User'),
+('user11', 'password11', 'User'),
+('user12', 'password12', 'User'),
+('user13', 'password13', 'User'),
+('user14', 'password14', 'User'),
+('user15', 'password15', 'User'),
+('user16', 'password16', 'User'),
+('user17', 'password17', 'User'),
+('manager2', 'password18', 'Manager'),
+('manager3', 'password19', 'Manager'),
+('manager4', 'password20', 'Manager'),
+('manager5', 'password21', 'Manager'),
+('manager6', 'password22', 'Manager');
+
+-- Chỉnh sửa thông tin người dùng đã được tạo tự động khi thêm tài khoản
+UPDATE User
+SET FullName = 'Nguyen Van D', Email = 'nguyenvand@gmail.com', Phone = '0909123457'
+WHERE AccountID = 4;
+
+UPDATE User
+SET FullName = 'Tran Thi E', Email = 'tranthie@gmail.com', Phone = '0912345679'
+WHERE AccountID = 5;
+
+UPDATE User
+SET FullName = 'Le Van F', Email = 'levanf@yahoo.com', Phone = '0909111223'
+WHERE AccountID = 6;
+
+UPDATE User
+SET FullName = 'Nguyen Van G', Email = 'nguyenvang@gmail.com', Phone = '0909123458'
+WHERE AccountID = 7;
+
+UPDATE User
+SET FullName = 'Tran Thi H', Email = 'tranthih@gmail.com', Phone = '0912345680'
+WHERE AccountID = 8;
+
+UPDATE User
+SET FullName = 'Le Van I', Email = 'levani@yahoo.com', Phone = '0909111224'
+WHERE AccountID = 9;
+
+UPDATE User
+SET FullName = 'Nguyen Van J', Email = 'nguyenvanj@gmail.com', Phone = '0909123459'
+WHERE AccountID = 10;
+
+UPDATE User
+SET FullName = 'Tran Thi K', Email = 'tranthik@gmail.com', Phone = '0912345681'
+WHERE AccountID = 11;
+
+UPDATE User
+SET FullName = 'Le Van L', Email = 'leval@yahoo.com', Phone = '0909111225'
+WHERE AccountID = 12;
+
+UPDATE User
+SET FullName = 'Nguyen Van M', Email = 'nguyenvanm@gmail.com', Phone = '0909123460'
+WHERE AccountID = 13;
+
+UPDATE User
+SET FullName = 'Tran Thi N', Email = 'tranthin@gmail.com', Phone = '0912345682'
+WHERE AccountID = 14;
+
+UPDATE User
+SET FullName = 'Le Van O', Email = 'levano@yahoo.com', Phone = '0909111226'
+WHERE AccountID = 15;
+
+UPDATE User
+SET FullName = 'Nguyen Van P', Email = 'nguyenvanp@gmail.com', Phone = '0909123461'
+WHERE AccountID = 16;
+
+UPDATE User
+SET FullName = 'Tran Thi Q', Email = 'tranthiq@gmail.com', Phone = '0912345683'
+WHERE AccountID = 17;
+
+UPDATE User
+SET FullName = 'Le Van R', Email = 'levanr@yahoo.com', Phone = '0909111227'
+WHERE AccountID = 18;
+
+UPDATE Manager
+SET FullName = 'Le Van S', Email = 'levans@yahoo.com', Phone = '0909111228'
+WHERE AccountID = 19;
+
+UPDATE Manager
+SET FullName = 'Nguyen Van T', Email = 'nguyenvant@gmail.com', Phone = '0909123462'
+WHERE AccountID = 20;
+
+UPDATE Manager
+SET FullName = 'Tran Thi U', Email = 'tranthiu@gmail.com', Phone = '0912345684'
+WHERE AccountID = 21;
+
+UPDATE Manager
+SET FullName = 'Le Van V', Email = 'levanv@yahoo.com', Phone = '0909111229'
+WHERE AccountID = 22;
+
+UPDATE Manager
+SET FullName = 'Nguyen Van W', Email = 'nguyenvanw@gmail.com', Phone = '0909123463'
+WHERE AccountID = 23;
 
 
 -- Thêm dữ liệu ví dụ vào bảng Book
 INSERT INTO Book (Title, Author, Category, Publisher, YearPublished, AvailableCopies)
 VALUES 
-('The Great Gatsby', 'F. Scott Fitzgerald', 'Novel', 'Charles Scribner\'s Sons', 1925, 5),
-('Learning MySQL', 'O\'Reilly Media', 'Programming', 'O\'Reilly Media', 2007, 2),
+('The Great Gatsby', 'F. Scott Fitzgerald', 'Novel', 'Charles Scribner\'s Sons', 1925, 10),
+('Learning MySQL', 'O\'Reilly Media', 'Programming', 'O\'Reilly Media', 2007, 10),
 ('Harry Potter and the Philosopher\'s Stone', 'J.K. Rowling', 'Fantasy', 'Bloomsbury', 1997, 10);
+-- Thêm dữ liệu ví dụ vào bảng Book
+INSERT INTO Book (Title, Author, Category, Publisher, YearPublished, AvailableCopies)
+VALUES 
+('To Kill a Mockingbird', 'Harper Lee', 'Fiction', 'J.B. Lippincott & Co.', 1960, 5),
+('1984', 'George Orwell', 'Dystopian', 'Secker & Warburg', 1949, 10),
+('The Catcher in the Rye', 'J.D. Salinger', 'Fiction', 'Little, Brown and Company', 1951, 8),
+('The Hobbit', 'J.R.R. Tolkien', 'Fantasy', 'George Allen & Unwin', 1937, 6),
+('Fahrenheit 451', 'Ray Bradbury', 'Dystopian', 'Ballantine Books', 1953, 4),
+('Brave New World', 'Aldous Huxley', 'Dystopian', 'Chatto & Windus', 1932, 6),
+('The Grapes of Wrath', 'John Steinbeck', 'Fiction', 'The Viking Press-James Lloyd', 1939, 5);
+-- Thêm dữ liệu ví dụ vào bảng Book với năm phát hành sau 1900
+INSERT INTO Book (Title, Author, Category, Publisher, YearPublished, AvailableCopies)
+VALUES 
+('The Road', 'Cormac McCarthy', 'Post-apocalyptic', 'Alfred A. Knopf', 2006, 7),
+('The Da Vinci Code', 'Dan Brown', 'Mystery', 'Doubleday', 2003, 8),
+('The Kite Runner', 'Khaled Hosseini', 'Drama', 'Riverhead Books', 2003, 9),
+('Life of Pi', 'Yann Martel', 'Adventure', 'Knopf Canada', 2001, 6),
+('The Girl with the Dragon Tattoo', 'Stieg Larsson', 'Mystery', 'Norstedts Förlag', 2005, 5);
 
+-- Thêm dữ liệu ví dụ vào bảng Borrow và ReturnTable
+-- Thêm dữ liệu ví dụ vào bảng Borrow
+INSERT INTO Borrow (AccountID, BookID, BorrowDate, ExpectedReturnDate)
+VALUES 
+(1, 1, '2023-01-01', '2023-01-15'),
+(2, 2, '2023-01-02', '2023-01-16'),
+(3, 3, '2023-01-03', '2023-01-17'),
+(4, 4, '2023-01-04', '2023-01-18'),
+(5, 5, '2023-01-05', '2023-01-19'),
+(6, 6, '2023-01-06', '2023-01-20'),
+(7, 7, '2023-01-07', '2023-01-21'),
+(8, 8, '2023-01-08', '2023-01-22'),
+(9, 9, '2023-01-09', '2023-01-23'),
+(10, 10, '2023-01-10', '2023-01-24'),
+(11, 11, '2023-01-11', '2023-01-25'),
+(12, 12, '2023-01-12', '2023-01-26'),
+(13, 13, '2023-01-13', '2023-01-27'),
+(1, 2, '2023-01-24', '2023-02-07'),
+(2, 3, '2023-01-25', '2023-02-08'),
+(3, 4, '2023-01-26', '2023-02-09'),
+(4, 5, '2023-01-27', '2023-02-10'),
+(5, 6, '2023-01-28', '2023-02-11'),
+(6, 7, '2023-01-29', '2023-02-12'),
+(7, 8, '2023-01-30', '2023-02-13');
 
--- Tạo view cho danh sách người dùng
-CREATE VIEW UserList AS
+-- Thêm dữ liệu ví dụ vào bảng ReturnTable
+INSERT INTO ReturnTable (BorrowID, ReturnDate, DamagePercentage)
+VALUES 
+(1, '2023-01-15', 0),
+(2, '2023-01-16', 5),
+(3, '2023-01-17', 0),
+(4, '2023-01-18', 10),
+(5, '2023-01-19', 0),
+(6, '2023-01-20', 15),
+(7, '2023-01-21', 0),
+(8, '2023-01-22', 20),
+(9, '2023-01-23', 0),
+(10, '2023-01-24', 25),
+(11, '2023-01-25', 0),
+(12, '2023-01-26', 30),
+(13, '2023-01-27', 0),
+(14, '2023-01-28', 35),
+(15, '2023-01-29', 0),
+(16, '2023-01-30', 40),
+(17, '2023-01-31', 0),
+(18, '2023-02-01', 45),
+(19, '2023-02-02', 0),
+(20, '2023-02-03', 50);
 SELECT 
     u.AccountID,
     u.FullName,

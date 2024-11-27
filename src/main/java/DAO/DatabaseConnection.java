@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import org.checkerframework.checker.units.qual.t;
+
 import javafx.application.Platform;
 import model.Account;
 import model.Borrow;
@@ -44,14 +47,13 @@ public class DatabaseConnection {
             try {
                 connection = DriverManager.getConnection(URL, USER, PASSWORD);
             } catch (SQLException e) {
-                ErrorDialog.showError("Database Connection Error", "Cannot connect to the database.", e.getMessage(), null);
-                throw e; // Ném lại ngoại lệ để xử lý tiếp nếu cần
+                throw new SQLException("Cannot connect to the database.", e);
             }
         }
         return connection;
     }
 
-    private void startConnectionChecker() {
+    private void startConnectionChecker() throws RuntimeException {
         connectionChecker = new Timer(true);
         connectionChecker.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -61,14 +63,13 @@ public class DatabaseConnection {
                         connection = DriverManager.getConnection(URL, USER, PASSWORD);
                     }
                 } catch (SQLException e) {
-                    ErrorDialog.showError("Database Connection Error", "Cannot connect to the database.", e.getMessage(), null);
-                    e.printStackTrace();
+                    throw new RuntimeException("Cannot connect to the database.", e);
                 }
             }
         }, 0, 30000); // Kiểm tra mỗi 30 giây
     }
 
-    public synchronized void closeConnection() {
+    public synchronized void closeConnection() throws RuntimeException {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -77,65 +78,9 @@ public class DatabaseConnection {
                 connectionChecker.cancel();
             }
         } catch (SQLException e) {
-            ErrorDialog.showError("Database Connection Error", "Error closing the database connection.", e.getMessage(), null);
-            e.printStackTrace();
+            throw new RuntimeException("Cannot close the database connection.", e);
         }
     }
 
-    public static void main(String[] args) {
-        // Khởi tạo JavaFX Application Thread
-        Platform.startup(() -> {
-            try {
-                // Thử AccountDao
-                System.out.println("Testing AccountDao:");
-                List<Account> accounts = AccountDao.getInstance().getAll();
-                for (Account account : accounts) {
-                    System.out.println(account);
-                }
-
-                // Thử BookDao
-                System.out.println("\nTesting BookDao:");
-                List<Document> books = BookDao.getInstance().getAll();
-                for (Document book : books) {
-                    System.out.println(book);
-                }
-
-                // Thử BorrowDao
-                System.out.println("\nTesting BorrowDao:");
-                List<Borrow> borrows = BorrowDao.getInstance().getAll();
-                for (Borrow borrow : borrows) {
-                    System.out.println(borrow);
-                }
-
-                // Thử UserDao
-                System.out.println("\nTesting UserDao:");
-                List<User> users = UserDao.getInstance().getAll();
-                for (User user : users) {
-                    System.out.println(user);
-                }
-
-                // Thử ReturnDao
-                System.out.println("\nTesting ReturnDao:");
-                List<Return> returns = ReturnDao.getInstance().getAll();
-                for (Return returnRecord : returns) {
-                    System.out.println(returnRecord);
-                }
-
-                // Thử ManagerDao
-                System.out.println("\nTesting ManagerDao:");
-                List<Manager> managers = ManagerDao.getInstance().getAll();
-                for (Manager manager : managers) {
-                    System.out.println(manager);
-                }
-
-                // Đóng ExecutorService khi ứng dụng kết thúc
-                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    ThreadManager.shutdown();
-                }));
-            } catch (Exception e) {
-                ErrorDialog.showError("Error", "An unexpected error occurred.", e.getMessage(), null);
-                e.printStackTrace();
-            }
-        });
-    }
+    
 }

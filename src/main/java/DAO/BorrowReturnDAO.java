@@ -68,20 +68,44 @@ public class BorrowReturnDAO {
 
         return borrowReturns;
     }
-    public static void main(String[] args) {
-        BorrowReturnDAO dao = BorrowReturnDAO.getInstance();
-        List<BorrowReturn> borrowReturns = dao.getAll();
-        for (BorrowReturn borrowReturn : borrowReturns) {
-            System.out.println("Borrow ID: " + borrowReturn.getBorrowID());
-            System.out.println("Member: " + borrowReturn.getMember());
-            System.out.println("Book: " + borrowReturn.getBook());
-            System.out.println("Borrow Date: " + borrowReturn.getBorrowDate());
-            System.out.println("Expected Return Date: " + borrowReturn.getExpectedReturnDate());
-            System.out.println("Status: " + borrowReturn.getStatus());
-            System.out.println("Return Date: " + borrowReturn.getReturnDate());
-            System.out.println("Damage Percentage: " + borrowReturn.getDamagePercentage());
-            System.out.println("Penalty Fee: " + borrowReturn.getPenaltyFee());
-            System.out.println("-------------------------------");
+
+
+    public List<BorrowReturn> getByAccountId(int accountId) {
+        List<BorrowReturn> borrowReturns = new ArrayList<>();
+        String query = "SELECT * FROM BorrowReturnList WHERE SUBSTRING_INDEX(Member, ' - ', 1) = ?";
+        Future<?> future = ThreadManager.submitSqlTask(() -> {
+            try (Connection conn = DatabaseConnection.getInstance().getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, accountId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        int borrowID = rs.getInt("BorrowID");
+                        String member = rs.getString("Member");
+                        String book = rs.getString("Book");
+                        Date borrowDate = rs.getDate("BorrowDate");
+                        Date expectedReturnDate = rs.getDate("ExpectedReturnDate");
+                        String status = rs.getString("Status");
+                        Date returnDate = rs.getDate("ReturnDate");
+                        int damagePercentage = rs.getInt("DamagePercentage");
+                        int penaltyFee = rs.getInt("PenaltyFee");
+
+                        BorrowReturn borrowReturn = new BorrowReturn(borrowID, member, book, borrowDate, expectedReturnDate, status, returnDate, damagePercentage, penaltyFee);
+                        borrowReturns.add(borrowReturn);
+                    }
+                }
+            } catch (SQLException e) {
+            
+                throw new RuntimeException("Error retrieving borrow/return records by account ID: " + e.getMessage(), e);
+            }
+        });
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+       
+            throw new RuntimeException("Error executing SQL task: " + e.getMessage(), e);
         }
+
+        return borrowReturns;
     }
+  
 }

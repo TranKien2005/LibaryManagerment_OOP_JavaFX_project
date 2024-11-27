@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.Image?>
+
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="800" fx:controller="Controller.MyAccountController" spacing="20" alignment="CENTER" styleClass="root-pane" stylesheets="@/stylesheet/myAccount.css">
+    <!-- Header -->
+    <VBox spacing="10" alignment="CENTER" AnchorPane.topAnchor="20.0">
+        <ImageView fx:id="userIcon" fitHeight="100" fitWidth="100" pickOnBounds="true" preserveRatio="true" styleClass="profile-icon" onMouseClicked="#handleUserIconClick"/>
+        <Label text="Update User Information" styleClass="header-label"/>
+    </VBox>
+
+    <!-- Form Section -->
+    <VBox spacing="15" alignment="CENTER" AnchorPane.topAnchor="150.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
+        <!-- Full Name -->
+        <HBox spacing="10" alignment="CENTER">
+            
+            <TextField fx:id="fullnameField" promptText="Full Name" styleClass="input-field"/>
+        </HBox>
+        
+        <!-- Phone Number -->
+        <HBox spacing="10" alignment="CENTER">
+            
+            <TextField fx:id="phoneField" promptText="Phone Number" styleClass="input-field"/>
+        </HBox>
+
+        <!-- Email -->
+        <HBox spacing="10" alignment="CENTER">
+           
+            <TextField fx:id="emailField" promptText="Email" styleClass="input-field"/>
+        </HBox>
+
+        <!-- Password -->
+        <HBox spacing="10" alignment="CENTER">
+            
+            <PasswordField fx:id="passwordField" promptText="New Password" styleClass="input-field"/>
+        </HBox>
+
+        <!-- Confirm Password -->
+        <HBox spacing="10" alignment="CENTER">
+            
+            <PasswordField fx:id="confirmPasswordField" promptText="Confirm Password" styleClass="input-field"/>
+        </HBox>
+    </VBox>
+
+    <!-- Button Section -->
+    <HBox spacing="20" alignment="CENTER" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
+        <Button text="Lưu" onAction="#handleUpdate" styleClass="btn, btn-primary">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                        <Image url="@/icons/save.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button text="Hủy" onAction="#handleCancel" styleClass="btn, btn-secondary">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                        <Image url="@/icons/cancel.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+    </HBox>
+</VBox>

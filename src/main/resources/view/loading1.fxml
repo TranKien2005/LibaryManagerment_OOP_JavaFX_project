@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- loading.fxml -->
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" alignment="CENTER" spacing="10">
+    <Label text="Đang xử lý, vui lòng đợi..." />
+    <ProgressBar fx:id="progressBar" prefWidth="300" />
+</VBox>

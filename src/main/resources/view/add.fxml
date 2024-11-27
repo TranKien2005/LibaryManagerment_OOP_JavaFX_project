@@ -4,7 +4,7 @@
 <?import java.lang.String?>
 <?import javafx.scene.image.Image?>
 
-<StackPane alignment="CENTER" prefHeight="685.0" prefWidth="754.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.AddController">
+<StackPane alignment="CENTER" prefHeight="685.0" prefWidth="754.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.AddController" >
     <children>
         <TabPane tabClosingPolicy="UNAVAILABLE" prefHeight="685.0" prefWidth="754.0">
             <tabs>
@@ -71,6 +71,13 @@
                                         <graphic>
                                             <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
                                                 <Image url="@/icons/add.png" />
+                                            </ImageView>
+                                        </graphic>
+                                    </Button>
+                                    <Button fx:id="addByFileButton" onAction="#handleAddByFile" prefWidth="150" styleClass="btn, btn-primary" text="Thêm từ file">
+                                        <graphic>
+                                            <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+                                                <Image url="@/icons/file.png" />
                                             </ImageView>
                                         </graphic>
                                     </Button>

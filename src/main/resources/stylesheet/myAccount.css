@@ -1,0 +1,61 @@
+/* Root Pane */
+.root-pane {
+    -fx-background-color: #f4f4f9;
+    -fx-padding: 20;
+    -fx-font-family: 'Arial';
+}
+
+/* Header */
+.header-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #333;
+    -fx-font-weight: bold;
+}
+
+.profile-icon {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 10, 0.3, 0, 0);
+}
+
+/* Input Fields */
+.input-field {
+    -fx-pref-width: 250px;
+    -fx-pref-height: 30px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+}
+
+.input-field:focused {
+    -fx-border-color: #0078d7;
+}
+
+/* Icons */
+.icon {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0.3, 0, 0);
+}
+
+/* Buttons */
+.button-save {
+    -fx-background-color: #0078d7;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 5px;
+}
+
+.button-save:hover {
+    -fx-background-color: #005bb5;
+}
+
+.button-cancel {
+    -fx-background-color: #cccccc;
+    -fx-text-fill: #333;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 5px;
+}
+
+.button-cancel:hover {
+    -fx-background-color: #999999;
+}

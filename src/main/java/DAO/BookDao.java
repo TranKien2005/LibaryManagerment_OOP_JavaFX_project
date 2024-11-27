@@ -63,7 +63,7 @@ public final class BookDao {
             future.get(); // Đợi cho đến khi tác vụ hoàn thành
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        }
+        } 
         return documents;
     }
 
@@ -239,5 +239,254 @@ public final class BookDao {
         } catch (SQLException e) {
             throw new SQLException("Error adding rating" + e.getMessage(), e);
         }
+    }
+
+    public List<Document> getTopRatedBooks() throws SQLException {
+        List<Document> topRatedBooks = new ArrayList<>();
+        String query = "SELECT * FROM Book ORDER BY Rating DESC LIMIT 7";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                Document document = new Document(
+                    rs.getInt("ID"),
+                    rs.getString("Title"),
+                    rs.getString("Author"),
+                    rs.getString("Category"),
+                    rs.getString("Publisher"),
+                    rs.getInt("YearPublished"),
+                    rs.getInt("AvailableCopies")
+                );
+                document.setDescription(rs.getString("Description"));
+                document.setCoverImage(rs.getBinaryStream("Image"));
+                document.setRating(rs.getDouble("Rating"));
+                document.setReviewCount(rs.getInt("NumberOfRatings"));
+                topRatedBooks.add(document);
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Error getting top rated books" + e.getMessage(), e);
+        }
+        return topRatedBooks;
+    }
+
+    public List<Document> getFavorite(int accountId) throws SQLException {
+        List<Document> recommendedBooks = new ArrayList<>();
+        String query = "WITH BorrowHistory AS (\n" +
+    "    -- Lấy danh sách sách, thể loại và tác giả mà người dùng đã mượn\n" +
+    "    SELECT \n" +
+    "        b.`BookID` AS BookID,\n" +
+    "        bk.`Title`,\n" +
+    "        bk.Category,\n" +
+    "        bk.Author,\n" +
+    "        COUNT(*) AS BorrowCount\n" +
+    "    FROM Borrow b\n" +
+    "    JOIN Book bk ON b.BookID = bk.`ID`\n" +
+    "    WHERE b.AccountID = 1\n" +
+    "    GROUP BY b.`BookID`\n" +
+    "),\n" +
+    "CategoryScore AS (\n" +
+    "    -- Tính điểm theo thể loại dựa trên lịch sử mượn\n" +
+    "    SELECT \n" +
+    "        bh.Category,\n" +
+    "        SUM(bh.BorrowCount) AS CategoryScore\n" +
+    "    FROM BorrowHistory bh\n" +
+    "    GROUP BY bh.Category\n" +
+    "),\n" +
+    "AuthorScore AS (\n" +
+    "    SELECT \n" +
+    "        bh.Author,\n" +
+    "        SUM(bh.BorrowCount) AS AuthorScore\n" +
+    "    FROM BorrowHistory bh\n" +
+    "    GROUP BY bh.Author\n" +
+    "),\n" +
+    "Ranking AS (\n" +
+    "    -- Tính tổng điểm cho từng sách\n" +
+    "    SELECT\n" +
+    "        bk.*, \n" +
+    "        COALESCE(cs.CategoryScore, 0) + COALESCE(au.AuthorScore, 0) AS RankingScore\n" +
+    "    FROM Book bk\n" +
+    "    LEFT JOIN CategoryScore cs ON bk.Category = cs.Category\n" +
+    "    LEFT JOIN AuthorScore au ON bk.Author = au.Author\n" +
+    "    WHERE bk.ID NOT IN (\n" +
+    "        -- Loại sách mà người dùng đã mượn\n" +
+    "        SELECT b.BookID\n" +
+    "        FROM Borrow b\n" +
+    "        WHERE b.AccountID = 1\n" +
+    "    )\n" +
+    ")\n" +
+    "-- Lấy 5 sách có điểm cao nhất\n" +
+    "SELECT \n" +
+    "    *\n" +
+    "FROM Ranking\n" +
+    "ORDER BY RankingScore DESC" +
+    " LIMIT 14;";
+
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Document document = new Document(
+                        rs.getInt("ID"),
+                        rs.getString("Title"),
+                        rs.getString("Author"),
+                        rs.getString("Category"),
+                        rs.getString("Publisher"), // Thêm Publisher nếu cần
+                        rs.getInt("YearPublished"), // Thêm YearPublished nếu cần
+                        rs.getInt("AvailableCopies") // Thêm AvailableCopies nếu cần
+                    );
+                    document.setDescription(rs.getString("Description")); // Thêm Description nếu cần
+                    document.setCoverImage(rs.getBinaryStream("Image")); // Thêm Image nếu cần
+                    document.setRating(rs.getDouble("Rating")); // Thêm Rating nếu cần
+                    document.setReviewCount(rs.getInt("NumberOfRatings")); // Thêm NumberOfRatings nếu cần
+                    recommendedBooks.add(document);
+                }
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Error getting search-based recommendations: " + e.getMessage(), e);
+        }
+        return recommendedBooks;
+    }
+    public List<Document> getTrendingBooks() throws SQLException {
+        List<Document> trendingBooks = new ArrayList<>();
+        String query = "SELECT " +
+                       "    book.ID, " +
+                       "    book.Title, " +
+                       "    book.Author, " +
+                       "    book.Category, " +
+                       "    book.Publisher, " +
+                       "    book.YearPublished, " +
+                       "    book.AvailableCopies, " +
+                       "    book.Description, " +
+                       "    book.Image, " +
+                       "    book.Rating, " +
+                       "    book.NumberOfRatings, " +
+                       "    COUNT(borrow.BookID) AS borrow_count " +
+                       "FROM " +
+                       "    Book AS book " +
+                       "LEFT JOIN " +
+                       "    Borrow AS borrow ON book.ID = borrow.BookID " +
+                       "    AND borrow.BorrowDate >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) " +
+                       "GROUP BY " +
+                       "    book.ID, book.Title, book.Author, book.Category, book.Publisher, book.YearPublished, book.AvailableCopies, book.Description, book.Image, book.Rating, book.NumberOfRatings " +
+                       "ORDER BY " +
+                       "    borrow_count DESC, " +
+                       "    book.Rating DESC " +
+                       "LIMIT 7";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                Document document = new Document(
+                    rs.getInt("ID"),
+                    rs.getString("Title"),
+                    rs.getString("Author"),
+                    rs.getString("Category"),
+                    rs.getString("Publisher"),
+                    rs.getInt("YearPublished"),
+                    rs.getInt("AvailableCopies")
+                );
+                document.setDescription(rs.getString("Description"));
+                document.setCoverImage(rs.getBinaryStream("Image"));
+                document.setRating(rs.getDouble("Rating"));
+                document.setReviewCount(rs.getInt("NumberOfRatings"));
+                trendingBooks.add(document);
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Error getting trending books" + e.getMessage(), e);
+        }
+        return trendingBooks;
+    }
+
+    public List<Document> getAll(int page, int pageSize) throws SQLException {
+        List<Document> documents = new ArrayList<>();
+        String query = "SELECT ID, Title, Author, Category, Publisher, YearPublished, AvailableCopies, Description, Image, Rating, NumberOfRatings FROM Book ORDER BY YearPublished DESC LIMIT ? OFFSET ?";
+
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, pageSize);
+            stmt.setInt(2, page * pageSize
+            );
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Document document = new Document(
+                    rs.getInt("ID"),
+                    rs.getString("Title"),
+                    rs.getString("Author"),
+                    rs.getString("Category"),
+                    rs.getString("Publisher"),
+                    rs.getInt("YearPublished"),
+                    rs.getInt("AvailableCopies")
+                );
+                document.setDescription(rs.getString("Description"));
+                document.setCoverImage(rs.getBinaryStream("Image"));
+                document.setRating(rs.getInt("Rating"));
+                document.setReviewCount(rs.getInt("NumberOfRatings"));
+                synchronized (documents) {
+                    documents.add(document);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return documents;
+    }
+
+    
+
+    public List<Document> searchNewArrivals(String searchText, int page, int pageSize) throws SQLException {
+        List<Document> documents = new ArrayList<>();
+        String query = "SELECT ID, Title, Author, Category, Publisher, YearPublished, AvailableCopies, Description, Image, Rating, NumberOfRatings " +
+                       "FROM Book " +
+                       "WHERE Title LIKE ? OR Category LIKE ? OR Author LIKE ? OR Description LIKE ? " +
+                       "ORDER BY " +
+                       "CASE " +
+                       "WHEN Title LIKE ? THEN 1 " +
+                       "WHEN Category LIKE ? THEN 2 " +
+                       "WHEN Author LIKE ? THEN 3 " +
+                       "WHEN Description LIKE ? THEN 4 " +
+                       "ELSE 5 " +
+                       "END, " +
+                       "YearPublished DESC " +
+                       "LIMIT ? OFFSET ?";
+    
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            String searchPattern = "%" + searchText + "%";
+            stmt.setString(1, searchPattern);
+            stmt.setString(2, searchPattern);
+            stmt.setString(3, searchPattern);
+            stmt.setString(4, searchPattern);
+            stmt.setString(5, searchPattern);
+            stmt.setString(6, searchPattern);
+            stmt.setString(7, searchPattern);
+            stmt.setString(8, searchPattern);
+            stmt.setInt(9,  pageSize);
+            stmt.setInt(10, page * pageSize);
+            ResultSet rs = stmt.executeQuery();
+    
+            while (rs.next()) {
+                Document document = new Document(
+                    rs.getInt("ID"),
+                    rs.getString("Title"),
+                    rs.getString("Author"),
+                    rs.getString("Category"),
+                    rs.getString("Publisher"),
+                    rs.getInt("YearPublished"),
+                    rs.getInt("AvailableCopies")
+                );
+                document.setDescription(rs.getString("Description"));
+                document.setCoverImage(rs.getBinaryStream("Image"));
+                document.setRating(rs.getInt("Rating"));
+                document.setReviewCount(rs.getInt("NumberOfRatings"));
+                synchronized (documents) {
+                    documents.add(document);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return documents;
     }
 }
