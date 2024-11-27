@@ -1,5 +1,9 @@
 package Controller;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 
 import DAO.AccountDao;
@@ -8,6 +12,7 @@ import DAO.UserDao;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -18,6 +23,7 @@ import model.User;
 import util.ErrorDialog;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import QR.*;
 
 public class MyAccountController {
 
@@ -52,6 +58,7 @@ public class MyAccountController {
             phoneField.setText(user.getPhone());
             emailField.setText(user.getEmail());
             passwordField.setText(account.getPassword());
+            userIcon.setImage(new Image(QR.CreateQRCode.generateQRCode("accountID: " + accountID)));
         } else {
             accountID = menuController.getInstance().getAccountID();
             Manager user = ManagerDao.getInstance().get(accountID);
@@ -60,6 +67,7 @@ public class MyAccountController {
             phoneField.setText(user.getPhone());
             emailField.setText(user.getEmail());
             passwordField.setText(account.getPassword());
+            userIcon.setImage(new Image(QR.CreateQRCode.generateQRCode("accountID: " + accountID)));
         }
         
         
@@ -79,6 +87,17 @@ public class MyAccountController {
 
     @FXML
     private void handleUserIconClick(MouseEvent event) {
+        try {
+            String qrCodeText = "accountID: " + accountID;
+            String filePath = System.getProperty("user.home") + "/Downloads/QRCode.png";
+            try (InputStream qrCodeInputStream = QR.CreateQRCode.generateQRCode(qrCodeText)) {
+                Files.copy(qrCodeInputStream, Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+            }
+            ErrorDialog.showSuccess("Success", "QR code saved to Downloads folder.", (Stage) fullnameField.getScene().getWindow());
+        } catch (Exception e) {
+            ErrorDialog.showError("Error", "Failed to save QR code: " + e.getMessage(), (Stage) fullnameField.getScene().getWindow());
+            e.printStackTrace();
+        }
         
     }
 

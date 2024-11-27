@@ -26,6 +26,7 @@
                 <Label text="Chưa có tài khoản?" styleClass="text-muted"/>
                 <Button text="Đăng ký" styleClass="btn, btn-link" onAction="#handleRegister"/>
             </HBox>
+            <Button text="Quét mã QR để đăng nhập" styleClass="btn, btn-secondary, btn-block" fx:id="qrLoginButton" onAction="#handleQRLogin" maxWidth="300"/>
         </VBox>
         
         <VBox alignment="CENTER" spacing="20" styleClass="welcome-box" maxWidth="400">

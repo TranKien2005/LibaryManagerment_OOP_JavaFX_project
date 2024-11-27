@@ -22,6 +22,7 @@ DAO\AccountDao.class
 Controller\AddController.class
 model\BorrowReturn.class
 DAO\BorrowReturnDAO.class
+QR\qr.class
 model\Return.class
 Controller\menuUserController$1.class
 model\Borrow.class
@@ -32,3 +33,4 @@ Controller\LoadingController.class
 Controller\EditController.class
 Controller\menuUserController.class
 Controller\LoginController.class
+Controller\MyAccountController.class
