@@ -9,6 +9,8 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.checkerframework.checker.units.qual.m;
+
 import QR.*;
 
 
@@ -24,6 +26,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import model.*;
 import util.ErrorDialog;
+import util.ThreadManager;
 
 
 public class BookDetailController {
@@ -82,8 +85,6 @@ public class BookDetailController {
 
     int accountID = menuUserController.getInstance().getAccountID();
 
-    
-    private List<BorrowReturn> listBorrowReturns = menuController.getInstance().borrowReturnList;
 
     /**
      * Thiết lập sách cần hiển thị.
@@ -168,17 +169,9 @@ public class BookDetailController {
      */
     @FXML
     private void handleBorrow() {
-         listBorrowReturns = menuUserController.getInstance().borrowReturnList;
-        for (BorrowReturn borrowReturn : listBorrowReturns) {
-           String b = borrowReturn.getBook();
-           String[] parts = b.split("-");
-           String ids = parts[0];
-          
-           int idBook = Integer.parseInt(ids);
-           if (idBook == book.getBookID() && borrowReturn.getStatus().equals("Borrowed" )) {
-               util.ErrorDialog.showError("Thông báo", "Bạn đang mượn sách này rồi.", null);
-               return;
-           }
+        if (BorrowReturnDAO.getInstance().isBorrowed(accountID, book.getBookID())) {
+            util.ErrorDialog.showError("Thông báo", "Bạn đã mượn sách này rồi.", null);
+            return;
         }
         BorrowDao borrowDAO = BorrowDao.getInstance();
         int selectedMemberId = accountID;
@@ -196,8 +189,6 @@ public class BookDetailController {
         try {
             borrowDAO.insert(newBorrow);
             util.ErrorDialog.showSuccess("Thành công", "Tài liệu đã được mượn thành công.", null);
-
-            listBorrowReturns = menuUserController.getInstance().borrowReturnList;
         }
          catch (SQLException e) {
             e.printStackTrace();
@@ -206,6 +197,7 @@ public class BookDetailController {
             e.printStackTrace();
             util.ErrorDialog.showError("Error",  e.getMessage(), null);
         }
+    
     }
 
     /**
@@ -213,23 +205,15 @@ public class BookDetailController {
      */
     @FXML
     private void handleReturn() {
-        listBorrowReturns = menuUserController.getInstance().borrowReturnList;
         ReturnDao returnDAO = ReturnDao.getInstance();
         int selectedMemberId = accountID;
         int selectedDocumentId = book.getBookID();
         int selectedBorrow;
         selectedBorrow = -1;
-        for (BorrowReturn borrowReturn : listBorrowReturns) {
-           
-            String b = borrowReturn.getBook();
-            String[] parts = b.split("-");
-            String ids = parts[0];
-            int idBook = Integer.parseInt(ids);
-            if (idBook == book.getBookID() && borrowReturn.getStatus().equals("Borrowed")) {
-            selectedBorrow = borrowReturn.getBorrowID();
-            }
+        if (BorrowReturnDAO.getInstance().isBorrowed(accountID, book.getBookID())) {
+            selectedBorrow = BorrowReturnDAO.getInstance().getID(accountID, book.getBookID());
         }
-        if (selectedBorrow == -1) {
+        else {
             util.ErrorDialog.showError("Thông báo", "Bạn chưa mượn sách này", null);
             return;
         }
@@ -239,8 +223,6 @@ public class BookDetailController {
          LocalDate.now(), damagePercentage);
          ReturnDao.getInstance().insert(returnRecord);
          util.ErrorDialog.showSuccess("Thành công", "Tài liệu đã được trả thành công.", null);
-            menuUserController.getInstance().reload();
-            listBorrowReturns = menuUserController.getInstance().borrowReturnList;
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -249,6 +231,7 @@ public class BookDetailController {
         e.printStackTrace();
            util.ErrorDialog.showError("Error",  e.getMessage(), null);
        }
+    
     }
 
     

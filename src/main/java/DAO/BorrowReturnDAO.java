@@ -107,5 +107,39 @@ public class BorrowReturnDAO {
 
         return borrowReturns;
     }
+
+    
+    public boolean isBorrowed(int accountId, int bookId) {
+        String query = "SELECT * FROM BorrowReturnList WHERE SUBSTRING_INDEX(Member, ' - ', 1) = ? AND SUBSTRING_INDEX(Book, ' - ', 1) = ? AND Status = 'Borrowed'";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement statement = conn.prepareStatement(query)) {
+            statement.setInt(1, accountId);
+            statement.setInt(2, bookId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public int getID(int accountId, int bookId) {
+        String query = "SELECT BorrowID FROM BorrowReturnList WHERE SUBSTRING_INDEX(Member, ' - ', 1) = ? AND SUBSTRING_INDEX(Book, ' - ', 1) = ? AND Status = 'Borrowed'";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement statement = conn.prepareStatement(query)) {
+            statement.setInt(1, accountId);
+            statement.setInt(2, bookId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt("BorrowID");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
   
+       
 }

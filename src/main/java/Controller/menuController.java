@@ -892,7 +892,7 @@ private void handleSearchAction() {
     }
 
     private boolean ishandlingQR = false;
-    public QRScanner qrScanner;
+    public QRScanner qrScanner = QRScanner.getInstance();
     private boolean isValidQRCodeFormatUser(String qrCodeText) {
         if (qrCodeText == null || !qrCodeText.startsWith("accountID:")) {
             return false;
@@ -922,18 +922,20 @@ private void handleSearchAction() {
         if (isscanning || ishandlingQR) {
             return;
         }
-        qrScanner = QRScanner.getInstance();
-        System.setProperty("opencv.videoio.MSMF", "false");
         qrScanner.startQRScanner(qrCodeText -> {
         Platform.runLater(() -> {
         
             try {
-               
+                if (ishandlingQR) {
+                    return;
+                }
                 if (isValidQRCodeFormatUser(qrCodeText)) {
                     int accountID = Integer.parseInt(qrCodeText.substring("accountID:".length()).trim());
                     User user = UserDao.getInstance().get(accountID);
                     ishandlingQR = true;
-                    showBorrowReturnTab();
+                    if (!borrowAndReturnTab.isVisible()) {
+                        showBorrowReturnTab();
+                    }
                     cbMembers.setValue(accountID + " - " + user.getFullName());
                     qrScanner.stopQRScanner();
                     ishandlingQR = false;

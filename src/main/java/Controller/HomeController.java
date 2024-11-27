@@ -360,7 +360,7 @@ public class HomeController {
         // Xóa các sách hiện tại trong phần sách mới
         fpNewArrivals.getChildren().clear();
         newArrivalsPage = 0; // Reset the page number for new arrivals
-        
+        updateCurrentPageLabel();
         try {
             // Tải lại sách mới
             loadMoreNewArrivals();

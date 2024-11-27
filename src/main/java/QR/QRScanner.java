@@ -58,10 +58,6 @@ public class QRScanner {
         running.set(true);
          ThreadManager.execute(() -> {
             int deviceIndex = 0; // Try different device indices if needed
-            if (!isCameraAvailable(deviceIndex)) {
-                System.err.println("Camera is not available");
-                throw new RuntimeException("Camera is not available");
-            }
             grabber = new OpenCVFrameGrabber(deviceIndex);
             try  {
                 
@@ -126,22 +122,8 @@ public class QRScanner {
         instance = null;
     }
 
-    private boolean isCameraAvailable(int cameraIndex) {
-        OpenCVFrameGrabber testGrabber = new OpenCVFrameGrabber(cameraIndex);
-        try {
-            testGrabber.start();
-            testGrabber.stop();
-            testGrabber.release();
-            return true; // Camera hoạt động
-        } catch (Exception e) {
-            System.err.println("Camera is unavailable: " + e.getMessage());
-            return false;
-        }
-    }
-    
-
     public static void main(String[] args) {
-        System.setProperty("opencv.videoio.MSMF", "false");
+        
         QRScanner scanner = new QRScanner();
         scanner.startQRScanner(qrCodeText -> {
             System.out.println("QR Code detected: " + qrCodeText);

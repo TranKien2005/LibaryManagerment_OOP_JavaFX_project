@@ -232,7 +232,7 @@ public class LoginController {
 
     
     private boolean loginInProgress = false;
-    public QRScanner qrScanner;
+    public QRScanner qrScanner = QRScanner.getInstance();
     private boolean isValidQRCodeFormat(String qrCodeText) {
         if (qrCodeText == null || !qrCodeText.startsWith("accountID:")) {
             return false;
@@ -250,22 +250,25 @@ public class LoginController {
     if (isscanning || loginInProgress) {
         return;
     }
-    qrScanner = QRScanner.getInstance();
-    System.setProperty("opencv.videoio.MSMF", "false");
     qrScanner.startQRScanner(qrCodeText -> {
         Platform.runLater(() -> {
         
         if (qrCodeText.startsWith("accountID:")) {
             try {
+                if (loginInProgress) {
+                return;
+                }
                 if (!isValidQRCodeFormat(qrCodeText)) {
                 ErrorDialog.showError("QR Code Error", "Invalid QR Code format", null);
                 return;
                 }
                 int accountId = Integer.parseInt(qrCodeText.substring("accountID:".length()).trim());
                 loginInProgress = true;
-                
                 qrScanner.stopQRScanner();
+                loginByAccountId(accountId);
                 loginInProgress = false;
+                
+                
             } catch (NumberFormatException e) {
                 ErrorDialog.showError("QR Code Error", "Invalid account ID", null);
                 e.printStackTrace();

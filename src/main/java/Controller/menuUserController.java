@@ -534,7 +534,7 @@ public class menuUserController {
     }
 
     private boolean ishandlingQR = false;
-    public QRScanner qrScanner;
+    public QRScanner qrScanner = QRScanner.getInstance();
     private boolean isValidQRCodeFormat(String qrCodeText) {
         if (qrCodeText == null || !qrCodeText.startsWith("BookID:")) {
             return false;
@@ -552,13 +552,11 @@ public class menuUserController {
         if (isscanning || ishandlingQR) {
             return;
         }
-        qrScanner = QRScanner.getInstance();
-        System.setProperty("opencv.videoio.MSMF", "false");
         qrScanner.startQRScanner(qrCodeText -> {
         Platform.runLater(() -> {
         
             try {
-               
+                if (ishandlingQR) { return; }
                 if (!isValidQRCodeFormat(qrCodeText)) {
                 ErrorDialog.showError("QR Code Error", "Invalid QR Code format", null);
                 return;
@@ -566,8 +564,13 @@ public class menuUserController {
                 int bookID = Integer.parseInt(qrCodeText.substring("BookID:".length()).trim());
                 Document document = BookDao.getInstance().get(bookID);
                 ishandlingQR = true;
-                showHomeTab();
-                homeController.openBookDetailTab(document);
+                if (borrowAndReturnTab.isVisible()) {
+                    cbDocuments.setValue(bookID + " - " + document.getTitle());
+                }
+                else {
+                    showHomeTab();
+                    homeController.openBookDetailTab(document);
+                }
                 qrScanner.stopQRScanner();
                 ishandlingQR = false;
                 
