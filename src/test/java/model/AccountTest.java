@@ -40,13 +40,6 @@ public class AccountTest {
         assertEquals(1, account.getAccountID());
     }
 
-    // @Test
-    // public void testSetAccountID() {
-    //     Account account = new Account(1, "user1", "password", "User");
-    //     account.setAccountID(2);
-    //     assertEquals(2, account.getAccountID());
-    // }
-
     @Test
     public void testGetUsername() {
         Account account = new Account("user1", "password", "User");

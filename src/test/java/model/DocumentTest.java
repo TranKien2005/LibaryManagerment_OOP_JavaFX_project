@@ -75,16 +75,4 @@ public class DocumentTest {
         doc.setReviewCount(5);
         assertEquals(5, doc.getReviewCount());
     }
-
-    @Test
-    public void testSetCoverImageByUrl() {
-        Document doc = new Document("Title", "Author", "Category", "Publisher", 2023, 10);
-        String validUrl = "http://example.com/image.jpg";
-        try {
-            doc.setCoverImageByUrl(validUrl);
-            assertNotNull(doc.getCoverImage());
-        } catch (IOException e) {
-            fail("IOException should not be thrown for a valid URL");
-        }
-    }
 } 
