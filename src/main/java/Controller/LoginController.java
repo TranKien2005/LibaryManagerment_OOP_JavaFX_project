@@ -247,28 +247,25 @@ public class LoginController {
     @FXML
     private void handleQRLogin() {
     boolean isscanning = (qrScanner != null && qrScanner.isRunning());
-    if (isscanning) {
+    if (isscanning || loginInProgress) {
         return;
     }
     qrScanner = QRScanner.getInstance();
+    System.setProperty("opencv.videoio.MSMF", "false");
     qrScanner.startQRScanner(qrCodeText -> {
         Platform.runLater(() -> {
         
         if (qrCodeText.startsWith("accountID:")) {
             try {
-                if (loginInProgress) {
-                    
-                    return; // Ignore if a login attempt is already in progress
-                }
                 if (!isValidQRCodeFormat(qrCodeText)) {
                 ErrorDialog.showError("QR Code Error", "Invalid QR Code format", null);
                 return;
                 }
                 int accountId = Integer.parseInt(qrCodeText.substring("accountID:".length()).trim());
                 loginInProgress = true;
-                loginByAccountId(accountId);
-                qrScanner.stopQRScanner();
                 
+                qrScanner.stopQRScanner();
+                loginInProgress = false;
             } catch (NumberFormatException e) {
                 ErrorDialog.showError("QR Code Error", "Invalid account ID", null);
                 e.printStackTrace();

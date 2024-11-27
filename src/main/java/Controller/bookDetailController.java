@@ -1,13 +1,19 @@
 package Controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+
+import QR.*;
+
 
 import DAO.*;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -69,12 +75,16 @@ public class BookDetailController {
     @FXML
     private Button star5;
 
+    @FXML
+    private ImageView qrCodeImageView;
+
     private int rating = 0;
 
     int accountID = menuUserController.getInstance().getAccountID();
 
     
     private List<BorrowReturn> listBorrowReturns = menuController.getInstance().borrowReturnList;
+
     /**
      * Thiết lập sách cần hiển thị.
      * @param book Đối tượng Document đại diện cho thông tin sách.
@@ -92,6 +102,13 @@ public class BookDetailController {
         // Cập nhật ảnh bìa
         accountID = menuUserController.getInstance().getAccountID();
         InputStream coverImageStream = book.getCoverImage();
+        try {
+            InputStream qrCodeStream = CreateQRCode.generateQRCode("BookID: " + book.getBookID());
+            qrCodeImageView.setImage(new Image(qrCodeStream));
+        } catch (Exception e) {
+            e.printStackTrace();
+            util.ErrorDialog.showError("Error", "Có lỗi xảy ra khi tạo mã QR.", null);
+        }
         if (coverImageStream != null) {
             Image image = new Image(coverImageStream);
             try {
@@ -179,7 +196,7 @@ public class BookDetailController {
         try {
             borrowDAO.insert(newBorrow);
             util.ErrorDialog.showSuccess("Thành công", "Tài liệu đã được mượn thành công.", null);
-            menuUserController.getInstance().reload();
+
             listBorrowReturns = menuUserController.getInstance().borrowReturnList;
         }
          catch (SQLException e) {
@@ -304,6 +321,26 @@ public class BookDetailController {
             } else {
                 stars[i].setStyle("-fx-text-fill: black;");
             }
+        }
+    }
+
+    @FXML
+    private void handleQrCodeClick(MouseEvent event) {
+        try {
+            Image qrCodeImage = qrCodeImageView.getImage();
+            if (qrCodeImage != null) {
+            File outputFile = new File(System.getProperty("user.home") + "/Downloads/QRCodeBook.png");
+            if (outputFile.exists()) {
+                outputFile.delete();
+            }
+            ImageIO.write(SwingFXUtils.fromFXImage(qrCodeImage, null), "png", outputFile);
+            util.ErrorDialog.showSuccess("Success", "QR code has been saved to Downloads folder.", null);
+            } else {
+            throw new Exception("QR code not found.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            util.ErrorDialog.showError("Error", "Có lỗi xảy ra khi tải mã QR.", null);
         }
     }
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import DAO.*;
+import QR.QRScanner;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -530,6 +531,63 @@ public class menuUserController {
         }
             
             
+    }
+
+    private boolean ishandlingQR = false;
+    public QRScanner qrScanner;
+    private boolean isValidQRCodeFormat(String qrCodeText) {
+        if (qrCodeText == null || !qrCodeText.startsWith("BookID:")) {
+            return false;
+        }
+        try {
+            Integer.parseInt(qrCodeText.substring("BookID:".length()).trim());
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+    @FXML
+    private void handleQRCodeScan() {
+        boolean isscanning = (qrScanner != null && qrScanner.isRunning());
+        if (isscanning || ishandlingQR) {
+            return;
+        }
+        qrScanner = QRScanner.getInstance();
+        System.setProperty("opencv.videoio.MSMF", "false");
+        qrScanner.startQRScanner(qrCodeText -> {
+        Platform.runLater(() -> {
+        
+            try {
+               
+                if (!isValidQRCodeFormat(qrCodeText)) {
+                ErrorDialog.showError("QR Code Error", "Invalid QR Code format", null);
+                return;
+                }
+                int bookID = Integer.parseInt(qrCodeText.substring("BookID:".length()).trim());
+                Document document = BookDao.getInstance().get(bookID);
+                ishandlingQR = true;
+                showHomeTab();
+                homeController.openBookDetailTab(document);
+                qrScanner.stopQRScanner();
+                ishandlingQR = false;
+                
+            } catch (NumberFormatException e) {
+                ErrorDialog.showError("QR Code Error", "Invalid account ID", null);
+                e.printStackTrace();
+                ishandlingQR = false;
+            } catch (RuntimeException e) {
+                ErrorDialog.showError("QR Code Error", e.getMessage(), null);
+                e.printStackTrace();
+                ishandlingQR = false;
+            } catch (Exception e) {
+                ErrorDialog.showError("QR Code Error", e.getMessage(), null);
+                e.printStackTrace();
+                ishandlingQR = false;
+            }
+       
+        
+        });
+    });
     }
 }
     

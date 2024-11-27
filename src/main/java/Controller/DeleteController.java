@@ -38,6 +38,10 @@ public class DeleteController extends menuController {
 
     private BookDao bookDao;
 
+    public void setNameField(Document book) {
+        nameField.setText(book.getBookID() + " - " + book.getTitle());
+    }
+
     public DeleteController() {
         this.bookDao = BookDao.getInstance();
     }
@@ -156,6 +160,8 @@ public class DeleteController extends menuController {
             });
       
         }
+
+        
 
         @FXML
         private void handleCancel() {

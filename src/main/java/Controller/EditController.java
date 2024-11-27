@@ -42,7 +42,10 @@ public class EditController extends menuController {
     private BookDao bookDao;
     private Consumer<Void> onEditSuccess; // Callback
    
-
+    public void setSearchField(Document book) {
+        this.searchField.setText(book.getBookID() + " - " + book.getTitle());
+        loadDocumentDetails(book.getBookID());
+    }
     public EditController() {
         this.bookDao = BookDao.getInstance();
     }

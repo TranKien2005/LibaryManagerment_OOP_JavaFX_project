@@ -10,10 +10,11 @@ c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\ja
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\DAO\BookDao.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\DAO\BorrowReturnDAO.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\LoadingController.java
-c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\QR\qr.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\menuController.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\model\Borrow.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\AddController.java
+c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\QR\QRCodeListener.java
+c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\QR\QRScanner.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\model\Return.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\MemberManagementController.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\DAO\DatabaseConnection.java
@@ -23,6 +24,7 @@ c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\ja
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\DAO\ManagerDao.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\model\Account.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\DAO\ReturnDao.java
+c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\QR\CreateQRCode.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\HomeController.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\model\BorrowReturn.java
 c:\Users\ttk08\OneDrive\Desktop\LibaryManagerment_OOP_JavaFX_project\src\main\java\Controller\registerController.java

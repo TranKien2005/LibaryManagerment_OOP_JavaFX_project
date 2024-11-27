@@ -56,6 +56,14 @@
           </graphic>
           <text>Tài khoản của tôi</text>
         </Button>
+        <Button fx:id="btnQRCode" alignment="CENTER_LEFT" onAction="#handleQRCodeScan" prefHeight="100" styleClass="sidebar-button">
+          <graphic>
+            <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">
+              <Image url="@/icons/qr-scan.png" />
+            </ImageView>
+          </graphic>
+          <text>Quét mã QR</text>
+        </Button>
          <Button fx:id="btnLogout" alignment="CENTER_LEFT" onAction="#handleLogout" prefHeight="100" styleClass="sidebar-button">
           <graphic>
             <ImageView fitHeight="20" fitWidth="20" preserveRatio="true" smooth="true">

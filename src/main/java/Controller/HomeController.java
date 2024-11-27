@@ -379,7 +379,7 @@ public class HomeController {
         scrollPaneMain.setContent(initialContent);
     }
 
-    private void openBookDetailTab(Document book) {
+    public void openBookDetailTab(Document book) {
         try {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/bookDetail.fxml"));
         Parent bookDetailRoot = loader.load();

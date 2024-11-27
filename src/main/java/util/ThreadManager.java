@@ -15,6 +15,7 @@ public class ThreadManager {
             generalExecutorService = Executors.newFixedThreadPool(5);
         }
         generalExecutorService.execute(task);
+        
     }
 
     public static Future<?> submitSqlTask(Runnable task) {

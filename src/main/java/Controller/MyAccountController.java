@@ -1,14 +1,18 @@
 package Controller;
 
+import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 
+import javax.imageio.ImageIO;
+
 import DAO.AccountDao;
 import DAO.ManagerDao;
 import DAO.UserDao;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
@@ -88,15 +92,22 @@ public class MyAccountController {
     @FXML
     private void handleUserIconClick(MouseEvent event) {
         try {
-            String qrCodeText = "accountID: " + accountID;
-            String filePath = System.getProperty("user.home") + "/Downloads/QRCode.png";
-            try (InputStream qrCodeInputStream = QR.CreateQRCode.generateQRCode(qrCodeText)) {
-                Files.copy(qrCodeInputStream, Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+            Image image = userIcon.getImage();
+            if (image != null) {
+                File outputFile = new File(System.getProperty("user.home") + "/Downloads/QRCodeAccount.png");
+            if (outputFile.exists()) {
+                outputFile.delete();
             }
-            ErrorDialog.showSuccess("Success", "QR code saved to Downloads folder.", (Stage) fullnameField.getScene().getWindow());
-        } catch (Exception e) {
-            ErrorDialog.showError("Error", "Failed to save QR code: " + e.getMessage(), (Stage) fullnameField.getScene().getWindow());
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", outputFile);
+            util.ErrorDialog.showSuccess("Success", "QR code has been saved to Downloads folder.", null);
+            }
+            else {
+                throw new Exception("QR code not found.");
+            }
+        }
+        catch(Exception e) {
             e.printStackTrace();
+            util.ErrorDialog.showError("Error", "Có lỗi xảy ra khi tải mã QR.", null);
         }
         
     }

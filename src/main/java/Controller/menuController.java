@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import DAO.*;
 import Main.Main;
+import QR.QRScanner;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -445,11 +446,7 @@ public class menuController {
             myAccountController.handleReload();
         }
 
-        @FXML
-        private void showHomeTab() {
-       
-        stackPane.getChildren().get(stackPane.getChildren().size() - 1).setVisible(true);
-        }
+        
 
         
     
@@ -892,5 +889,95 @@ private void handleSearchAction() {
         }
             
             
+    }
+
+    private boolean ishandlingQR = false;
+    public QRScanner qrScanner;
+    private boolean isValidQRCodeFormatUser(String qrCodeText) {
+        if (qrCodeText == null || !qrCodeText.startsWith("accountID:")) {
+            return false;
+        }
+        try {
+            Integer.parseInt(qrCodeText.substring("accountID:".length()).trim());
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private boolean isValidQRCodeFormatBook(String qrCodeText) {
+        if (qrCodeText == null || !qrCodeText.startsWith("BookID:")) {
+            return false;
+        }
+        try {
+            Integer.parseInt(qrCodeText.substring("bookID:".length()).trim());
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+    @FXML
+    private void handleQRCodeScan() {
+        boolean isscanning = (qrScanner != null && qrScanner.isRunning());
+        if (isscanning || ishandlingQR) {
+            return;
+        }
+        qrScanner = QRScanner.getInstance();
+        System.setProperty("opencv.videoio.MSMF", "false");
+        qrScanner.startQRScanner(qrCodeText -> {
+        Platform.runLater(() -> {
+        
+            try {
+               
+                if (isValidQRCodeFormatUser(qrCodeText)) {
+                    int accountID = Integer.parseInt(qrCodeText.substring("accountID:".length()).trim());
+                    User user = UserDao.getInstance().get(accountID);
+                    ishandlingQR = true;
+                    showBorrowReturnTab();
+                    cbMembers.setValue(accountID + " - " + user.getFullName());
+                    qrScanner.stopQRScanner();
+                    ishandlingQR = false;
+                } else if (isValidQRCodeFormatBook(qrCodeText)) {
+                    int bookID = Integer.parseInt(qrCodeText.substring("bookID:".length()).trim());
+                    Document document = BookDao.getInstance().get(bookID);
+                    ishandlingQR = true;
+
+                    if (borrowAndReturnTab.isVisible()) {
+                         cbDocuments.setValue(bookID + " - " + document.getTitle());
+                    
+                    } else {
+                        showDocumentListTab();
+                        tvDocuments.getSelectionModel().select(document);
+                    }
+                    
+                    qrScanner.stopQRScanner();
+                    ishandlingQR = false;
+                } else {
+                    ErrorDialog.showError("QR Code Error", "Invalid QR Code format", null);
+                    ishandlingQR = false;
+                    return;
+                }
+                
+            } catch (NumberFormatException e) {
+                ErrorDialog.showError("QR Code Error", "Invalid ID format", null);
+                e.printStackTrace();
+                ishandlingQR = false;
+            } catch (RuntimeException e) {
+                ErrorDialog.showError("QR Code Error", e.getMessage(), null);
+                e.printStackTrace();
+                ishandlingQR = false;
+            } catch (SQLException e) {
+                ErrorDialog.showError("Database Error", e.getMessage(), null);
+                e.printStackTrace();
+                ishandlingQR = false;
+            } catch (Exception e) {
+                ErrorDialog.showError("QR Code Error", e.getMessage(), null);
+                e.printStackTrace();
+                ishandlingQR = false;
+            }
+       
+        
+        });
+    });
     }
 }

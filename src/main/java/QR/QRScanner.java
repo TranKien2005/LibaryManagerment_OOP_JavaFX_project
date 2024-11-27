@@ -29,8 +29,11 @@ public class QRScanner {
         }
         return instance;
     }
-    private CanvasFrame canvas;
-    private AtomicBoolean running = new AtomicBoolean(false);
+
+    private CanvasFrame canvas; // Cửa sổ quét
+    private OpenCVFrameGrabber grabber; // Quản lý camera
+
+    public AtomicBoolean running = new AtomicBoolean(false);
 
     public interface QRCodeListener {
         void onQRCodeDetected(String qrCodeText);
@@ -52,22 +55,22 @@ public class QRScanner {
         if (isRunning()) {
             return;
         }
+        running.set(true);
          ThreadManager.execute(() -> {
             int deviceIndex = 0; // Try different device indices if needed
-            running.set(true);
-            try (OpenCVFrameGrabber grabber = new OpenCVFrameGrabber(deviceIndex)) {
+            if (!isCameraAvailable(deviceIndex)) {
+                System.err.println("Camera is not available");
+                throw new RuntimeException("Camera is not available");
+            }
+            grabber = new OpenCVFrameGrabber(deviceIndex);
+            try  {
+                
                 grabber.start();
                 canvas = new CanvasFrame("QRScanner");
                 canvas.setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
                 canvas.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                        try {
-                            grabber.stop();
-                        } catch (FrameGrabber.Exception e) {
-                            e.printStackTrace();
-                        }
-                        canvas.dispose();
                         stopQRScanner();
                     }
                 });
@@ -92,8 +95,6 @@ public class QRScanner {
                         return;
                     }
                 }
-                grabber.stop();
-                canvas.dispose();
                 stopQRScanner();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -103,8 +104,19 @@ public class QRScanner {
     }
 
     public void stopQRScanner() {  
-        running.set(false);
-        resetInstance();
+        running.set(false); // Dừng vòng lặp quét
+        if (grabber != null) {
+            try {
+                grabber.stop(); // Giải phóng tài nguyên camera
+                grabber.close();
+                grabber.release();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (canvas != null) {
+            canvas.dispose(); // Đóng cửa sổ
+        }
     }
 
     public boolean isRunning() {
@@ -114,7 +126,22 @@ public class QRScanner {
         instance = null;
     }
 
+    private boolean isCameraAvailable(int cameraIndex) {
+        OpenCVFrameGrabber testGrabber = new OpenCVFrameGrabber(cameraIndex);
+        try {
+            testGrabber.start();
+            testGrabber.stop();
+            testGrabber.release();
+            return true; // Camera hoạt động
+        } catch (Exception e) {
+            System.err.println("Camera is unavailable: " + e.getMessage());
+            return false;
+        }
+    }
+    
+
     public static void main(String[] args) {
+        System.setProperty("opencv.videoio.MSMF", "false");
         QRScanner scanner = new QRScanner();
         scanner.startQRScanner(qrCodeText -> {
             System.out.println("QR Code detected: " + qrCodeText);
