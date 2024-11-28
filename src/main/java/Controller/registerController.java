@@ -71,10 +71,7 @@ public class registerController {
             return;
         }
 
-        if (!phone.matches("^[0-9]")) {
-            util.ErrorDialog.showError("Registration Failed", "Invalid phone number format. It should be 10 digits.", (Stage) registerButton.getScene().getWindow());
-            return;
-        }
+        
 
         try {
             AccountDao accountDao = AccountDao.getInstance();

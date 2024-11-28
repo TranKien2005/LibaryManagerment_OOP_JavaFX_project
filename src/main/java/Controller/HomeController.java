@@ -385,7 +385,7 @@ public class HomeController {
         Parent bookDetailRoot = loader.load();
 
         // Lấy controller của BookDetail và truyền dữ liệu sách vào
-        BookDetailController controller = loader.getController();
+        bookDetailController controller = loader.getController();
         controller.setBook(book);
 
         // Thay thế nội dung của ScrollPane bằng chi tiết sách

@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.BookDetailController" spacing="20" alignment="CENTER" stylesheets="@/stylesheet/bookdetail.css">
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.bookDetailController" spacing="20" alignment="CENTER" stylesheets="@/stylesheet/bookdetail.css">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>

@@ -29,7 +29,7 @@ import util.ErrorDialog;
 import util.ThreadManager;
 
 
-public class BookDetailController {
+public class bookDetailController {
 
     @FXML
     private ImageView coverImageView; // Hiển thị ảnh bìa sách
