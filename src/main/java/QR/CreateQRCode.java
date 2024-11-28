@@ -17,6 +17,9 @@ import javafx.stage.Stage;
 
 public class CreateQRCode extends Application {
 
+    /*
+     * Generate a QR code with the given text.
+     */
     public static InputStream generateQRCode(String text) throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         int width = 300;

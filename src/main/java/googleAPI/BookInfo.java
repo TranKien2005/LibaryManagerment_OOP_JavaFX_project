@@ -6,6 +6,9 @@ public class BookInfo {
     private String imageUrl;
     private String reviewCount;
 
+    /*
+     * Lưu nội dung lấy từ API
+     */
     public BookInfo(String description, String rating, String imageUrl, String reviewCount) {
         this.description = description;
         this.rating = rating;

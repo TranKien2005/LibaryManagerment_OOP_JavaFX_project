@@ -464,6 +464,10 @@ public class menuController {
         showPane(4);
     }
 
+
+    /*
+     * Phương thức này được gọi khi người dùng nhấn nút "Tải lại" trên giao diện
+     */
     @FXML
     private void handleReload() {
         resetList();
@@ -525,6 +529,10 @@ public class menuController {
         handleReload();
     }
 
+
+    /*
+     * Phương thức này được gọi khi người dùng nhấn nút "Thay đổi ảnh bìa" trên giao diện
+     */
     @FXML
     private void handleChangeCover() {
         // Mở cửa sổ chọn tệp
@@ -559,6 +567,9 @@ public class menuController {
 
     }
 
+    /*
+     * Phương thức này được gọi khi người dùng nhấn nút "Thay đổi mô tả" trên giao diện
+     */
     @FXML
     private void handleChangeDescription() {
         Document selectedDocument = tvDocuments.getSelectionModel().getSelectedItem();
@@ -587,7 +598,9 @@ public class menuController {
             util.ErrorDialog.showError("Error", e.getMessage(), (Stage) taDocumentDetails.getScene().getWindow());
         }
     }
-
+    /*
+     * Phương thức này được gọi khi người dùng nhấn nút "Thay đổi mô tả" trên giao diện
+     */
     @FXML
     private void handleFetchIncorrectInfo() {
         ThreadManager.execute(() -> {
@@ -632,6 +645,9 @@ public class menuController {
 
     }
 
+    /*
+     * Phương thức này được gọi khi người dùng nhấn nút "Mượn tai liệu" trên giao diện
+     */
     @FXML
     public void handleFilterAction() {
         String filterText = tfFilter.getText().toLowerCase().trim();
@@ -653,6 +669,9 @@ public class menuController {
         }
     }
 
+    /*
+     * Phương thức này được gọi khi người dùng nhấn nút "Mượn tai liệu" trên giao diện
+     */
     @FXML
     private void handleBorrowDocument() {
         cbDocuments.getParent().requestFocus();
@@ -727,6 +746,9 @@ public class menuController {
 
     }
 
+    /*
+     * Phương thức này được gọi khi người dùng nhấn nút "Trả tài liệu" trên giao diện
+     */
     @FXML
     private void handleReturnDocument() {
         try {
@@ -772,6 +794,9 @@ public class menuController {
 
     }
 
+    /*
+     * Phương thức này được gọi khi người dùng nhấn nút "Tìm kiếm" trên giao diện
+     */
     @FXML
     private void handleSearchAction() {
         String searchText = tfSearch.getText().toLowerCase().trim();
@@ -813,6 +838,9 @@ public class menuController {
         }
     }
 
+    /*
+     * Phương thức này được gọi khi người dùng nhấn nút "Đăng xuất" trên giao diện
+     */
     @FXML
     private void handleLogout() {
         try {
@@ -849,6 +877,9 @@ public class menuController {
     private boolean ishandlingQR = false;
     public QRScanner qrScanner = QRScanner.getInstance();
 
+    /*
+     * Phương thức này được gọi khi người dùng nhấn nút "Quét mã QR" trên giao diện
+     */
     private boolean isValidQRCodeFormatUser(String qrCodeText) {
         if (qrCodeText == null || !qrCodeText.startsWith("accountID:")) {
             return false;
@@ -860,7 +891,10 @@ public class menuController {
             return false;
         }
     }
-
+    
+    /*
+     * Phương thức này được gọi khi người dùng nhấn nút "Quét mã QR" trên giao diện
+     */
     private boolean isValidQRCodeFormatBook(String qrCodeText) {
         if (qrCodeText == null || !qrCodeText.startsWith("BookID:")) {
             return false;
@@ -873,6 +907,9 @@ public class menuController {
         }
     }
 
+    /*
+     * Phương thức này được gọi khi người dùng nhấn nút "Quét mã QR" trên giao diện
+     */
     @FXML
     private void handleQRCodeScan() {
         boolean isscanning = (qrScanner != null && qrScanner.isRunning());

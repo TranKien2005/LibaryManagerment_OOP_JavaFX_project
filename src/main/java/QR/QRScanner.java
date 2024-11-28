@@ -38,6 +38,9 @@ public class QRScanner {
         void onQRCodeDetected(String qrCodeText);
     }
 
+    /*
+     * Phương thức giải mã mã QR từ ảnh
+     */
     public static String decodeQRCode(BufferedImage bufferedImage) throws Exception {
         LuminanceSource source = new com.google.zxing.client.j2se.BufferedImageLuminanceSource(bufferedImage);
         BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
@@ -45,12 +48,18 @@ public class QRScanner {
         return result.getText();
     }
 
+    /*
+     * Phương thức chuyển đổi Frame thành BufferedImage
+     */
     public static BufferedImage frameToBufferedImage(Frame frame) {
         try (Java2DFrameConverter converter = new Java2DFrameConverter()) {
             return converter.getBufferedImage(frame);
         }
     }
 
+    /*
+     *  Phương thức bắt đầu quét mã QR
+     */
     @SuppressWarnings({"UseSpecificCatch", "CallToPrintStackTrace"})
     public void startQRScanner(QRCodeListener listener) {
         if (isRunning()) {
@@ -98,6 +107,9 @@ public class QRScanner {
         });
     }
 
+    /*
+     * Phương thức dừng quét mã QR
+     */
     public void stopQRScanner() {
         running.set(false); // Dừng vòng lặp quét
         if (grabber != null) {
@@ -122,12 +134,4 @@ public class QRScanner {
         instance = null;
     }
 
-    public static void main(String[] args) {
-
-        QRScanner scanner = new QRScanner();
-        scanner.startQRScanner(qrCodeText -> {
-            System.out.println("QR Code detected: " + qrCodeText);
-            System.out.println(scanner.isRunning());
-        });
-    }
 }

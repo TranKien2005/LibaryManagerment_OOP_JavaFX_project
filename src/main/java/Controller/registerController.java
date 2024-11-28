@@ -44,6 +44,9 @@ public class registerController {
     @FXML
     protected Button registerButton;
 
+    /*
+     * Hàm này được dùng để xử lý sự kiện khi người dùng nhấn nút "Đăng ký"
+     */
     @FXML
     protected void handleRegister() {
         String username = usernameField.getText();
@@ -130,6 +133,9 @@ public class registerController {
         }
     }
 
+    /*
+     * Hàm này được dùng để xử lý sự kiện khi người dùng nhấn nút "Đăng nhập"
+     */
     @FXML
     protected void handleLogin() {
         try {

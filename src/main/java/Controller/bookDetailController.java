@@ -226,6 +226,10 @@ public class bookDetailController {
 
     }
 
+    /**
+     * Xử lý sự kiện khi người dùng click vào một trong 5 ngôi sao
+     * @param event
+     */
     @FXML
     private void handleStarClick(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
@@ -277,6 +281,9 @@ public class bookDetailController {
         // Thực hiện các hành động khác như lưu rating vào cơ sở dữ liệu
     }
 
+    /**
+     * Cập nhật hiển thị số sao theo rating
+     */
     private void updateStarDisplay() {
         Button[] stars = { star1, star2, star3, star4, star5 };
         for (int i = 0; i < stars.length; i++) {
@@ -288,6 +295,9 @@ public class bookDetailController {
         }
     }
 
+    /**
+     * Xử lý sự kiện khi người dùng click vào nút tải mã QR
+     */
     @FXML
     private void handleQrCodeClick() {
         try {

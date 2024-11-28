@@ -296,7 +296,10 @@ public class menuUserController {
     public void reload() {
         handleReload();
     }
-
+    
+    /*
+     * Xử lý mượn tài liệu
+     */
     @FXML
     private void handleBorrowDocument() {
         cbDocuments.getParent().requestFocus();
@@ -367,6 +370,9 @@ public class menuUserController {
 
     }
 
+    /*
+     * Xử lý trả tài liệu
+     */
     @FXML
     private void handleReturnDocument() {
         try {
@@ -411,7 +417,9 @@ public class menuUserController {
         }
 
     }
-
+    /*
+     * Xử lý tìm kiếm tài liệu đã mượn
+     */
     @FXML
     private void handleSearchAction() {
         String searchText = tfSearch.getText().toLowerCase().trim();
@@ -453,6 +461,9 @@ public class menuUserController {
         }
     }
 
+    /*
+     * Xử lý đăng xuất
+     */
     @FXML
     private void handleLogout() {
         try {
@@ -501,6 +512,9 @@ public class menuUserController {
         }
     }
 
+    /*
+     * Xử lý quét mã QR
+     */
     @FXML
     private void handleQRCodeScan() {
         boolean isscanning = (qrScanner != null && qrScanner.isRunning());

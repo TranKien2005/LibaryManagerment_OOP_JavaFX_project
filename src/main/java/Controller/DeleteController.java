@@ -34,6 +34,9 @@ public class DeleteController extends menuController {
 
     private final BookDao bookDao;
 
+    /*
+     * Set the name field to the title of the book.
+     */
     public void setNameField(Document book) {
         nameField.setText(book.getBookID() + " - " + book.getTitle());
     }
@@ -82,6 +85,9 @@ public class DeleteController extends menuController {
         });
     }
 
+    /*
+     * Delete the selected document from the database.
+     */
     @FXML
     public void xoaTaiLieu() {
         String selectedDocumentID = nameField.getText().trim();
@@ -119,7 +125,7 @@ public class DeleteController extends menuController {
             }
         });
     }
-
+    
     private void capNhatBangTaiLieu() {
         try {
             bookList = BookDao.getInstance().getAll();
@@ -133,6 +139,9 @@ public class DeleteController extends menuController {
         }
     }
 
+    /*
+     * Update the suggestion list based on the search text.
+     */
     private void updateSuggestions(String searchText) {
 
         if (searchText == null || searchText.isEmpty()) {

@@ -112,6 +112,9 @@ public class HomeController {
     @FXML
     private Label lblCurrentPage;
 
+    /*
+     * Xử lý sự kiện khi người dùng nhấn nút "Trang sau" để xem trang tiếp theo
+     */
     @FXML
     private void handleNextPage() {
 
@@ -144,6 +147,9 @@ public class HomeController {
 
     }
 
+    /*
+     * Xử lý sự kiện khi người dùng nhấn nút "Trang trước" để xem trang trước đó
+     */
     @FXML
     private void handlePreviousPage() {
 
@@ -181,7 +187,10 @@ public class HomeController {
         updateCurrentPageLabel();
 
     }
-
+    
+    /*
+     * Cập nhật nhãn hiển thị trang hiện tại
+     */
     private void updateCurrentPageLabel() {
         int currentPage = isSearching ? searchPage : newArrivalsPage;
         lblCurrentPage.setText(String.valueOf(currentPage + 1));
@@ -201,6 +210,9 @@ public class HomeController {
         }
     }
 
+    /*
+     * Tải thêm sách mới từ cơ sở dữ liệu và hiển thị lên giao diện
+     */
     private void loadMoreNewArrivals() throws SQLException {
         List<Document> newArrivals = bookDao.getAll(newArrivalsPage, PAGE_SIZE);
         if (newArrivals.isEmpty()) {
@@ -213,6 +225,9 @@ public class HomeController {
         }
     }
 
+    /*
+     * Tạo một VBox chứa thông tin sách
+     */
     private VBox createBookItem(String title, InputStream coverImageStream, double rating, Document book) {
         VBox vBox = new VBox(10);
         vBox.getStyleClass().add("book-item");
@@ -266,6 +281,9 @@ public class HomeController {
         return vBox;
     }
 
+    /*
+     * Xử lý sự kiện khi người dùng nhấn nút tìm kiếm
+     */
     @FXML
     private void handleSearch() {
         scrollPaneMain.setContent(initialContent);
@@ -298,14 +316,27 @@ public class HomeController {
 
     public void handleAboutUs() {
         System.out.println("Thông tin về chúng tôi");
-        // TODO: Implement about us page navigation
+        try {
+            java.awt.Desktop.getDesktop().browse(new java.net.URI("https://github.com/TranKien2005/LibaryManagerment_OOP_JavaFX_project"));
+        } catch (IOException | java.net.URISyntaxException e) {
+            e.printStackTrace();
+            ErrorDialog.showError("Lỗi", "Không thể mở trang web.", (Stage) tfSearch.getScene().getWindow());
+        }
     }
 
     public void handleContact() {
         System.out.println("Liên hệ");
-        // TODO: Implement contact page navigation
+        try {
+            java.awt.Desktop.getDesktop().browse(new java.net.URI("https://mail.google.com/mail/?view=cm&fs=1&to=ttk08112005@gmail.com"));
+        } catch (IOException | java.net.URISyntaxException e) {
+            e.printStackTrace();
+            ErrorDialog.showError("Lỗi", "Không thể mở Gmail.", (Stage) tfSearch.getScene().getWindow());
+        }
     }
 
+    /*
+     * Xử lý sự kiện khi người dùng nhấn nút "Tải lại" để tải lại dữ liệu từ cơ sở dữ liệu
+     */
     @FXML
     public void handleReload() {
 

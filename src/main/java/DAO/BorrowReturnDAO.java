@@ -34,6 +34,9 @@ public class BorrowReturnDAO {
         return instance;
     }
 
+    /*
+     * Phương thức này trả về một danh sách các bản ghi từ view BorrowReturnList
+     */
     public List<BorrowReturn> getAll() {
         List<BorrowReturn> borrowReturns = new ArrayList<>();
         String query = "SELECT * FROM BorrowReturnList";
@@ -72,6 +75,9 @@ public class BorrowReturnDAO {
         return borrowReturns;
     }
 
+    /*
+     * Phương thức này trả về một danh sách các bản ghi từ view BorrowReturnList
+     */
     public List<BorrowReturn> getByAccountId(int accountId) {
         List<BorrowReturn> borrowReturns = new ArrayList<>();
         String query = "SELECT * FROM BorrowReturnList WHERE SUBSTRING_INDEX(Member, ' - ', 1) = ?";
@@ -112,6 +118,9 @@ public class BorrowReturnDAO {
         return borrowReturns;
     }
 
+    /*
+     * Phương thức này trả về một danh sách các bản ghi từ view BorrowReturnList
+     */
     public boolean isBorrowed(int accountId, int bookId) {
         String query = "SELECT * FROM BorrowReturnList WHERE SUBSTRING_INDEX(Member, ' - ', 1) = ? AND SUBSTRING_INDEX(Book, ' - ', 1) = ? AND Status = 'Borrowed'";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
@@ -127,6 +136,9 @@ public class BorrowReturnDAO {
         }
     }
 
+    /*
+     * Phương thức này trả về một danh sách các bản ghi từ view BorrowReturnList
+     */
     public int getID(int accountId, int bookId) {
         String query = "SELECT BorrowID FROM BorrowReturnList WHERE SUBSTRING_INDEX(Member, ' - ', 1) = ? AND SUBSTRING_INDEX(Book, ' - ', 1) = ? AND Status = 'Borrowed'";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();

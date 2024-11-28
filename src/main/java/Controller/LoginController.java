@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import DAO.AccountDao;
-import model.Account;
+import QR.QRScanner;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,9 +17,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import model.Account;
 import util.ErrorDialog;
-import QR.*;
 
+/**
+ * Controller for handling login functionality including regular login and QR code login.
+ */
 public class LoginController {
 
     @FXML
@@ -31,6 +34,10 @@ public class LoginController {
     @FXML
     protected Button loginButton;
 
+    /**
+     * Handles the login action when the login button is pressed.
+     * It validates the username and password, and navigates to the appropriate menu based on the account type.
+     */
     @FXML
     protected void handleLogin() {
         String username = usernameField.getText();
@@ -43,10 +50,10 @@ public class LoginController {
             if (account == null || !account.getPassword().equals(password)) {
                 throw new Exception("Invalid username or password");
             }
+
             // Show loading stage in the current stage
             Stage currentStage = (Stage) loginButton.getScene().getWindow();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/loading.fxml"));
-
             Parent root = loader.load();
             Scene scene = new Scene(root);
             currentStage.setScene(scene);
@@ -80,18 +87,22 @@ public class LoginController {
                             menuLoader.setAccountID(accountId);
                             mainLoader.setController(menuLoader);
                         }
+
                         Parent mainRoot = mainLoader.load();
                         Scene mainScene = new Scene(mainRoot);
                         Stage mainStage = new Stage();
                         mainStage.setScene(mainScene);
                         mainStage.setTitle("Menu");
+
+                        // Center the stage on the screen
                         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
                         mainStage.setX((screenBounds.getWidth() - 1500) / 2);
                         mainStage.setY((screenBounds.getHeight() - 800) / 2);
                         mainStage.setWidth(1500);
                         mainStage.setHeight(800);
                         mainStage.setResizable(false);
-                        // Sử dụng đường dẫn tuyệt đối cho tệp hình ảnh
+
+                        // Set window icon
                         Image icon = new Image(getClass().getResourceAsStream("/images/login/logo.png"));
                         if (icon.isError()) {
                             System.err.println("Error: Image file not found!");
@@ -99,6 +110,7 @@ public class LoginController {
                         }
                         mainStage.getIcons().add(icon);
 
+                        // Close current stage and show new menu stage
                         currentStage.close();
                         mainStage.show();
                     } catch (IOException e) {
@@ -121,6 +133,9 @@ public class LoginController {
 
     }
 
+    /**
+     * Handles the registration button click, opening the registration form.
+     */
     @FXML
     private void handleRegister() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/register.fxml"));
@@ -142,6 +157,11 @@ public class LoginController {
         }
     }
 
+    /**
+     * Log in using the provided account ID by fetching the account from the database.
+     * 
+     * @param accountId The ID of the account to log in with.
+     */
     private void loginByAccountId(int accountId) {
         AccountDao accountDao = AccountDao.getInstance();
         Account account;
@@ -186,18 +206,22 @@ public class LoginController {
                             menuLoader.setAccountID(accountId);
                             mainLoader.setController(menuLoader);
                         }
+
                         Parent mainRoot = mainLoader.load();
                         Scene mainScene = new Scene(mainRoot);
                         Stage mainStage = new Stage();
                         mainStage.setScene(mainScene);
                         mainStage.setTitle("Menu");
+
+                        // Center the stage on the screen
                         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
                         mainStage.setX((screenBounds.getWidth() - 1500) / 2);
                         mainStage.setY((screenBounds.getHeight() - 800) / 2);
                         mainStage.setWidth(1500);
                         mainStage.setHeight(800);
                         mainStage.setResizable(false);
-                        // Sử dụng đường dẫn tuyệt đối cho tệp hình ảnh
+
+                        // Set window icon
                         Image icon = new Image(getClass().getResourceAsStream("/images/login/logo.png"));
                         if (icon.isError()) {
                             System.err.println("Error: Image file not found!");
@@ -205,6 +229,7 @@ public class LoginController {
                         }
                         mainStage.getIcons().add(icon);
 
+                        // Close current stage and show new menu stage
                         currentStage.close();
                         mainStage.show();
                     } catch (IOException e) {
@@ -224,6 +249,12 @@ public class LoginController {
     private boolean loginInProgress = false;
     public QRScanner qrScanner = QRScanner.getInstance();
 
+    /**
+     * Validates the QR code text format to ensure it contains a valid account ID.
+     * 
+     * @param qrCodeText The QR code text to validate.
+     * @return True if the QR code format is valid, false otherwise.
+     */
     private boolean isValidQRCodeFormat(String qrCodeText) {
         if (qrCodeText == null || !qrCodeText.startsWith("accountID:")) {
             return false;
@@ -236,6 +267,9 @@ public class LoginController {
         }
     }
 
+    /**
+     * Handles the QR code login process, starting the scanner and processing the QR code.
+     */
     @FXML
     private void handleQRLogin() {
         boolean isscanning = (qrScanner != null && qrScanner.isRunning());

@@ -98,6 +98,9 @@ public class EditController extends menuController {
 
     }
 
+    /*
+     * Load thông tin chi tiết của một tài liệu từ cơ sở dữ liệu
+     */
     private void loadDocumentDetails(int ID) {
         if (ID == -1) {
             util.ErrorDialog.showError("Lỗi", "ID không hợp lệ.", null);
@@ -120,6 +123,9 @@ public class EditController extends menuController {
         }
     }
 
+    /*
+     * Cập nhật danh sách gợi ý tìm kiếm
+     */
     private void updateSuggestions(String title) {
 
         ObservableList<String> suggestions = FXCollections.observableArrayList();
@@ -135,6 +141,9 @@ public class EditController extends menuController {
 
     }
 
+    /*
+     * Xử lý sự kiện khi nhấn nút "Cập nhật tài liệu"
+     */
     @FXML
     private void handleEditDocument() {
         try {

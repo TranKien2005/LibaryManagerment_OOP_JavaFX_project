@@ -80,6 +80,9 @@ public class MyAccountController {
     @FXML
     private PasswordField confirmPasswordField;
 
+    /*
+     * Handle click on user icon to save QR code to Downloads folder
+     */
     @FXML
     private void handleUserIconClick(MouseEvent event) {
         try {
@@ -101,6 +104,9 @@ public class MyAccountController {
 
     }
 
+    /*
+     * Validate input fields
+     */
     private boolean validateInputFields() {
         if (fullnameField.getText().isEmpty() || phoneField.getText().isEmpty() || emailField.getText().isEmpty()
                 || passwordField.getText().isEmpty() || confirmPasswordField.getText().isEmpty()) {
@@ -116,6 +122,9 @@ public class MyAccountController {
         return true;
     }
 
+    /*
+     * Handle update button click
+     */
     @FXML
     private void handleUpdate() {
         // Validate input fields
@@ -163,6 +172,9 @@ public class MyAccountController {
 
     }
 
+    /*
+     * Handle cancel button click
+     */
     @FXML
     private void handleCancel() {
         fullnameField.clear();

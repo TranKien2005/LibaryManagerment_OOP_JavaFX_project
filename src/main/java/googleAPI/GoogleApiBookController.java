@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 import util.*;
 
 public class GoogleApiBookController {
-
+    // List các API key
     private static final String API_URL = "https://www.googleapis.com/books/v1/volumes?q=";
     private static final String API_KEY = "AIzaSyA06bI-XxA2j5ucnBbbN5fdrGux_flXDjc";
     private static final String API_KEY1 = "AIzaSyDZzdNOpuwPTo5Cf168Q5cWrSfrEyzihG4";
@@ -52,6 +52,9 @@ public class GoogleApiBookController {
         return pattern.matcher(normalized).replaceAll("").replaceAll("đ", "d").replaceAll("Đ", "D");
     }
 
+    /*
+     * Hàm lấy thông tin sách từ Google API
+     */
     public static BookInfo getBookInfo(String bookTitle) {
         if (!isValidInput(bookTitle)) {
             return new BookInfo("Invalid input: Book title is required.", null, null, null);
@@ -113,6 +116,9 @@ public class GoogleApiBookController {
         }
     }
 
+    /*
+     * Hàm lấy thông tin sách từ Google API bằng ISBN
+     */
     public static Document getBookInfoByISBN(String isbn) {
         if (isbn == null || isbn.trim().isEmpty()) {
             ErrorDialog.showError("Invalid input", "ISBN is required.", null);
