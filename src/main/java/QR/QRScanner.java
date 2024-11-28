@@ -1,24 +1,23 @@
 package QR;
+
 import org.bytedeco.javacv.*;
+
 import com.google.zxing.*;
 import com.google.zxing.common.HybridBinarizer;
 
 import util.ThreadManager;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.nio.file.Paths;
-import java.util.function.Consumer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class QRScanner {
-   
+
     private static QRScanner instance;
 
     private QRScanner() {
     }
 
+    @SuppressWarnings("DoubleCheckedLocking")
     public static QRScanner getInstance() {
         if (instance == null) {
             synchronized (QRScanner.class) {
@@ -47,20 +46,22 @@ public class QRScanner {
     }
 
     public static BufferedImage frameToBufferedImage(Frame frame) {
-        Java2DFrameConverter converter = new Java2DFrameConverter();
-        return converter.getBufferedImage(frame);
+        try (Java2DFrameConverter converter = new Java2DFrameConverter()) {
+            return converter.getBufferedImage(frame);
+        }
     }
 
+    @SuppressWarnings({"UseSpecificCatch", "CallToPrintStackTrace"})
     public void startQRScanner(QRCodeListener listener) {
         if (isRunning()) {
             return;
         }
         running.set(true);
-         ThreadManager.execute(() -> {
+        ThreadManager.execute(() -> {
             int deviceIndex = 0; // Try different device indices if needed
             grabber = new OpenCVFrameGrabber(deviceIndex);
-            try  {
-                
+            try {
+
                 grabber.start();
                 canvas = new CanvasFrame("QRScanner");
                 canvas.setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
@@ -85,8 +86,7 @@ public class QRScanner {
                         }
                     } catch (NotFoundException e) {
                         // No QR code found in the image
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         return;
                     }
@@ -94,19 +94,18 @@ public class QRScanner {
                 stopQRScanner();
             } catch (Exception e) {
                 e.printStackTrace();
-                return;
             }
         });
     }
 
-    public void stopQRScanner() {  
+    public void stopQRScanner() {
         running.set(false); // Dừng vòng lặp quét
         if (grabber != null) {
             try {
                 grabber.stop(); // Giải phóng tài nguyên camera
                 grabber.close();
                 grabber.release();
-            } catch (Exception e) {
+            } catch (FrameGrabber.Exception e) {
                 e.printStackTrace();
             }
         }
@@ -116,14 +115,15 @@ public class QRScanner {
     }
 
     public boolean isRunning() {
-        return  running.get();
+        return running.get();
     }
+
     public void resetInstance() {
         instance = null;
     }
 
     public static void main(String[] args) {
-        
+
         QRScanner scanner = new QRScanner();
         scanner.startQRScanner(qrCodeText -> {
             System.out.println("QR Code detected: " + qrCodeText);

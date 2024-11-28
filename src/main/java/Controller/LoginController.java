@@ -18,7 +18,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import util.ErrorDialog;
-import util.ThreadManager;
 import QR.*;
 
 public class LoginController {
@@ -38,16 +37,16 @@ public class LoginController {
         String password = passwordField.getText();
 
         AccountDao accountDao = AccountDao.getInstance();
-        Account account ;
+        Account account;
         try {
             account = accountDao.getByUsername(username);
             if (account == null || !account.getPassword().equals(password)) {
-            throw new Exception("Invalid username or password");
+                throw new Exception("Invalid username or password");
             }
-             // Show loading stage in the current stage
-        Stage currentStage = (Stage) loginButton.getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/loading.fxml"));
-      
+            // Show loading stage in the current stage
+            Stage currentStage = (Stage) loginButton.getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/loading.fxml"));
+
             Parent root = loader.load();
             Scene scene = new Scene(root);
             currentStage.setScene(scene);
@@ -56,20 +55,21 @@ public class LoginController {
 
             // Run login process in a new thread using ThreadManager
             util.ThreadManager.execute(() -> {
-               
-                    // Simulate login processing time
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+
+                // Simulate login processing time
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 Platform.runLater(() -> {
                     try {
-                        
-                        String fxmlFile = account.getAccountType().equals("User") ? "../view/menuUser.fxml" : "../view/menu.fxml";
+
+                        String fxmlFile = account.getAccountType().equals("User") ? "../view/menuUser.fxml"
+                                : "../view/menu.fxml";
                         FXMLLoader mainLoader = new FXMLLoader(getClass().getResource(fxmlFile));
-                        
+
                         int accountId = account.getAccountID();
                         if (account.getAccountType().equals("User")) {
                             menuUserController userLoader = new menuUserController();
@@ -106,10 +106,9 @@ public class LoginController {
                         ErrorDialog.showError("Error", e.getMessage(), currentStage);
                     }
                 });
-                
-              
+
             });
-       
+
         } catch (SQLException e) {
             System.err.println("SQL Error: " + e.getMessage());
             e.printStackTrace();
@@ -119,11 +118,7 @@ public class LoginController {
             e.printStackTrace();
             util.ErrorDialog.showError("Login Error", e.getMessage(), null);
         }
-    
 
-        
-
-       
     }
 
     @FXML
@@ -134,13 +129,12 @@ public class LoginController {
             Scene scene = new Scene(root);
             Stage stage = (Stage) loginButton.getScene().getWindow();
             stage.setTitle("Register");
-          
+
             stage.setScene(scene);
             stage.setHeight(650);
             stage.setWidth(1000);
             stage.show();
-           
-            
+
         } catch (IOException e) {
             System.err.println("Error loading register.fxml: " + e.getMessage());
             util.ErrorDialog.showError("Register Error", e.getMessage(), null);
@@ -152,39 +146,37 @@ public class LoginController {
         AccountDao accountDao = AccountDao.getInstance();
         Account account;
         try {
-             account = accountDao.get(accountId);
+            account = accountDao.get(accountId);
             if (account == null) {
                 throw new Exception("Account not found");
             }
 
-            
             Stage currentStage = (Stage) loginButton.getScene().getWindow();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/loading.fxml"));
-      
+
             Parent root = loader.load();
             Scene scene = new Scene(root);
             currentStage.setScene(scene);
             currentStage.setTitle("Loading");
             currentStage.show();
 
-
             // Run login process in a new thread using ThreadManager
             util.ThreadManager.execute(() -> {
-               
-                    // Simulate login processing time
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+
+                // Simulate login processing time
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 Platform.runLater(() -> {
                     try {
-                        
-                        String fxmlFile = account.getAccountType().equals("User") ? "../view/menuUser.fxml" : "../view/menu.fxml";
+
+                        String fxmlFile = account.getAccountType().equals("User") ? "../view/menuUser.fxml"
+                                : "../view/menu.fxml";
                         FXMLLoader mainLoader = new FXMLLoader(getClass().getResource(fxmlFile));
-                        
-                        
+
                         if (account.getAccountType().equals("User")) {
                             menuUserController userLoader = new menuUserController();
                             userLoader.setAccountID(accountId);
@@ -218,21 +210,20 @@ public class LoginController {
                     } catch (IOException e) {
                         throw new RuntimeException("Error loading menu.fxml: " + e.getMessage());
                     }
-                
+
                 });
             });
-        
-        }
-        catch (SQLException e) {
+
+        } catch (SQLException e) {
             throw new RuntimeException("Database Error: " + e.getMessage());
         } catch (Exception e) {
             throw new RuntimeException("Login Error: " + e.getMessage());
         }
     }
 
-    
     private boolean loginInProgress = false;
     public QRScanner qrScanner = QRScanner.getInstance();
+
     private boolean isValidQRCodeFormat(String qrCodeText) {
         if (qrCodeText == null || !qrCodeText.startsWith("accountID:")) {
             return false;
@@ -244,51 +235,51 @@ public class LoginController {
             return false;
         }
     }
+
     @FXML
     private void handleQRLogin() {
-    boolean isscanning = (qrScanner != null && qrScanner.isRunning());
-    if (isscanning || loginInProgress) {
-        return;
-    }
-    qrScanner.startQRScanner(qrCodeText -> {
-        Platform.runLater(() -> {
-        
-        if (qrCodeText.startsWith("accountID:")) {
-            try {
-                if (loginInProgress) {
-                return;
-                }
-                if (!isValidQRCodeFormat(qrCodeText)) {
-                ErrorDialog.showError("QR Code Error", "Invalid QR Code format", null);
-                return;
-                }
-                int accountId = Integer.parseInt(qrCodeText.substring("accountID:".length()).trim());
-                loginInProgress = true;
-                qrScanner.stopQRScanner();
-                loginByAccountId(accountId);
-                loginInProgress = false;
-                
-                
-            } catch (NumberFormatException e) {
-                ErrorDialog.showError("QR Code Error", "Invalid account ID", null);
-                e.printStackTrace();
-                loginInProgress = false;
-            } catch (RuntimeException e) {
-                ErrorDialog.showError("QR Code Error", e.getMessage(), null);
-                e.printStackTrace();
-                loginInProgress = false;
-            } catch (Exception e) {
-                ErrorDialog.showError("QR Code Error", e.getMessage(), null);
-                e.printStackTrace();
-                loginInProgress = false;
-            }
-        } else {
-            ErrorDialog.showError("QR Code Error", "Invalid QR Code format", null);
-            loginInProgress = false;
+        boolean isscanning = (qrScanner != null && qrScanner.isRunning());
+        if (isscanning || loginInProgress) {
+            return;
         }
+        qrScanner.startQRScanner(qrCodeText -> {
+            Platform.runLater(() -> {
+
+                if (qrCodeText.startsWith("accountID:")) {
+                    try {
+                        if (loginInProgress) {
+                            return;
+                        }
+                        if (!isValidQRCodeFormat(qrCodeText)) {
+                            ErrorDialog.showError("QR Code Error", "Invalid QR Code format", null);
+                            return;
+                        }
+                        int accountId = Integer.parseInt(qrCodeText.substring("accountID:".length()).trim());
+                        loginInProgress = true;
+                        qrScanner.stopQRScanner();
+                        loginByAccountId(accountId);
+                        loginInProgress = false;
+
+                    } catch (NumberFormatException e) {
+                        ErrorDialog.showError("QR Code Error", "Invalid account ID", null);
+                        e.printStackTrace();
+                        loginInProgress = false;
+                    } catch (RuntimeException e) {
+                        ErrorDialog.showError("QR Code Error", e.getMessage(), null);
+                        e.printStackTrace();
+                        loginInProgress = false;
+                    } catch (Exception e) {
+                        ErrorDialog.showError("QR Code Error", e.getMessage(), null);
+                        e.printStackTrace();
+                        loginInProgress = false;
+                    }
+                } else {
+                    ErrorDialog.showError("QR Code Error", "Invalid QR Code format", null);
+                    loginInProgress = false;
+                }
+            });
         });
-    });
-    
+
     }
 
 }

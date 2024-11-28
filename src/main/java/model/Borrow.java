@@ -16,16 +16,17 @@ public class Borrow {
         this.borrowDate = borrowDate;
         this.expectedReturnDate = expectedReturnDate;
         this.status = status;
-        }
+    }
 
-        public Borrow(int borrowID, int accountID, int bookID, LocalDate borrowDate, LocalDate expectedReturnDate, String status) {
+    public Borrow(int borrowID, int accountID, int bookID, LocalDate borrowDate, LocalDate expectedReturnDate,
+            String status) {
         this.borrowID = borrowID;
         this.accountID = accountID;
         this.bookID = bookID;
         this.borrowDate = borrowDate;
         this.expectedReturnDate = expectedReturnDate;
         this.status = status;
-        }
+    }
 
     // Getters and setters
     public int getAccountID() {

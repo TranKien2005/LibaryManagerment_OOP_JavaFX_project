@@ -1,15 +1,15 @@
 package DAO;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import model.Return;
 import util.ThreadManager;
 
-public class ReturnDao  {
+public class ReturnDao {
     private static ReturnDao instance;
 
     private ReturnDao() {
@@ -28,15 +28,14 @@ public class ReturnDao  {
         String query = "SELECT * FROM ReturnTable";
         Future<?> future = ThreadManager.submitSqlTask(() -> {
             try (Connection conn = DatabaseConnection.getInstance().getConnection();
-                 Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery(query)) {
+                    Statement stmt = conn.createStatement();
+                    ResultSet rs = stmt.executeQuery(query)) {
                 while (rs.next()) {
                     Return returnRecord = new Return(
-                        rs.getInt("ReturnID"),
-                        rs.getInt("BorrowID"),
-                        rs.getDate("ReturnDate").toLocalDate(),
-                        rs.getInt("DamagePercentage")
-                    );
+                            rs.getInt("ReturnID"),
+                            rs.getInt("BorrowID"),
+                            rs.getDate("ReturnDate").toLocalDate(),
+                            rs.getInt("DamagePercentage"));
                     synchronized (returns) {
                         returns.add(returnRecord);
                     }
@@ -47,7 +46,7 @@ public class ReturnDao  {
         });
         try {
             future.get(); // Đợi cho đến khi tác vụ hoàn thành
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e.getMessage());
         }
         return returns;
@@ -56,7 +55,7 @@ public class ReturnDao  {
     public void insert(Return returnRecord) throws SQLException {
         String query = "INSERT INTO ReturnTable (BorrowID, ReturnDate, DamagePercentage) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setInt(1, returnRecord.getBorrowID());
             pstmt.setDate(2, Date.valueOf(returnRecord.getReturnDate()));
             pstmt.setInt(3, returnRecord.getDamagePercentage());
@@ -69,7 +68,7 @@ public class ReturnDao  {
     public void update(Return returnRecord, int id) throws SQLException {
         String query = "UPDATE ReturnTable SET ReturnDate = ?, DamagePercentage = ? WHERE BorrowID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setDate(1, Date.valueOf(returnRecord.getReturnDate()));
             pstmt.setInt(2, returnRecord.getDamagePercentage());
             pstmt.setInt(3, id);
@@ -82,7 +81,7 @@ public class ReturnDao  {
     public void delete(int id) throws SQLException {
         String query = "DELETE FROM ReturnTable WHERE BorrowID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -93,16 +92,15 @@ public class ReturnDao  {
     public Return get(int id) throws SQLException {
         String query = "SELECT * FROM ReturnTable WHERE BorrowID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setInt(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     return new Return(
-                        rs.getInt("ReturnID"),
-                        rs.getInt("BorrowID"),
-                        rs.getDate("ReturnDate").toLocalDate(),
-                        rs.getInt("DamagePercentage")
-                    );
+                            rs.getInt("ReturnID"),
+                            rs.getInt("BorrowID"),
+                            rs.getDate("ReturnDate").toLocalDate(),
+                            rs.getInt("DamagePercentage"));
                 }
             }
         } catch (SQLException e) {
@@ -114,7 +112,7 @@ public class ReturnDao  {
     public int getID(Return returnRecord) throws SQLException {
         String query = "SELECT BorrowID FROM ReturnTable WHERE ReturnDate = ? AND DamagePercentage = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setDate(1, Date.valueOf(returnRecord.getReturnDate()));
             pstmt.setInt(2, returnRecord.getDamagePercentage());
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -132,8 +130,8 @@ public class ReturnDao  {
         List<Integer> ids = new ArrayList<>();
         String query = "SELECT BorrowID FROM ReturnTable";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 ids.add(rs.getInt("BorrowID"));
             }

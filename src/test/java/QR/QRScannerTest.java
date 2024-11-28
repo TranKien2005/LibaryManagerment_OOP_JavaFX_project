@@ -12,6 +12,7 @@ public class QRScannerTest {
         assertSame(scanner1, scanner2);
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testIsRunning() {
         QRScanner scanner = QRScanner.getInstance();

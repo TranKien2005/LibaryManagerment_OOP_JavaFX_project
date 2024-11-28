@@ -18,7 +18,8 @@ public final class Document {
     private int reviewCount;
     private InputStream coverImage;
 
-    public Document(String title, String author, String category, String publisher, int yearPublished, int availableCopies) {
+    public Document(String title, String author, String category, String publisher, int yearPublished,
+            int availableCopies) {
         this.title = title;
         this.author = author;
         this.category = category;
@@ -27,7 +28,8 @@ public final class Document {
         this.availableCopies = availableCopies;
     }
 
-     public Document(int bookID, String title, String author, String category, String publisher, int yearPublished, int availableCopies) {
+    public Document(int bookID, String title, String author, String category, String publisher, int yearPublished,
+            int availableCopies) {
         this.title = title;
         this.author = author;
         this.category = category;
@@ -123,6 +125,7 @@ public final class Document {
     }
 
     public void setCoverImageByUrl(String urlString) throws IOException {
+        @SuppressWarnings("deprecation")
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");

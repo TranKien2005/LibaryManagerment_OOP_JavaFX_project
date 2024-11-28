@@ -11,6 +11,7 @@ import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import model.Document;
@@ -35,18 +36,17 @@ public final class BookDao {
         String query = "SELECT * FROM Book";
         Future<?> future = ThreadManager.submitSqlTask(() -> {
             try (Connection conn = DatabaseConnection.getInstance().getConnection();
-                 Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery(query)) {
+                    Statement stmt = conn.createStatement();
+                    ResultSet rs = stmt.executeQuery(query)) {
                 while (rs.next()) {
                     Document document = new Document(
-                        rs.getInt("ID"),
-                        rs.getString("Title"),
-                        rs.getString("Author"),
-                        rs.getString("Category"),
-                        rs.getString("Publisher"),
-                        rs.getInt("YearPublished"),
-                        rs.getInt("AvailableCopies")
-                    );
+                            rs.getInt("ID"),
+                            rs.getString("Title"),
+                            rs.getString("Author"),
+                            rs.getString("Category"),
+                            rs.getString("Publisher"),
+                            rs.getInt("YearPublished"),
+                            rs.getInt("AvailableCopies"));
                     document.setDescription(rs.getString("Description"));
                     document.setCoverImage(rs.getBinaryStream("Image"));
                     document.setRating(rs.getInt("Rating"));
@@ -61,16 +61,16 @@ public final class BookDao {
         });
         try {
             future.get(); // Đợi cho đến khi tác vụ hoàn thành
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e.getMessage());
-        } 
+        }
         return documents;
     }
 
     public void insert(Document document) throws SQLException {
         String query = "INSERT INTO Book (Title, Author, Category, Publisher, YearPublished, AvailableCopies, Image, Description, Rating, NumberOfRatings) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, document.getTitle());
             pstmt.setString(2, document.getAuthor());
             pstmt.setString(3, document.getCategory());
@@ -83,14 +83,14 @@ public final class BookDao {
             pstmt.setInt(10, document.getReviewCount());
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            throw new SQLException( e.getMessage(), e);
+            throw new SQLException(e.getMessage(), e);
         }
     }
 
     public int getID(Document document) throws SQLException {
         String query = "SELECT ID FROM Book WHERE Title = ? AND Author = ? AND Category = ? AND Publisher = ? AND YearPublished = ? AND AvailableCopies = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, document.getTitle());
             pstmt.setString(2, document.getAuthor());
             pstmt.setString(3, document.getCategory());
@@ -111,7 +111,7 @@ public final class BookDao {
     public void update(Document document, int id) throws SQLException {
         String query = "UPDATE Book SET Title = ?, Author = ?, Category = ?, Publisher = ?, YearPublished = ?, AvailableCopies = ? WHERE ID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, document.getTitle());
             pstmt.setString(2, document.getAuthor());
             pstmt.setString(3, document.getCategory());
@@ -128,30 +128,29 @@ public final class BookDao {
     public void delete(int id) throws SQLException {
         String query = "DELETE FROM Book WHERE ID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            throw new SQLException("Error deleting document"+ e.getMessage(), e);
+            throw new SQLException("Error deleting document" + e.getMessage(), e);
         }
     }
 
     public Document get(int id) throws SQLException {
         String query = "SELECT * FROM Book WHERE ID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setInt(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     Document document = new Document(
-                        rs.getInt("ID"),
-                        rs.getString("Title"),
-                        rs.getString("Author"),
-                        rs.getString("Category"),
-                        rs.getString("Publisher"),
-                        rs.getInt("YearPublished"),
-                        rs.getInt("AvailableCopies")
-                    );
+                            rs.getInt("ID"),
+                            rs.getString("Title"),
+                            rs.getString("Author"),
+                            rs.getString("Category"),
+                            rs.getString("Publisher"),
+                            rs.getInt("YearPublished"),
+                            rs.getInt("AvailableCopies"));
                     document.setDescription(rs.getString("Description"));
                     document.setCoverImage(rs.getBinaryStream("Image"));
                     document.setRating(rs.getDouble("Rating"));
@@ -169,13 +168,13 @@ public final class BookDao {
         List<Integer> ids = new ArrayList<>();
         String query = "SELECT ID FROM Book";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 ids.add(rs.getInt("ID"));
             }
         } catch (SQLException e) {
-            throw new SQLException("Error getting all document IDs"+ e.getMessage(), e);
+            throw new SQLException("Error getting all document IDs" + e.getMessage(), e);
         }
         return ids;
     }
@@ -183,15 +182,15 @@ public final class BookDao {
     public void setBookImage(int bookId, String imagePath) throws SQLException, IOException {
         String query = "UPDATE Book SET Image = ? WHERE ID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             FileInputStream fis = new FileInputStream(imagePath)) {
+                PreparedStatement stmt = conn.prepareStatement(query);
+                FileInputStream fis = new FileInputStream(imagePath)) {
             stmt.setBinaryStream(1, fis, (int) new File(imagePath).length());
             stmt.setInt(2, bookId);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new SQLException("Error setting book image"+ e.getMessage(), e);
+            throw new SQLException("Error setting book image" + e.getMessage(), e);
         } catch (IOException e) {
-            throw new IOException("Error reading image file"+ e.getMessage(), e);
+            throw new IOException("Error reading image file" + e.getMessage(), e);
         }
     }
 
@@ -199,7 +198,7 @@ public final class BookDao {
         String query = "UPDATE Book SET Image = ? WHERE ID = ?";
         ThreadManager.submitSqlTask(() -> {
             try (Connection conn = DatabaseConnection.getInstance().getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(query)) {
+                    PreparedStatement stmt = conn.prepareStatement(query)) {
 
                 // Open connection to the image URL
                 URI uri = new URI(imageUrl);
@@ -220,7 +219,7 @@ public final class BookDao {
     public void setDescription(int id, String description) throws SQLException {
         String query = "UPDATE Book SET Description = ? WHERE ID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, description);
             pstmt.setInt(2, id);
             pstmt.executeUpdate();
@@ -232,7 +231,7 @@ public final class BookDao {
     public void addRating(int id, int newRating) throws SQLException {
         String query = "UPDATE Book SET Rating = ((Rating * NumberOfRatings) + ?) / (NumberOfRatings + 1), NumberOfRatings = NumberOfRatings + 1 WHERE ID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setInt(1, newRating);
             pstmt.setInt(2, id);
             pstmt.executeUpdate();
@@ -245,18 +244,17 @@ public final class BookDao {
         List<Document> topRatedBooks = new ArrayList<>();
         String query = "SELECT * FROM Book ORDER BY Rating DESC LIMIT 7";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 Document document = new Document(
-                    rs.getInt("ID"),
-                    rs.getString("Title"),
-                    rs.getString("Author"),
-                    rs.getString("Category"),
-                    rs.getString("Publisher"),
-                    rs.getInt("YearPublished"),
-                    rs.getInt("AvailableCopies")
-                );
+                        rs.getInt("ID"),
+                        rs.getString("Title"),
+                        rs.getString("Author"),
+                        rs.getString("Category"),
+                        rs.getString("Publisher"),
+                        rs.getInt("YearPublished"),
+                        rs.getInt("AvailableCopies"));
                 document.setDescription(rs.getString("Description"));
                 document.setCoverImage(rs.getBinaryStream("Image"));
                 document.setRating(rs.getDouble("Rating"));
@@ -271,69 +269,69 @@ public final class BookDao {
 
     public List<Document> getFavorite(int accountId) throws SQLException {
         List<Document> recommendedBooks = new ArrayList<>();
-        String query = "WITH BorrowHistory AS (\n" +
-    "    -- Lấy danh sách sách, thể loại và tác giả mà người dùng đã mượn\n" +
-    "    SELECT \n" +
-    "        b.`BookID` AS BookID,\n" +
-    "        bk.`Title`,\n" +
-    "        bk.Category,\n" +
-    "        bk.Author,\n" +
-    "        COUNT(*) AS BorrowCount\n" +
-    "    FROM Borrow b\n" +
-    "    JOIN Book bk ON b.BookID = bk.`ID`\n" +
-    "    WHERE b.AccountID = 1\n" +
-    "    GROUP BY b.`BookID`\n" +
-    "),\n" +
-    "CategoryScore AS (\n" +
-    "    -- Tính điểm theo thể loại dựa trên lịch sử mượn\n" +
-    "    SELECT \n" +
-    "        bh.Category,\n" +
-    "        SUM(bh.BorrowCount) AS CategoryScore\n" +
-    "    FROM BorrowHistory bh\n" +
-    "    GROUP BY bh.Category\n" +
-    "),\n" +
-    "AuthorScore AS (\n" +
-    "    SELECT \n" +
-    "        bh.Author,\n" +
-    "        SUM(bh.BorrowCount) AS AuthorScore\n" +
-    "    FROM BorrowHistory bh\n" +
-    "    GROUP BY bh.Author\n" +
-    "),\n" +
-    "Ranking AS (\n" +
-    "    -- Tính tổng điểm cho từng sách\n" +
-    "    SELECT\n" +
-    "        bk.*, \n" +
-    "        COALESCE(cs.CategoryScore, 0) + COALESCE(au.AuthorScore, 0) AS RankingScore\n" +
-    "    FROM Book bk\n" +
-    "    LEFT JOIN CategoryScore cs ON bk.Category = cs.Category\n" +
-    "    LEFT JOIN AuthorScore au ON bk.Author = au.Author\n" +
-    "    WHERE bk.ID NOT IN (\n" +
-    "        -- Loại sách mà người dùng đã mượn\n" +
-    "        SELECT b.BookID\n" +
-    "        FROM Borrow b\n" +
-    "        WHERE b.AccountID = 1\n" +
-    "    )\n" +
-    ")\n" +
-    "-- Lấy 5 sách có điểm cao nhất\n" +
-    "SELECT \n" +
-    "    *\n" +
-    "FROM Ranking\n" +
-    "ORDER BY RankingScore DESC" +
-    " LIMIT 14;";
+        String query = """
+                       WITH BorrowHistory AS (
+                           -- L\u1ea5y danh s\u00e1ch s\u00e1ch, th\u1ec3 lo\u1ea1i v\u00e0 t\u00e1c gi\u1ea3 m\u00e0 ng\u01b0\u1eddi d\u00f9ng \u0111\u00e3 m\u01b0\u1ee3n
+                           SELECT 
+                               b.`BookID` AS BookID,
+                               bk.`Title`,
+                               bk.Category,
+                               bk.Author,
+                               COUNT(*) AS BorrowCount
+                           FROM Borrow b
+                           JOIN Book bk ON b.BookID = bk.`ID`
+                           WHERE b.AccountID = 1
+                           GROUP BY b.`BookID`
+                       ),
+                       CategoryScore AS (
+                           -- T\u00ednh \u0111i\u1ec3m theo th\u1ec3 lo\u1ea1i d\u1ef1a tr\u00ean l\u1ecbch s\u1eed m\u01b0\u1ee3n
+                           SELECT 
+                               bh.Category,
+                               SUM(bh.BorrowCount) AS CategoryScore
+                           FROM BorrowHistory bh
+                           GROUP BY bh.Category
+                       ),
+                       AuthorScore AS (
+                           SELECT 
+                               bh.Author,
+                               SUM(bh.BorrowCount) AS AuthorScore
+                           FROM BorrowHistory bh
+                           GROUP BY bh.Author
+                       ),
+                       Ranking AS (
+                           -- T\u00ednh t\u1ed5ng \u0111i\u1ec3m cho t\u1eebng s\u00e1ch
+                           SELECT
+                               bk.*, 
+                               COALESCE(cs.CategoryScore, 0) + COALESCE(au.AuthorScore, 0) AS RankingScore
+                           FROM Book bk
+                           LEFT JOIN CategoryScore cs ON bk.Category = cs.Category
+                           LEFT JOIN AuthorScore au ON bk.Author = au.Author
+                           WHERE bk.ID NOT IN (
+                               -- Lo\u1ea1i s\u00e1ch m\u00e0 ng\u01b0\u1eddi d\u00f9ng \u0111\u00e3 m\u01b0\u1ee3n
+                               SELECT b.BookID
+                               FROM Borrow b
+                               WHERE b.AccountID = 1
+                           )
+                       )
+                       -- L\u1ea5y 5 s\u00e1ch c\u00f3 \u0111i\u1ec3m cao nh\u1ea5t
+                       SELECT 
+                           *
+                       FROM Ranking
+                       ORDER BY RankingScore DESC LIMIT 14;""";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     Document document = new Document(
-                        rs.getInt("ID"),
-                        rs.getString("Title"),
-                        rs.getString("Author"),
-                        rs.getString("Category"),
-                        rs.getString("Publisher"), // Thêm Publisher nếu cần
-                        rs.getInt("YearPublished"), // Thêm YearPublished nếu cần
-                        rs.getInt("AvailableCopies") // Thêm AvailableCopies nếu cần
+                            rs.getInt("ID"),
+                            rs.getString("Title"),
+                            rs.getString("Author"),
+                            rs.getString("Category"),
+                            rs.getString("Publisher"), // Thêm Publisher nếu cần
+                            rs.getInt("YearPublished"), // Thêm YearPublished nếu cần
+                            rs.getInt("AvailableCopies") // Thêm AvailableCopies nếu cần
                     );
                     document.setDescription(rs.getString("Description")); // Thêm Description nếu cần
                     document.setCoverImage(rs.getBinaryStream("Image")); // Thêm Image nếu cần
@@ -347,45 +345,46 @@ public final class BookDao {
         }
         return recommendedBooks;
     }
+
     public List<Document> getTrendingBooks() throws SQLException {
         List<Document> trendingBooks = new ArrayList<>();
         String query = "SELECT " +
-                       "    book.ID, " +
-                       "    book.Title, " +
-                       "    book.Author, " +
-                       "    book.Category, " +
-                       "    book.Publisher, " +
-                       "    book.YearPublished, " +
-                       "    book.AvailableCopies, " +
-                       "    book.Description, " +
-                       "    book.Image, " +
-                       "    book.Rating, " +
-                       "    book.NumberOfRatings, " +
-                       "    COUNT(borrow.BookID) AS borrow_count " +
-                       "FROM " +
-                       "    Book AS book " +
-                       "LEFT JOIN " +
-                       "    Borrow AS borrow ON book.ID = borrow.BookID " +
-                       "    AND borrow.BorrowDate >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) " +
-                       "GROUP BY " +
-                       "    book.ID, book.Title, book.Author, book.Category, book.Publisher, book.YearPublished, book.AvailableCopies, book.Description, book.Image, book.Rating, book.NumberOfRatings " +
-                       "ORDER BY " +
-                       "    borrow_count DESC, " +
-                       "    book.Rating DESC " +
-                       "LIMIT 7";
+                "    book.ID, " +
+                "    book.Title, " +
+                "    book.Author, " +
+                "    book.Category, " +
+                "    book.Publisher, " +
+                "    book.YearPublished, " +
+                "    book.AvailableCopies, " +
+                "    book.Description, " +
+                "    book.Image, " +
+                "    book.Rating, " +
+                "    book.NumberOfRatings, " +
+                "    COUNT(borrow.BookID) AS borrow_count " +
+                "FROM " +
+                "    Book AS book " +
+                "LEFT JOIN " +
+                "    Borrow AS borrow ON book.ID = borrow.BookID " +
+                "    AND borrow.BorrowDate >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) " +
+                "GROUP BY " +
+                "    book.ID, book.Title, book.Author, book.Category, book.Publisher, book.YearPublished, book.AvailableCopies, book.Description, book.Image, book.Rating, book.NumberOfRatings "
+                +
+                "ORDER BY " +
+                "    borrow_count DESC, " +
+                "    book.Rating DESC " +
+                "LIMIT 7";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 Document document = new Document(
-                    rs.getInt("ID"),
-                    rs.getString("Title"),
-                    rs.getString("Author"),
-                    rs.getString("Category"),
-                    rs.getString("Publisher"),
-                    rs.getInt("YearPublished"),
-                    rs.getInt("AvailableCopies")
-                );
+                        rs.getInt("ID"),
+                        rs.getString("Title"),
+                        rs.getString("Author"),
+                        rs.getString("Category"),
+                        rs.getString("Publisher"),
+                        rs.getInt("YearPublished"),
+                        rs.getInt("AvailableCopies"));
                 document.setDescription(rs.getString("Description"));
                 document.setCoverImage(rs.getBinaryStream("Image"));
                 document.setRating(rs.getDouble("Rating"));
@@ -403,22 +402,20 @@ public final class BookDao {
         String query = "SELECT ID, Title, Author, Category, Publisher, YearPublished, AvailableCopies, Description, Image, Rating, NumberOfRatings FROM Book ORDER BY YearPublished DESC LIMIT ? OFFSET ?";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, pageSize);
-            stmt.setInt(2, page * pageSize
-            );
+            stmt.setInt(2, page * pageSize);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 Document document = new Document(
-                    rs.getInt("ID"),
-                    rs.getString("Title"),
-                    rs.getString("Author"),
-                    rs.getString("Category"),
-                    rs.getString("Publisher"),
-                    rs.getInt("YearPublished"),
-                    rs.getInt("AvailableCopies")
-                );
+                        rs.getInt("ID"),
+                        rs.getString("Title"),
+                        rs.getString("Author"),
+                        rs.getString("Category"),
+                        rs.getString("Publisher"),
+                        rs.getInt("YearPublished"),
+                        rs.getInt("AvailableCopies"));
                 document.setDescription(rs.getString("Description"));
                 document.setCoverImage(rs.getBinaryStream("Image"));
                 document.setRating(rs.getInt("Rating"));
@@ -433,26 +430,25 @@ public final class BookDao {
         return documents;
     }
 
-    
-
     public List<Document> searchNewArrivals(String searchText, int page, int pageSize) throws SQLException {
         List<Document> documents = new ArrayList<>();
-        String query = "SELECT ID, Title, Author, Category, Publisher, YearPublished, AvailableCopies, Description, Image, Rating, NumberOfRatings " +
-                       "FROM Book " +
-                       "WHERE Title LIKE ? OR Category LIKE ? OR Author LIKE ? OR Description LIKE ? " +
-                       "ORDER BY " +
-                       "CASE " +
-                       "WHEN Title LIKE ? THEN 1 " +
-                       "WHEN Category LIKE ? THEN 2 " +
-                       "WHEN Author LIKE ? THEN 3 " +
-                       "WHEN Description LIKE ? THEN 4 " +
-                       "ELSE 5 " +
-                       "END, " +
-                       "YearPublished DESC " +
-                       "LIMIT ? OFFSET ?";
-    
+        String query = "SELECT ID, Title, Author, Category, Publisher, YearPublished, AvailableCopies, Description, Image, Rating, NumberOfRatings "
+                +
+                "FROM Book " +
+                "WHERE Title LIKE ? OR Category LIKE ? OR Author LIKE ? OR Description LIKE ? " +
+                "ORDER BY " +
+                "CASE " +
+                "WHEN Title LIKE ? THEN 1 " +
+                "WHEN Category LIKE ? THEN 2 " +
+                "WHEN Author LIKE ? THEN 3 " +
+                "WHEN Description LIKE ? THEN 4 " +
+                "ELSE 5 " +
+                "END, " +
+                "YearPublished DESC " +
+                "LIMIT ? OFFSET ?";
+
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
             String searchPattern = "%" + searchText + "%";
             stmt.setString(1, searchPattern);
             stmt.setString(2, searchPattern);
@@ -462,20 +458,19 @@ public final class BookDao {
             stmt.setString(6, searchPattern);
             stmt.setString(7, searchPattern);
             stmt.setString(8, searchPattern);
-            stmt.setInt(9,  pageSize);
+            stmt.setInt(9, pageSize);
             stmt.setInt(10, page * pageSize);
             ResultSet rs = stmt.executeQuery();
-    
+
             while (rs.next()) {
                 Document document = new Document(
-                    rs.getInt("ID"),
-                    rs.getString("Title"),
-                    rs.getString("Author"),
-                    rs.getString("Category"),
-                    rs.getString("Publisher"),
-                    rs.getInt("YearPublished"),
-                    rs.getInt("AvailableCopies")
-                );
+                        rs.getInt("ID"),
+                        rs.getString("Title"),
+                        rs.getString("Author"),
+                        rs.getString("Category"),
+                        rs.getString("Publisher"),
+                        rs.getInt("YearPublished"),
+                        rs.getInt("AvailableCopies"));
                 document.setDescription(rs.getString("Description"));
                 document.setCoverImage(rs.getBinaryStream("Image"));
                 document.setRating(rs.getInt("Rating"));

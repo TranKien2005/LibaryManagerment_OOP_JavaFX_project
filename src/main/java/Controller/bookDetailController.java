@@ -5,29 +5,27 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.checkerframework.checker.units.qual.m;
-
-import QR.*;
-
-
-import DAO.*;
+import DAO.BookDao;
+import DAO.BorrowDao;
+import DAO.BorrowReturnDAO;
+import DAO.ReturnDao;
+import QR.CreateQRCode;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import model.*;
+import model.Borrow;
+import model.Document;
+import model.Return;
 import util.ErrorDialog;
-import util.ThreadManager;
-
 
 public class bookDetailController {
 
@@ -85,12 +83,12 @@ public class bookDetailController {
 
     int accountID = menuUserController.getInstance().getAccountID();
 
-
     /**
      * Thiết lập sách cần hiển thị.
+     * 
      * @param book Đối tượng Document đại diện cho thông tin sách.
      */
-   
+
     public void setBook(Document book) {
         this.book = book;
         updateBookDetails();
@@ -145,22 +143,23 @@ public class bookDetailController {
         try {
             ratingBox.getChildren().clear(); // Xóa các sao cũ
             for (int i = 1; i <= 5; i++) {
-            ImageView star = new ImageView();
-            if (i <= book.getRating()) {
-            star.setImage(new Image("/images/menu/star_filled.png")); // Đường dẫn đến ảnh sao đen
-            } else if (i - book.getRating() <= 0.5) {
-            star.setImage(new Image("/images/menu/halfStar.png")); // Đường dẫn đến ảnh sao nửa
-            } else {
-            star.setImage(new Image("/images/menu/star_empty.png")); // Đường dẫn đến ảnh sao trống
+                ImageView star = new ImageView();
+                if (i <= book.getRating()) {
+                    star.setImage(new Image("/images/menu/star_filled.png")); // Đường dẫn đến ảnh sao đen
+                } else if (i - book.getRating() <= 0.5) {
+                    star.setImage(new Image("/images/menu/halfStar.png")); // Đường dẫn đến ảnh sao nửa
+                } else {
+                    star.setImage(new Image("/images/menu/star_empty.png")); // Đường dẫn đến ảnh sao trống
+                }
+                star.setFitHeight(15);
+                star.setFitWidth(15);
+                star.setPreserveRatio(true);
+                ratingBox.getChildren().add(star);
             }
-            star.setFitHeight(15);
-            star.setFitWidth(15);
-            star.setPreserveRatio(true);
-            ratingBox.getChildren().add(star);
-        }
         } catch (Exception e) {
             e.printStackTrace();
-            util.ErrorDialog.showError("Error", "Có lỗi xảy ra khi cập nhật đánh giá sao.", (Stage) ratingBox.getScene().getWindow());
+            util.ErrorDialog.showError("Error", "Có lỗi xảy ra khi cập nhật đánh giá sao.",
+                    (Stage) ratingBox.getScene().getWindow());
         }
     }
 
@@ -180,24 +179,22 @@ public class bookDetailController {
         LocalDate returnDate = borrowDate.plusMonths(1);
 
         Borrow newBorrow = new Borrow(
-            selectedMemberId,
-            selectedDocumentId,
-            borrowDate,
-            returnDate,
-            "Borrowed"
-        );
+                selectedMemberId,
+                selectedDocumentId,
+                borrowDate,
+                returnDate,
+                "Borrowed");
         try {
             borrowDAO.insert(newBorrow);
             util.ErrorDialog.showSuccess("Thành công", "Tài liệu đã được mượn thành công.", null);
-        }
-         catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            util.ErrorDialog.showError("Database Error",  e.getMessage(), null);
+            util.ErrorDialog.showError("Database Error", e.getMessage(), null);
         } catch (Exception e) {
             e.printStackTrace();
-            util.ErrorDialog.showError("Error",  e.getMessage(), null);
+            util.ErrorDialog.showError("Error", e.getMessage(), null);
         }
-    
+
     }
 
     /**
@@ -205,37 +202,31 @@ public class bookDetailController {
      */
     @FXML
     private void handleReturn() {
-        ReturnDao returnDAO = ReturnDao.getInstance();
-        int selectedMemberId = accountID;
-        int selectedDocumentId = book.getBookID();
         int selectedBorrow;
         selectedBorrow = -1;
         if (BorrowReturnDAO.getInstance().isBorrowed(accountID, book.getBookID())) {
             selectedBorrow = BorrowReturnDAO.getInstance().getID(accountID, book.getBookID());
-        }
-        else {
+        } else {
             util.ErrorDialog.showError("Thông báo", "Bạn chưa mượn sách này", null);
             return;
         }
         try {
-         int damagePercentage = (int) (Math.random() * 100); // Random damage percentage between 0 and 100
-         Return returnRecord = new Return(selectedBorrow, 
-         LocalDate.now(), damagePercentage);
-         ReturnDao.getInstance().insert(returnRecord);
-         util.ErrorDialog.showSuccess("Thành công", "Tài liệu đã được trả thành công.", null);
-        }
-        catch (SQLException e) {
+            int damagePercentage = (int) (Math.random() * 100); // Random damage percentage between 0 and 100
+            Return returnRecord = new Return(selectedBorrow,
+                    LocalDate.now(), damagePercentage);
+            ReturnDao.getInstance().insert(returnRecord);
+            util.ErrorDialog.showSuccess("Thành công", "Tài liệu đã được trả thành công.", null);
+        } catch (SQLException e) {
             e.printStackTrace();
-           util.ErrorDialog.showError("Database Error",  e.getMessage(), null);
-       } catch (Exception e) {
-        e.printStackTrace();
-           util.ErrorDialog.showError("Error",  e.getMessage(), null);
-       }
-    
+            util.ErrorDialog.showError("Database Error", e.getMessage(), null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            util.ErrorDialog.showError("Error", e.getMessage(), null);
+        }
+
     }
 
-    
-     @FXML
+    @FXML
     private void handleStarClick(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
         String buttonId = clickedButton.getId();
@@ -245,34 +236,24 @@ public class bookDetailController {
         }
         int currentRating = rating;
         switch (buttonId) {
-            case "star1":
-                rating = 1;
-                break;
-            case "star2":
-                rating = 2;
-                break;
-            case "star3":
-                rating = 3;
-                break;
-            case "star4":
-                rating = 4;
-                break;
-            case "star5":
-                rating = 5;
-                break;
+            case "star1" -> rating = 1;
+            case "star2" -> rating = 2;
+            case "star3" -> rating = 3;
+            case "star4" -> rating = 4;
+            case "star5" -> rating = 5;
         }
 
         updateStarDisplay();
         System.out.println("User rated the book: " + rating + " stars");
         if (update) {
             try {
-            book.setRating((book.getRating() * book.getReviewCount() - currentRating + rating) / book.getReviewCount());
-            BookDao.getInstance().update(book, book.getBookID());
-            updateBookDetails();
-            ErrorDialog.showSuccess("Success", "Rating added successfully.", null);
-            
-            }
-            catch (SQLException e) {
+                book.setRating(
+                        (book.getRating() * book.getReviewCount() - currentRating + rating) / book.getReviewCount());
+                BookDao.getInstance().update(book, book.getBookID());
+                updateBookDetails();
+                ErrorDialog.showSuccess("Success", "Rating added successfully.", null);
+
+            } catch (SQLException e) {
                 e.printStackTrace();
                 util.ErrorDialog.showError("Database Error", e.getMessage(), null);
             } catch (Exception e) {
@@ -297,7 +278,7 @@ public class bookDetailController {
     }
 
     private void updateStarDisplay() {
-        Button[] stars = {star1, star2, star3, star4, star5};
+        Button[] stars = { star1, star2, star3, star4, star5 };
         for (int i = 0; i < stars.length; i++) {
             if (i < rating) {
                 stars[i].setStyle("-fx-text-fill: gold;");
@@ -308,18 +289,18 @@ public class bookDetailController {
     }
 
     @FXML
-    private void handleQrCodeClick(MouseEvent event) {
+    private void handleQrCodeClick() {
         try {
             Image qrCodeImage = qrCodeImageView.getImage();
             if (qrCodeImage != null) {
-            File outputFile = new File(System.getProperty("user.home") + "/Downloads/QRCodeBook.png");
-            if (outputFile.exists()) {
-                outputFile.delete();
-            }
-            ImageIO.write(SwingFXUtils.fromFXImage(qrCodeImage, null), "png", outputFile);
-            util.ErrorDialog.showSuccess("Success", "QR code has been saved to Downloads folder.", null);
+                File outputFile = new File(System.getProperty("user.home") + "/Downloads/QRCodeBook.png");
+                if (outputFile.exists()) {
+                    outputFile.delete();
+                }
+                ImageIO.write(SwingFXUtils.fromFXImage(qrCodeImage, null), "png", outputFile);
+                util.ErrorDialog.showSuccess("Success", "QR code has been saved to Downloads folder.", null);
             } else {
-            throw new Exception("QR code not found.");
+                throw new Exception("QR code not found.");
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -12,7 +12,7 @@ public class Account {
         this.accountType = accountType;
     }
 
-    public Account (int accountID, String username, String password, String accountType) {
+    public Account(int accountID, String username, String password, String accountType) {
         this.accountID = accountID;
         this.accountType = accountType;
         this.username = username;

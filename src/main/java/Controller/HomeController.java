@@ -15,8 +15,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Document;
 import util.ErrorDialog;
-import util.ThreadManager;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -84,27 +82,26 @@ public class HomeController {
 
             // Hiển thị top sách
             for (Document book : topBooks) {
-                VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(),   book.getRating(), book);
+                VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(), book.getRating(), book);
                 fpTopBooks.getChildren().add(bookItem);
             }
 
             // Hiển thị sách yêu thích cho người dùng có AccountID = 2
             for (Document book : favoriteBooks) {
-                VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(),   book.getRating(), book);
+                VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(), book.getRating(), book);
                 fpRecommendedBooks.getChildren().add(bookItem);
             }
 
             // Hiển thị sách trending
             for (Document book : trendingBooks) {
-                VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(),   book.getRating(), book);
+                VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(), book.getRating(), book);
                 fpTrendingBooks.getChildren().add(bookItem);
             }
 
             loadMoreNewArrivals();
 
-             // Add listener for Enter key press in the search field
+            // Add listener for Enter key press in the search field
             tfSearch.setOnAction(event -> handleSearch());
-
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -112,29 +109,27 @@ public class HomeController {
         }
     }
 
-    
     @FXML
     private Label lblCurrentPage;
 
-    
-
     @FXML
     private void handleNextPage() {
-       
-            if (isSearching) {
-                searchPage++;
+
+        if (isSearching) {
+            searchPage++;
             try {
                 loadMoreSearchResults();
                 scrollPaneMain.setVvalue(0);
             } catch (SQLException e) {
                 e.printStackTrace();
-                ErrorDialog.showError("Lỗi", "Không thể tải thêm kết quả tìm kiếm.", (Stage) tfSearch.getScene().getWindow());
+                ErrorDialog.showError("Lỗi", "Không thể tải thêm kết quả tìm kiếm.",
+                        (Stage) tfSearch.getScene().getWindow());
                 searchPage--;
                 return;
             }
-            
-            } else {
-                newArrivalsPage++;
+
+        } else {
+            newArrivalsPage++;
             try {
                 loadMoreNewArrivals();
             } catch (SQLException e) {
@@ -143,15 +138,15 @@ public class HomeController {
                 newArrivalsPage--;
                 return;
             }
-            
-            }
-            updateCurrentPageLabel();
-        
+
+        }
+        updateCurrentPageLabel();
+
     }
 
     @FXML
     private void handlePreviousPage() {
-       
+
         if (isSearching) {
             if (searchPage == 0) {
                 return;
@@ -160,10 +155,11 @@ public class HomeController {
             try {
                 loadMoreSearchResults();
                 scrollPaneMain.setVvalue(0);
-                
+
             } catch (SQLException e) {
                 e.printStackTrace();
-                ErrorDialog.showError("Lỗi", "Không thể tải thêm kết quả tìm kiếm.", (Stage) tfSearch.getScene().getWindow());
+                ErrorDialog.showError("Lỗi", "Không thể tải thêm kết quả tìm kiếm.",
+                        (Stage) tfSearch.getScene().getWindow());
                 searchPage++;
                 return;
             }
@@ -174,7 +170,7 @@ public class HomeController {
             newArrivalsPage--;
             try {
                 loadMoreNewArrivals();
-               
+
             } catch (SQLException e) {
                 e.printStackTrace();
                 newArrivalsPage++;
@@ -183,36 +179,36 @@ public class HomeController {
             }
         }
         updateCurrentPageLabel();
-  
+
     }
 
     private void updateCurrentPageLabel() {
         int currentPage = isSearching ? searchPage : newArrivalsPage;
-        lblCurrentPage.setText(String.valueOf(currentPage + 1 ));
+        lblCurrentPage.setText(String.valueOf(currentPage + 1));
     }
 
     private void loadMoreSearchResults() throws SQLException {
         List<Document> searchResults = bookDao.searchNewArrivals(currentSearchText, searchPage, PAGE_SIZE_SEARCH);
-        
+
         if (searchResults.isEmpty()) {
             throw new SQLException("No more search results to load.");
         }
         fpNewArrivals.getChildren().clear();
         for (Document book : searchResults) {
-            
-            VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(),  book.getRating(), book);
+
+            VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(), book.getRating(), book);
             fpNewArrivals.getChildren().add(bookItem);
         }
     }
 
     private void loadMoreNewArrivals() throws SQLException {
-        List<Document> newArrivals = bookDao.getAll(newArrivalsPage , PAGE_SIZE);
+        List<Document> newArrivals = bookDao.getAll(newArrivalsPage, PAGE_SIZE);
         if (newArrivals.isEmpty()) {
             throw new SQLException("No more new arrivals to load.");
         }
         fpNewArrivals.getChildren().clear();
         for (Document book : newArrivals) {
-            VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(),  book.getRating(), book);
+            VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(), book.getRating(), book);
             fpNewArrivals.getChildren().add(bookItem);
         }
     }
@@ -238,39 +234,37 @@ public class HomeController {
         imageView.setFitWidth(100);
         imageView.setPreserveRatio(true);
         imageView.getStyleClass().add("image-view");
-        
+
         Label label = new Label(title);
         label.getStyleClass().add("label");
-    
+
         // Tạo HBox để chứa các sao
         HBox starsBox = new HBox(2);
         starsBox.getStyleClass().add("stars-box");
         for (int i = 1; i <= 5; i++) {
             ImageView star = new ImageView();
             if (i <= rating) {
-            star.setImage(new Image("/images/menu/star_filled.png")); // Đường dẫn đến ảnh sao đen
+                star.setImage(new Image("/images/menu/star_filled.png")); // Đường dẫn đến ảnh sao đen
             } else if (i - rating <= 0.5) {
-            star.setImage(new Image("/images/menu/halfStar.png")); // Đường dẫn đến ảnh sao nửa
+                star.setImage(new Image("/images/menu/halfStar.png")); // Đường dẫn đến ảnh sao nửa
             } else {
-            star.setImage(new Image("/images/menu/star_empty.png")); // Đường dẫn đến ảnh sao trống
+                star.setImage(new Image("/images/menu/star_empty.png")); // Đường dẫn đến ảnh sao trống
             }
             star.setFitHeight(15);
             star.setFitWidth(15);
             star.setPreserveRatio(true);
             starsBox.getChildren().add(star);
         }
-          // Thêm EventHandler cho sự kiện nháy đúp
-          vBox.setOnMouseClicked(event -> {
+        // Thêm EventHandler cho sự kiện nháy đúp
+        vBox.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 openBookDetailTab(book);
             }
         });
-    
+
         vBox.getChildren().addAll(imageView, label, starsBox);
         return vBox;
     }
-
-    
 
     @FXML
     private void handleSearch() {
@@ -278,7 +272,7 @@ public class HomeController {
         currentSearchText = tfSearch.getText().toLowerCase().trim();
         isSearching = true;
         searchPage = 0;
-    
+
         // Ẩn các VBox top, recommend, và trending
         topBooksSection.setVisible(false);
         topBooksSection.setManaged(false);
@@ -286,14 +280,11 @@ public class HomeController {
         recommendedBooksSection.setManaged(false);
         trendingBooksSection.setVisible(false);
         trendingBooksSection.setManaged(false);
-    
-        
-    
+
         // Xóa các sách hiện tại trong phần sách mới
         fpNewArrivals.getChildren().clear();
         newArrivalsPage = 0; // Reset the page number for new arrivals
-        
-        
+
         try {
             // Tìm kiếm sách mới theo tiêu đề
             loadMoreSearchResults();
@@ -315,14 +306,13 @@ public class HomeController {
         // TODO: Implement contact page navigation
     }
 
-
     @FXML
     public void handleReload() {
 
         scrollPaneMain.setContent(initialContent);
         isSearching = false;
         tfSearch.clear();
-        
+
         try {
             topBooks = bookDao.getTopRatedBooks();
             favoriteBooks = bookDao.getFavorite(2);
@@ -330,19 +320,19 @@ public class HomeController {
 
             fpTopBooks.getChildren().clear();
             for (Document book : topBooks) {
-                VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(),  book.getRating(), book);
+                VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(), book.getRating(), book);
                 fpTopBooks.getChildren().add(bookItem);
             }
 
             fpRecommendedBooks.getChildren().clear();
             for (Document book : favoriteBooks) {
-                VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(),  book.getRating(), book);
+                VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(), book.getRating(), book);
                 fpRecommendedBooks.getChildren().add(bookItem);
             }
 
             fpTrendingBooks.getChildren().clear();
             for (Document book : trendingBooks) {
-                VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(),  book.getRating(), book);
+                VBox bookItem = createBookItem(book.getTitle(), book.getCoverImage(), book.getRating(), book);
                 fpTrendingBooks.getChildren().add(bookItem);
             }
         } catch (SQLException e) {
@@ -356,7 +346,7 @@ public class HomeController {
         recommendedBooksSection.setManaged(true);
         trendingBooksSection.setVisible(true);
         trendingBooksSection.setManaged(true);
-        
+
         // Xóa các sách hiện tại trong phần sách mới
         fpNewArrivals.getChildren().clear();
         newArrivalsPage = 0; // Reset the page number for new arrivals
@@ -370,7 +360,7 @@ public class HomeController {
             // Handle the exception appropriately (e.g., show an error message to the user)
         }
     }
-   
+
     public void reload() {
         handleReload();
     }
@@ -381,20 +371,19 @@ public class HomeController {
 
     public void openBookDetailTab(Document book) {
         try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/bookDetail.fxml"));
-        Parent bookDetailRoot = loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/bookDetail.fxml"));
+            Parent bookDetailRoot = loader.load();
 
-        // Lấy controller của BookDetail và truyền dữ liệu sách vào
-        bookDetailController controller = loader.getController();
-        controller.setBook(book);
+            // Lấy controller của BookDetail và truyền dữ liệu sách vào
+            bookDetailController controller = loader.getController();
+            controller.setBook(book);
 
-        // Thay thế nội dung của ScrollPane bằng chi tiết sách
-        scrollPaneMain.setContent(bookDetailRoot);
+            // Thay thế nội dung của ScrollPane bằng chi tiết sách
+            scrollPaneMain.setContent(bookDetailRoot);
 
-        } 
-        catch (IOException e) {
-        e.printStackTrace();
-        // Handle the exception appropriately (e.g., show an error message to the user)
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle the exception appropriately (e.g., show an error message to the user)
         }
     }
 

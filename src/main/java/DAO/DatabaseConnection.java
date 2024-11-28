@@ -3,26 +3,13 @@ package DAO;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import org.checkerframework.checker.units.qual.t;
-
-import javafx.application.Platform;
-import model.Account;
-import model.Borrow;
-import model.Document;
-import model.Manager;
-import model.Return;
-import model.User;
-import util.ErrorDialog;
-import util.ThreadManager;
 
 public class DatabaseConnection {
     private static final String URL = "jdbc:mysql://localhost:3306/librarymanagement";
     private static final String USER = "root";
-    private static final String PASSWORD = "";
+    private static final String PASSWORD = "123456";
     private Connection connection;
     private Timer connectionChecker;
 
@@ -82,5 +69,4 @@ public class DatabaseConnection {
         }
     }
 
-    
 }

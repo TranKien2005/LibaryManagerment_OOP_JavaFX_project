@@ -3,6 +3,7 @@ package DAO;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import model.Manager;
@@ -27,15 +28,14 @@ public class ManagerDao {
         String query = "SELECT * FROM Manager";
         Future<?> future = ThreadManager.submitSqlTask(() -> {
             try (Connection conn = DatabaseConnection.getInstance().getConnection();
-                 Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery(query)) {
+                    Statement stmt = conn.createStatement();
+                    ResultSet rs = stmt.executeQuery(query)) {
                 while (rs.next()) {
                     Manager manager = new Manager(
-                        rs.getInt("AccountID"),
-                        rs.getString("FullName"),
-                        rs.getString("Email"),
-                        rs.getString("Phone")
-                    );
+                            rs.getInt("AccountID"),
+                            rs.getString("FullName"),
+                            rs.getString("Email"),
+                            rs.getString("Phone"));
                     synchronized (managers) {
                         managers.add(manager);
                     }
@@ -46,7 +46,7 @@ public class ManagerDao {
         });
         try {
             future.get(); // Đợi cho đến khi tác vụ hoàn thành
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e.getMessage());
         }
         return managers;
@@ -55,7 +55,7 @@ public class ManagerDao {
     public void insert(Manager manager) throws SQLException {
         String query = "INSERT INTO Manager (AccountID, FullName, Email, Phone) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setInt(1, manager.getAccountID());
             pstmt.setString(2, manager.getFullName());
             pstmt.setString(3, manager.getEmail());
@@ -69,7 +69,7 @@ public class ManagerDao {
     public void update(Manager manager, int id) throws SQLException {
         String query = "UPDATE Manager SET FullName = ?, Email = ?, Phone = ? WHERE AccountID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, manager.getFullName());
             pstmt.setString(2, manager.getEmail());
             pstmt.setString(3, manager.getPhone());
@@ -83,7 +83,7 @@ public class ManagerDao {
     public void delete(int id) throws SQLException {
         String query = "DELETE FROM Manager WHERE AccountID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -94,16 +94,15 @@ public class ManagerDao {
     public Manager get(int id) throws SQLException {
         String query = "SELECT * FROM Manager WHERE AccountID = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setInt(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     return new Manager(
-                        rs.getInt("AccountID"),
-                        rs.getString("FullName"),
-                        rs.getString("Email"),
-                        rs.getString("Phone")
-                    );
+                            rs.getInt("AccountID"),
+                            rs.getString("FullName"),
+                            rs.getString("Email"),
+                            rs.getString("Phone"));
                 }
             }
         } catch (SQLException e) {
@@ -115,7 +114,7 @@ public class ManagerDao {
     public int getID(Manager manager) throws SQLException {
         String query = "SELECT AccountID FROM Manager WHERE FullName = ? AND Email = ? AND Phone = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, manager.getFullName());
             pstmt.setString(2, manager.getEmail());
             pstmt.setString(3, manager.getPhone());
@@ -134,8 +133,8 @@ public class ManagerDao {
         List<Integer> ids = new ArrayList<>();
         String query = "SELECT AccountID FROM Manager";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 ids.add(rs.getInt("AccountID"));
             }
