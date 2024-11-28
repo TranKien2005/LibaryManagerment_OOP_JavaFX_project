@@ -3,8 +3,8 @@ package Controller;
 import java.sql.SQLException;
 import java.util.List;
 
-import DAO.UserDao;
 import DAO.AccountDao;
+import DAO.UserDao;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
@@ -23,6 +23,9 @@ import model.Account;
 import model.User;
 import util.ThreadManager;
 
+/**
+ * Controller for managing user members, including viewing, updating, filtering, and deleting users.
+ */
 public class MemberManagementController {
 
     @FXML
@@ -35,12 +38,10 @@ public class MemberManagementController {
     private TableColumn<User, Integer> colUserId;
     @FXML
     private TableColumn<User, String> colUsername;
-
     @FXML
     private TableColumn<User, String> colPhone;
     @FXML
     private TableColumn<User, String> colEmail;
-
     @FXML
     private TextField tfUsername;
     @FXML
@@ -54,10 +55,12 @@ public class MemberManagementController {
 
     private final ObservableList<User> userList = FXCollections.observableArrayList();
 
+    /**
+     * Initializes the controller, setting up the table view and loading users into the table.
+     */
     @FXML
     public void initialize() {
         Platform.runLater(() -> {
-
             initializeTableView();
             loadUsers();
         });
@@ -80,16 +83,21 @@ public class MemberManagementController {
         });
     }
 
+    /**
+     * Initializes the columns of the table view to display user information.
+     */
     private void initializeTableView() {
         colUserId.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getAccountID()));
         colUsername.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFullName()));
-
         colPhone.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPhone()));
         colEmail.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmail()));
 
         tvMembers.setItems(userList);
     }
 
+    /**
+     * Loads all users from the database and updates the table view.
+     */
     private void loadUsers() {
         try {
             List<User> users = UserDao.getInstance().getAll();
@@ -106,6 +114,9 @@ public class MemberManagementController {
         }
     }
 
+    /**
+     * Handles filtering the user list based on the text input in the filter field.
+     */
     @FXML
     private void handleMemberFilterAction() {
         String filterText = tfMemberFilter.getText().toLowerCase().trim();
@@ -125,6 +136,10 @@ public class MemberManagementController {
         });
     }
 
+    /**
+     * Handles updating the details of a selected user.
+     * Validates input fields and updates the user in the database.
+     */
     @FXML
     private void handleUpdateUser() {
         User selectedUser = tvMembers.getSelectionModel().getSelectedItem();
@@ -157,16 +172,19 @@ public class MemberManagementController {
             util.ErrorDialog.showError("Error", e.getMessage(), (Stage) rootVBox.getScene().getWindow());
         }
 
-        // Update user in database
+        // Refresh table view
         ThreadManager.execute(() -> {
             Platform.runLater(() -> {
-
                 refreshTableView();
-
             });
         });
     }
 
+    /**
+     * Validates the input fields for updating user details.
+     * 
+     * @return True if all fields are valid, false otherwise.
+     */
     private boolean validateInputFields() {
         // Perform validation on input fields
         if (tfUsername.getText().isEmpty() || tfPhone.getText().isEmpty() || tfEmail.getText().isEmpty()) {
@@ -178,6 +196,9 @@ public class MemberManagementController {
         return true;
     }
 
+    /**
+     * Refreshes the table view by reloading all user data from the database.
+     */
     private void refreshTableView() {
         try {
             userList.setAll(UserDao.getInstance().getAll());
@@ -191,9 +212,11 @@ public class MemberManagementController {
         tfFullname.clear();
         tfEmail.clear();
         tfPhone.clear();
-
     }
 
+    /**
+     * Handles the deletion of a selected user after user confirmation.
+     */
     @FXML
     private void handleDeleteUser() {
         User selectedUser = tvMembers.getSelectionModel().getSelectedItem();
@@ -233,20 +256,28 @@ public class MemberManagementController {
         });
     }
 
+    /**
+     * Displays the user's password in a dialog box.
+     */
     @FXML
     private void handleShowPassword() {
         util.ErrorDialog.showError("Password", pfPassword.getText(), (Stage) rootVBox.getScene().getWindow());
     }
 
+    /**
+     * Handles refreshing the user list and table view.
+     */
     @FXML
     private void handleRefresh() {
         refreshTableView();
         loadUsers();
     }
 
+    /**
+     * Reloads the user list and refreshes the table view.
+     */
     public void reload() {
         refreshTableView();
         loadUsers();
     }
-
 }
