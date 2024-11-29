@@ -1,252 +1,145 @@
 /**
- * Data Access Object (DAO) for interacting with the Account table in the database.
- * This class provides methods to perform CRUD operations and other utility functions for accounts.
- * It uses singleton design pattern to ensure a single instance.
+ * Data Access Object (DAO) for managing Account entities in the database.
+ * Implements the Singleton pattern to ensure a single instance of the DAO.
+ * Provides CRUD operations and additional account-specific functionality.
  */
 
 package DAO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
+import DAO.base.BaseDao;
+import DAO.mappers.AccountMapper;
+import DAO.utils.AccountQueryBuilder;
 import model.Account;
-import util.ThreadManager;
 
-public class AccountDao {
+public class AccountDao extends BaseDao<Account> {
     private static AccountDao instance;
 
-    /**
-     * Private constructor to prevent instantiation from other classes.
-     */
     private AccountDao() {
+        super("Account", new AccountMapper());
     }
 
     /**
-     * Returns the singleton instance of the AccountDao.
-     * 
-     * @return AccountDao instance.
+     * Gets the singleton instance of AccountDao.
+     * Thread-safe implementation using synchronized keyword.
+     *
+     * @return The singleton instance of AccountDao
      */
-    public static AccountDao getInstance() {
+    public static synchronized AccountDao getInstance() {
         if (instance == null) {
             instance = new AccountDao();
         }
         return instance;
     }
 
-    /**
-     * Retrieves all accounts from the database.
-     * 
-     * @return List of Account objects.
-     * @throws SQLException if a database access error occurs.
-     */
+    @Override
     public List<Account> getAll() throws SQLException {
-        List<Account> accounts = new ArrayList<>();
-        String query = "SELECT * FROM Account";
-        Future<?> future = ThreadManager.submitSqlTask(() -> {
-            try (Connection conn = DatabaseConnection.getInstance().getConnection();
-                    Statement stmt = conn.createStatement();
-                    ResultSet rs = stmt.executeQuery(query)) {
-                while (rs.next()) {
-                    Account account = new Account(
-                            rs.getInt("AccountID"),
-                            rs.getString("Username"),
-                            rs.getString("Password"),
-                            rs.getString("AccountType"));
-                    synchronized (accounts) {
-                        accounts.add(account);
-                    }
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException("An error occurred while fetching accounts: " + e.getMessage(), e);
-            }
-        });
-        try {
-            future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException("An error occurred while fetching accounts: " + e.getMessage(), e);
-        }
-        return accounts;
+        return executeQuery(AccountQueryBuilder.select().build());
     }
 
-    /**
-     * Inserts a new account into the database.
-     * 
-     * @param account The Account object to insert.
-     * @throws SQLException if a database access error occurs.
-     */
-    public void insert(Account account) throws SQLException {
-        String query = "INSERT INTO Account (Username, Password, AccountType) VALUES (?, ?, ?)";
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, account.getUsername());
-            pstmt.setString(2, account.getPassword());
-            pstmt.setString(3, account.getAccountType());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new SQLException("An error occurred while inserting the account: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Updates the password of an existing account.
-     * 
-     * @param account The Account object containing updated password.
-     * @param id      The ID of the account to update.
-     * @throws SQLException if a database access error occurs.
-     */
-    public void update(Account account, int id) throws SQLException {
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-            String checkQuery = "SELECT * FROM Account WHERE AccountID = ?";
-            try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
-                checkStmt.setInt(1, id);
-                try (ResultSet rs = checkStmt.executeQuery()) {
-                    if (rs.next()) {
-                        String currentUsername = rs.getString("Username");
-                        String currentAccountType = rs.getString("AccountType");
-                        if (!currentUsername.equals(account.getUsername())
-                                || !currentAccountType.equals(account.getAccountType())) {
-                            throw new SQLException("Username or AccountType does not match the existing record.");
-                        }
-                    } else {
-                        throw new SQLException("Account with the specified ID does not exist.");
-                    }
-                }
-            }
-
-            String updateQuery = "UPDATE Account SET Password = ? WHERE AccountID = ?";
-            try (PreparedStatement pstmt = conn.prepareStatement(updateQuery)) {
-                pstmt.setString(1, account.getPassword());
-                pstmt.setInt(2, id);
-                pstmt.executeUpdate();
-            }
-        } catch (SQLException e) {
-            throw new SQLException("An error occurred while updating the account: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Deletes an account from the database by its ID.
-     * 
-     * @param id The ID of the account to delete.
-     * @throws SQLException if a database access error occurs.
-     */
-    public void delete(int id) throws SQLException {
-        String query = "DELETE FROM Account WHERE AccountID = ?";
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new SQLException("An error occurred while deleting the account: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Retrieves an account by its ID.
-     * 
-     * @param id The ID of the account to retrieve.
-     * @return The Account object if found, otherwise null.
-     * @throws SQLException if a database access error occurs.
-     */
+    @Override
     public Account get(int id) throws SQLException {
-        String query = "SELECT * FROM Account WHERE AccountID = ?";
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, id);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Account(
-                            rs.getInt("AccountID"),
-                            rs.getString("Username"),
-                            rs.getString("Password"),
-                            rs.getString("AccountType"));
-                }
-            }
-        } catch (SQLException e) {
-            throw new SQLException("An error occurred while fetching the account: " + e.getMessage(), e);
-        }
-        return null;
+        String qb = AccountQueryBuilder.select()
+            .where("AccountID = ?").build();
+        return executeSingleQuery(qb, id);
+    }
+
+    @Override
+    public void insert(Account account) throws SQLException {
+        executeUpdate(AccountQueryBuilder.insert().build(),
+            account.getAccountID(),
+            account.getUsername(),
+            account.getPassword(),
+            account.getAccountType()
+        );
     }
 
     /**
-     * Retrieves an account by its username.
-     * 
-     * @param username The username of the account to retrieve.
-     * @return The Account object if found, otherwise null.
-     * @throws SQLException if a database access error occurs.
+     * Updates only the password of an account.
+     * Validates that username and account type match before updating.
+     *
+     * @param account The account with updated password
+     * @param id The ID of the account to update
+     * @throws SQLException if database error occurs or validation fails
      */
-    public Account getByUsername(String username) throws SQLException {
-        String query = "SELECT * FROM Account WHERE Username = ?";
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, username);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Account(
-                            rs.getInt("AccountID"),
-                            rs.getString("Username"),
-                            rs.getString("Password"),
-                            rs.getString("AccountType"));
-                }
-            }
-        } catch (SQLException e) {
-            throw new SQLException("An error occurred while fetching the account: " + e.getMessage(), e);
+    @Override
+    public void update(Account account, int id) throws SQLException {
+    
+        Account existing = get(id);
+        if (existing == null) {
+            throw new SQLException("Account with the specified ID does not exist.");
         }
-        return null;
+        if (!existing.getUsername().equals(account.getUsername()) || 
+            !existing.getAccountType().equals(account.getAccountType())) {
+            throw new SQLException("Username or AccountType does not match the existing record.");
+        }
+
+       String qb = AccountQueryBuilder.update()
+            .set("Password")
+            .where("AccountID = ?").build();
+        executeUpdate(qb, account.getPassword(), id);
     }
 
-    // Other methods have similar documentation and implementation patterns.
-
-    public void updatePassword(int id, String newPassword) throws SQLException {
-        String query = "UPDATE Account SET Password = ? WHERE AccountID = ?";
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, newPassword);
-            pstmt.setInt(2, id);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new SQLException("An error occurred while updating the password: " + e.getMessage(), e);
-        }
+    @Override
+    public void delete(int id) throws SQLException {
+        executeUpdate(AccountQueryBuilder.delete()
+            .where("AccountID = ?")
+            .build(), id);
     }
 
-    public List<Integer> getAllID() throws SQLException {
-        List<Integer> ids = new ArrayList<>();
-        String query = "SELECT AccountID FROM Account";
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                ids.add(rs.getInt("AccountID"));
-            }
-        } catch (SQLException e) {
-            throw new SQLException("An error occurred while fetching account IDs: " + e.getMessage(), e);
-        }
-        return ids;
-    }
-
+    @Override
     public int getID(Account account) throws SQLException {
-        String query = "SELECT AccountID FROM Account WHERE Username = ? AND Password = ? AND AccountType = ?";
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, account.getUsername());
-            pstmt.setString(2, account.getPassword());
-            pstmt.setString(3, account.getAccountType());
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("AccountID");
-                }
-            }
-        } catch (SQLException e) {
-            throw new SQLException("An error occurred while fetching the account ID: " + e.getMessage(), e);
-        }
-        return -1; // Return -1 if the account ID is not found
+        String qb = AccountQueryBuilder.select("AccountID")
+            .where("Username = ? AND Password = ? AND AccountType = ?").build();
+        Account result = executeSingleQuery(qb,
+            account.getUsername(),
+            account.getPassword(),
+            account.getAccountType()
+        );
+        return result != null ? result.getAccountID() : -1;
     }
 
+    @Override
+    public List<Integer> getAllID() throws SQLException {
+        return executeQueryList(
+            AccountQueryBuilder.select("AccountID").build(),
+            Integer.class,
+            1
+        );
+    }
+
+    /**
+     * Updates the password for an account.
+     * Direct password update without additional validation.
+     *
+     * @param id The ID of the account
+     * @param newPassword The new password to set
+     * @throws SQLException if database error occurs
+     */
+    public void updatePassword(int id, String newPassword) throws SQLException {
+       String qb = AccountQueryBuilder.update()
+            .set("Password")
+            .where("AccountID = ?").build();
+        executeUpdate(qb, newPassword, id);
+    }
+
+    private Account executeSingleQuery(String query, Object... params) throws SQLException {
+        List<Account> results = executeQuery(query, params);
+        return results.isEmpty() ? null : results.get(0);
+    }
+
+    /**
+     * Retrieves an account by username.
+     *
+     * @param name The username to search for
+     * @return The matching Account or null if not found
+     * @throws SQLException if database error occurs
+     */
+    public Account getByUsername(String name) throws SQLException {
+        String db = AccountQueryBuilder.select().where("username = ?").build();
+        List<Account> results = executeQuery(db, name);
+        return results.isEmpty() ? null : results.get(0);
+    }
 }

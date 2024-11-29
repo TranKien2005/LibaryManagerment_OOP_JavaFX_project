@@ -80,11 +80,11 @@ public class LoginController {
                         int accountId = account.getAccountID();
                         if (account.getAccountType().equals("User")) {
                             menuUserController userLoader = new menuUserController();
-                            userLoader.setAccountID(accountId);
+                            menuUserController.setAccountID(accountId);
                             mainLoader.setController(userLoader);
                         } else {
                             menuController menuLoader = new menuController();
-                            menuLoader.setAccountID(accountId);
+                            menuController.setAccountID(accountId);
                             mainLoader.setController(menuLoader);
                         }
 

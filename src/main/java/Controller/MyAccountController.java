@@ -13,11 +13,10 @@ import DAO.ManagerDao;
 import DAO.UserDao;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import model.Account;
 import model.Manager;
@@ -81,7 +80,7 @@ public class MyAccountController {
     private PasswordField confirmPasswordField;
 
     @FXML
-    private void handleUserIconClick(MouseEvent event) {
+    private void handleUserIconClick() {
         try {
             Image image = userIcon.getImage();
             if (image != null) {

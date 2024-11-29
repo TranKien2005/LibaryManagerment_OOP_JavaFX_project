@@ -1,24 +1,33 @@
 package Controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
-
-import javafx.scene.control.Label;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import DAO.*;
+import DAO.AccountDao;
+import DAO.BookDao;
+import DAO.BorrowDao;
+import DAO.BorrowReturnDAO;
+import DAO.ManagerDao;
+import DAO.ReturnDao;
+import DAO.UserDao;
 import QR.QRScanner;
+import googleAPI.BookInfo;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -28,18 +37,17 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import model.*;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import model.Account;
+import model.Borrow;
+import model.BorrowReturn;
+import model.Document;
+import model.Manager;
+import model.Return;
+import model.User;
 import util.ErrorDialog;
 import util.ThreadManager;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-
-import java.io.IOException;
-
-import googleAPI.*;
-import javafx.stage.FileChooser;
 
 public class menuController {
     private static menuController instance;
@@ -70,6 +78,12 @@ public class menuController {
         return instance;
     }
 
+    /**
+     * Resets the lists of books, users, borrow returns, and accounts by fetching the latest data from the database.
+     * 
+     * @throws SQLException if there is an error accessing the database.
+     * @throws Exception for any other errors that may occur.
+     */
     public void resetList() {
         try {
             bookList = BookDao.getInstance().getAll();
@@ -692,7 +706,7 @@ public class menuController {
 
         Integer selectedMemberId;
         try {
-            selectedMemberId = Integer.parseInt(selectedMemberIdString);
+            selectedMemberId = Integer.valueOf(selectedMemberIdString);
         } catch (NumberFormatException e) {
             e.printStackTrace();
             util.ErrorDialog.showError("Lỗi", "ID thành viên không hợp lệ.", (Stage) cbMembers.getScene().getWindow());

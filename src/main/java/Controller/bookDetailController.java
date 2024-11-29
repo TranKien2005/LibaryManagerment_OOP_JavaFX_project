@@ -8,6 +8,8 @@ import java.time.LocalDate;
 
 import javax.imageio.ImageIO;
 
+import com.google.zxing.WriterException;
+
 import DAO.BookDao;
 import DAO.BorrowDao;
 import DAO.BorrowReturnDAO;
@@ -81,7 +83,7 @@ public class bookDetailController {
 
     private int rating = 0;
 
-    int accountID = menuUserController.getInstance().getAccountID();
+    int accountID = menuUserController.getAccountID();
 
     /**
      * Thiết lập sách cần hiển thị.
@@ -97,14 +99,16 @@ public class bookDetailController {
     /**
      * Cập nhật thông tin chi tiết sách lên giao diện.
      */
+    @SuppressWarnings("CallToPrintStackTrace")
     private void updateBookDetails() {
+        menuUserController.getInstance();
         // Cập nhật ảnh bìa
-        accountID = menuUserController.getInstance().getAccountID();
+        accountID = menuUserController.getAccountID();
         InputStream coverImageStream = book.getCoverImage();
         try {
             InputStream qrCodeStream = CreateQRCode.generateQRCode("BookID: " + book.getBookID());
             qrCodeImageView.setImage(new Image(qrCodeStream));
-        } catch (Exception e) {
+        } catch (WriterException | IOException e) {
             e.printStackTrace();
             util.ErrorDialog.showError("Error", "Có lỗi xảy ra khi tạo mã QR.", null);
         }
@@ -139,6 +143,7 @@ public class bookDetailController {
     /**
      * Cập nhật đánh giá sao (rating) của sách.
      */
+    @SuppressWarnings("CallToPrintStackTrace")
     private void updateRatingBox() {
         try {
             ratingBox.getChildren().clear(); // Xóa các sao cũ
@@ -167,24 +172,25 @@ public class bookDetailController {
      * Xử lý mượn sách.
      */
     @FXML
+    @SuppressWarnings({"CallToPrintStackTrace", "unused"})
     private void handleBorrow() {
-        if (BorrowReturnDAO.getInstance().isBorrowed(accountID, book.getBookID())) {
-            util.ErrorDialog.showError("Thông báo", "Bạn đã mượn sách này rồi.", null);
-            return;
-        }
-        BorrowDao borrowDAO = BorrowDao.getInstance();
-        int selectedMemberId = accountID;
-        int selectedDocumentId = book.getBookID();
-        LocalDate borrowDate = LocalDate.now();
-        LocalDate returnDate = borrowDate.plusMonths(1);
-
-        Borrow newBorrow = new Borrow(
-                selectedMemberId,
-                selectedDocumentId,
-                borrowDate,
-                returnDate,
-                "Borrowed");
         try {
+            if (BorrowReturnDAO.getInstance().isBorrowed(accountID, book.getBookID())) {
+                util.ErrorDialog.showError("Thông báo", "Bạn đã mượn sách này rồi.", null);
+                return;
+            }
+            BorrowDao borrowDAO = BorrowDao.getInstance();
+            int selectedMemberId = accountID;
+            int selectedDocumentId = book.getBookID();
+            LocalDate borrowDate = LocalDate.now();
+            LocalDate returnDate = borrowDate.plusMonths(1);
+
+            Borrow newBorrow = new Borrow(
+                    selectedMemberId,
+                    selectedDocumentId,
+                    borrowDate,
+                    returnDate,
+                    "Borrowed");
             borrowDAO.insert(newBorrow);
             util.ErrorDialog.showSuccess("Thành công", "Tài liệu đã được mượn thành công.", null);
         } catch (SQLException e) {
@@ -194,22 +200,28 @@ public class bookDetailController {
             e.printStackTrace();
             util.ErrorDialog.showError("Error", e.getMessage(), null);
         }
-
     }
 
     /**
      * Xử lý trả sách.
      */
     @FXML
+    @SuppressWarnings("CallToPrintStackTrace")
     private void handleReturn() {
-        int selectedBorrow;
-        selectedBorrow = -1;
-        if (BorrowReturnDAO.getInstance().isBorrowed(accountID, book.getBookID())) {
-            selectedBorrow = BorrowReturnDAO.getInstance().getID(accountID, book.getBookID());
-        } else {
-            util.ErrorDialog.showError("Thông báo", "Bạn chưa mượn sách này", null);
+        int selectedBorrow = -1;
+        try {
+            if (BorrowReturnDAO.getInstance().isBorrowed(accountID, book.getBookID())) {
+                selectedBorrow = BorrowReturnDAO.getInstance().getID(accountID, book.getBookID());
+            } else {
+                util.ErrorDialog.showError("Thông báo", "Bạn chưa mượn sách này", null);
+                return;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            util.ErrorDialog.showError("Database Error", e.getMessage(), null);
             return;
         }
+        
         try {
             int damagePercentage = (int) (Math.random() * 100); // Random damage percentage between 0 and 100
             Return returnRecord = new Return(selectedBorrow,
@@ -223,7 +235,6 @@ public class bookDetailController {
             e.printStackTrace();
             util.ErrorDialog.showError("Error", e.getMessage(), null);
         }
-
     }
 
     @FXML

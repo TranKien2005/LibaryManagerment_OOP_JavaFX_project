@@ -5,23 +5,23 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.function.Consumer;
 
+import DAO.BookDao;
+import googleAPI.GoogleApiBookController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.TextField;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.*;
-import DAO.*;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import java.util.function.Consumer;
-import util.*;
-import googleAPI.*;
+import model.Document;
+import util.ThreadManager;
 
 public class AddController extends menuController {
 
@@ -112,10 +112,6 @@ public class AddController extends menuController {
         quantityField.clear();
     }
 
-    private void closeWindow() {
-        Stage stage = (Stage) addButton.getScene().getWindow();
-        stage.close();
-    }
 
     @FXML
     public void initialize() {
@@ -131,6 +127,7 @@ public class AddController extends menuController {
         isbnField.clear();
     }
 
+    @Override
     public void reload() {
         clearFields();
         isbnField.clear();
@@ -227,35 +224,36 @@ public class AddController extends menuController {
                         int failureCount = 0;
                         int totalLines = (int) reader.lines().count(); // Đếm tổng số dòng trong file
                         reader.close(); // Đóng và mở lại reader để đọc từ đầu
-                        BufferedReader reader2 = new BufferedReader(new FileReader(selectedFile));
-                        int currentLine = 0;
+                        try (BufferedReader reader2 = new BufferedReader(new FileReader(selectedFile))) {
+                            int currentLine = 0;
 
-                        while ((isbn = reader2.readLine()) != null) {
-                            if (!isbn.trim().isEmpty()) {
-                                boolean check = true;
-                                final String currentIsbn = isbn.trim();
-                                Document document = null;
-                                try {
-                                    document = GoogleApiBookController.getBookInfoByISBN(currentIsbn);
-                                    if (document != null) {
-                                        BookDao.getInstance().insert(document);
-                                        check = true;
-                                    } else {
+                            while ((isbn = reader2.readLine()) != null) {
+                                if (!isbn.trim().isEmpty()) {
+                                    boolean check = true;
+                                    final String currentIsbn = isbn.trim();
+                                    Document document = null;
+                                    try {
+                                        document = GoogleApiBookController.getBookInfoByISBN(currentIsbn);
+                                        if (document != null) {
+                                            BookDao.getInstance().insert(document);
+                                            check = true;
+                                        } else {
+                                            check = false;
+                                        }
+                                    } catch (SQLException e) {
                                         check = false;
+                                        e.printStackTrace();
                                     }
-                                } catch (Exception e) {
-                                    check = false;
-                                    e.printStackTrace();
+                                    if (check) {
+                                        successCount++;
+                                    } else {
+                                        failureCount++;
+                                    }
                                 }
-                                if (check) {
-                                    successCount++;
-                                } else {
-                                    failureCount++;
-                                }
+                                currentLine++;
+                                final double progress = (double) currentLine / totalLines;
+                                Platform.runLater(() -> progressBar.setProgress(progress)); // Cập nhật thanh tiến trình
                             }
-                            currentLine++;
-                            final double progress = (double) currentLine / totalLines;
-                            Platform.runLater(() -> progressBar.setProgress(progress)); // Cập nhật thanh tiến trình
                         }
                         final int finalSuccessCount = successCount;
                         final int finalFailureCount = failureCount;
