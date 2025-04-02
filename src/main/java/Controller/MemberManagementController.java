@@ -62,7 +62,7 @@ public class MemberManagementController {
             loadUsers();
         });
 
-        tvMembers.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        tvMembers.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> {
             if (newValue != null) {
                 try {
                     tfUsername.setText(newValue.getFullName());

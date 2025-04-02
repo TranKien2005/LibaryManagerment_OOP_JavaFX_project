@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
-Test set: DAO.BookDaoTest
+Test set: QR.QRScannerTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.038 s -- in DAO.BookDaoTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in QR.QRScannerTest

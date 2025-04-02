@@ -101,7 +101,7 @@ public class HomeController {
             loadMoreNewArrivals();
 
             // Add listener for Enter key press in the search field
-            tfSearch.setOnAction(event -> handleSearch());
+            tfSearch.setOnAction(_ -> handleSearch());
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -297,13 +297,30 @@ public class HomeController {
     }
 
     public void handleAboutUs() {
-        System.out.println("Thông tin về chúng tôi");
-        // TODO: Implement about us page navigation
+        try {
+            java.awt.Desktop.getDesktop().browse(new java.net.URI("https://github.com/TranKien2005/LibaryManagerment_OOP_JavaFX_project"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            ErrorDialog.showError("Lỗi", "Không thể mở liên kết.", (Stage) tfSearch.getScene().getWindow());
+        }
     }
 
     public void handleContact() {
-        System.out.println("Liên hệ");
-        // TODO: Implement contact page navigation
+        try {
+            String recipient = "ttk08112005@gmail.com";
+            String subject = "Contact Us";
+            String body = "Hello, this is a message from the Library Management System.";
+
+            String mailto = String.format("mailto:%s?subject=%s&body=%s", 
+                                          java.net.URLEncoder.encode(recipient, "UTF-8"), 
+                                          java.net.URLEncoder.encode(subject, "UTF-8"), 
+                                          java.net.URLEncoder.encode(body, "UTF-8"));
+
+            java.awt.Desktop.getDesktop().browse(new java.net.URI(mailto));
+        } catch (Exception e) {
+            e.printStackTrace();
+            ErrorDialog.showError("Lỗi", "Không thể mở ứng dụng email.", (Stage) tfSearch.getScene().getWindow());
+        }
     }
 
     @FXML

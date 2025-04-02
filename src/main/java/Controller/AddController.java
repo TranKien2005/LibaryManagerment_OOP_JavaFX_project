@@ -112,6 +112,7 @@ public class AddController extends menuController {
         quantityField.clear();
     }
 
+    @SuppressWarnings("unused")
     private void closeWindow() {
         Stage stage = (Stage) addButton.getScene().getWindow();
         stage.close();
@@ -257,6 +258,7 @@ public class AddController extends menuController {
                             final double progress = (double) currentLine / totalLines;
                             Platform.runLater(() -> progressBar.setProgress(progress)); // Cập nhật thanh tiến trình
                         }
+                        reader2.close();
                         final int finalSuccessCount = successCount;
                         final int finalFailureCount = failureCount;
                         Platform.runLater(() -> {

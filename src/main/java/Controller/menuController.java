@@ -229,7 +229,7 @@ public class menuController {
         Platform.runLater(() -> tvDocuments.setItems(FXCollections.observableArrayList(bookList)));
 
         // Thêm listener cho việc chọn tài liệu
-        tvDocuments.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+        tvDocuments.getSelectionModel().selectedItemProperty().addListener((_, _, newSelection) -> {
             taDocumentDetails.clear();
             reviewTextArea.clear();
             scoreLabel.setText("");
@@ -237,9 +237,6 @@ public class menuController {
             bookCoverImageView.setImage(null);
             if (newSelection != null) {
 
-                String bookName = newSelection.getTitle();
-                String authorName = newSelection.getAuthor();
-                String doChinhXac;
                 InputStream imageStream = newSelection.getCoverImage();
 
                 reviewTextArea.setText(newSelection.getDescription());
@@ -701,10 +698,6 @@ public class menuController {
 
         try {
             int selectedDocumentId = Integer.parseInt(nameDocument);
-            Document selectedDocument = BookDao.getInstance().get(selectedDocumentId);
-
-            User user = UserDao.getInstance().get(selectedMemberId);
-
             Borrow newBorrow = new Borrow(
                     selectedMemberId,
                     selectedDocumentId,

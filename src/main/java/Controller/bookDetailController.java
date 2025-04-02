@@ -81,7 +81,7 @@ public class bookDetailController {
 
     private int rating = 0;
 
-    int accountID = menuUserController.getInstance().getAccountID();
+    int accountID = menuUserController.getAccountID();
 
     /**
      * Thiết lập sách cần hiển thị.
@@ -99,7 +99,7 @@ public class bookDetailController {
      */
     private void updateBookDetails() {
         // Cập nhật ảnh bìa
-        accountID = menuUserController.getInstance().getAccountID();
+        accountID = menuUserController.getAccountID();
         InputStream coverImageStream = book.getCoverImage();
         try {
             InputStream qrCodeStream = CreateQRCode.generateQRCode("BookID: " + book.getBookID());

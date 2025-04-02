@@ -31,6 +31,7 @@ public class LoginController {
     @FXML
     protected Button loginButton;
 
+    @SuppressWarnings("static-access")
     @FXML
     protected void handleLogin() {
         String username = usernameField.getText();
@@ -142,6 +143,7 @@ public class LoginController {
         }
     }
 
+    @SuppressWarnings("static-access")
     private void loginByAccountId(int accountId) {
         AccountDao accountDao = AccountDao.getInstance();
         Account account;
